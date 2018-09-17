@@ -111,12 +111,6 @@ func TestAddLog(t *testing.T) {
 }
 
 func TestCreateConfirm(t *testing.T) {
-	// type args struct {
-	// 	msg    *pb.Message
-	// 	status int32
-	// 	text   string
-	// 	params []interface{}
-	// }
 	tests := []struct {
 		name      string
 		id        string
