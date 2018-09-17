@@ -1,29 +1,21 @@
-FROM golang:1.11rc1-alpine3.8 AS builder
+FROM golang:1.11.0-alpine AS build
 
-ARG BUILD
+ARG VERSION
 
 RUN apk add --update \
 		gcc \
-		musl-dev
+		musl-dev \
+		git
 
 WORKDIR /client
-COPY go.mod go.sum /client/
-ENV GOPROXY="https://modules.myopenfactory.io"
-COPY . /client
-RUN cd /client/cmd && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$BUILD" -o /build/client_linux_amd64
-RUN cd /client/cmd && CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=$BUILD" -o /build/client_windows_amd64.exe
+COPY . /client/
+RUN go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$VERSION"
 
-FROM alpine:latest AS alpine
-RUN apk --no-cache add tzdata zip ca-certificates
-WORKDIR /usr/share/zoneinfo
-# -0 means no compression.  Needed because go's
-# tz loader doesn't handle compressed data.
-RUN zip -r -0 /zoneinfo.zip .
+FROM alpine:latest
+RUN apk add --no-cache tzdata ca-certificates
+COPY myOpenFactoryCA.crt /usr/local/share/ca-certificates/extra/myOpenFactoryCA.crt
+RUN update-ca-certificates
 
-FROM scratch
-ENV ZONEINFO /zoneinfo.zip
-COPY --from=alpine /zoneinfo.zip /
-COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /build/client_linux_amd64 /app/client
 WORKDIR /app/
+COPY --from=build /client/client /app/client
 CMD ["/app/client"]
