@@ -256,6 +256,7 @@ func TestInboundFilePlugin_ConsumeMessage(t *testing.T) {
 				Logs: []*pb.Log{
 					{Level: pb.Log_INFO, Description: fmt.Sprintf("file created with name %q", filepath.Join(dir.Path(), "newfile.txt"))},
 				},
+				StatusCode: http.StatusOK,
 			},
 			wantErr: false,
 			checkFiles: []file{
@@ -283,6 +284,7 @@ func TestInboundFilePlugin_ConsumeMessage(t *testing.T) {
 				Logs: []*pb.Log{
 					{Level: pb.Log_INFO, Description: fmt.Sprintf("message append to %s", filepath.Join(dir.Path(), "newfile2.txt"))},
 				},
+				StatusCode: http.StatusOK,
 			},
 			wantErr: false,
 			checkFiles: []file{
