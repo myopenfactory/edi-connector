@@ -1,6 +1,7 @@
 package transport
 
 import (
+	"net/http"
 	"reflect"
 	"testing"
 
@@ -110,76 +111,81 @@ func TestAddLog(t *testing.T) {
 }
 
 func TestCreateConfirm(t *testing.T) {
-	type args struct {
-		msg    *pb.Message
-		status int32
-		text   string
-		params []interface{}
-	}
+	// type args struct {
+	// 	msg    *pb.Message
+	// 	status int32
+	// 	text   string
+	// 	params []interface{}
+	// }
 	tests := []struct {
-		name    string
-		args    args
-		want    *pb.Confirm
-		wantErr bool
+		name      string
+		id        string
+		processID string
+		status    int32
+		text      string
+		params    []interface{}
+		want      *pb.Confirm
+		wantErr   bool
 	}{
 		{
-			name: "NilInputMsg",
-			args: args{
-				msg: &pb.Message{
-					Id:        "TestIdent",
-					ProcessId: "4711",
-				},
-			},
+			name:    "EmptyID",
 			wantErr: true,
 		},
 		{
-			name: "Success",
-			args: args{
-				msg: &pb.Message{
-					Id:        "TestIdent",
-					ProcessId: "4711",
-				},
-				text: "Test message",
-			},
+			name:    "EmptyProcessID",
+			id:      "TestIdent",
+			wantErr: true,
+		},
+		{
+			name:      "EmptyText",
+			id:        "TestIdent",
+			processID: "4711",
+			wantErr:   true,
+		},
+		{
+			name:      "Conflict",
+			id:        "TestIdent",
+			processID: "4711",
+			status:    http.StatusConflict,
+			text:      "Test message",
 			want: &pb.Confirm{
-				ProcessId: "4711",
 				Id:        "TestIdent",
-				Success:   true,
+				ProcessId: "4711",
 				Logs: []*pb.Log{
 					&pb.Log{
+						Level:       pb.Log_ERROR,
 						Description: "Test message",
 					},
 				},
+				Success:    false,
+				StatusCode: http.StatusConflict,
 			},
 			wantErr: false,
 		},
 		{
-			name: "Success",
-			args: args{
-				msg: &pb.Message{
-					Id:        "TestIdent",
-					ProcessId: "4711",
-				},
-				text:   "Test message",
-				status: 409,
-			},
+			name:      "Success",
+			id:        "TestIdent",
+			processID: "4711",
+			status:    http.StatusOK,
+			text:      "Test message",
 			want: &pb.Confirm{
-				ProcessId: "4711",
 				Id:        "TestIdent",
-				Success:   false,
+				ProcessId: "4711",
 				Logs: []*pb.Log{
 					&pb.Log{
+						Level:       pb.Log_INFO,
 						Description: "Test message",
-						Level:       pb.Log_ERROR,
 					},
 				},
+				Success:    true,
+				StatusCode: http.StatusOK,
 			},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := CreateConfirm(tt.args.msg.Id, tt.args.msg.ProcessId, tt.args.status, tt.args.text, tt.args.params...)
+			got, err := CreateConfirm(tt.id, tt.processID, tt.status, tt.text, tt.params...)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CreateConfirm() error = %v, wantErr %v", err, tt.wantErr)
 				return
