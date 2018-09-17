@@ -223,7 +223,7 @@ func (p *outboundFilePlugin) process(ctx context.Context, obj interface{}) (*pb.
 		for _, l := range confirm.Logs {
 			msgs = append(msgs, l.Description)
 		}
-		return nil, fmt.Errorf("error from confirm for file %s: %s", confirm.Id, confirm.StatusCode)
+		return nil, fmt.Errorf("error from confirm for file %s: %d", confirm.Id, confirm.StatusCode)
 	}
 	if p.successFolder != "" {
 		newfile := filepath.Join(p.successFolder, fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(file)))
