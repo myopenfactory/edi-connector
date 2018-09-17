@@ -290,7 +290,7 @@ func TestNewClient(t *testing.T) {
 
 func Test_Client_Run(t *testing.T) {
 	test := &testServer{}
-	server := httptest.NewServer(pb.NewCoreServiceServer(test, nil))
+	server := httptest.NewServer(pb.NewClientServiceServer(test, nil))
 
 	log.Println(server.URL)
 
