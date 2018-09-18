@@ -23,7 +23,7 @@ func TestPrintLogs(t *testing.T) {
 			name: "NullError",
 			args: args{
 				logs: []*pb.Log{
-					&pb.Log{},
+					{},
 				},
 			},
 		},
@@ -31,19 +31,19 @@ func TestPrintLogs(t *testing.T) {
 			name: "PrintAll",
 			args: args{
 				logs: []*pb.Log{
-					&pb.Log{
+					{
 						Level:       pb.Log_ERROR,
 						Description: "ERROR",
 					},
-					&pb.Log{
+					{
 						Level:       pb.Log_WARN,
 						Description: "WARN",
 					},
-					&pb.Log{
+					{
 						Level:       pb.Log_INFO,
 						Description: "INFO",
 					},
-					&pb.Log{
+					{
 						Level:       pb.Log_DEBUG,
 						Description: "DEBUG",
 					},
@@ -80,7 +80,7 @@ func TestAddLog(t *testing.T) {
 				msg:   "Testus",
 			},
 			want: []*pb.Log{
-				&pb.Log{
+				{
 					Level:       pb.Log_ERROR,
 					Description: "Testus",
 				},
@@ -94,7 +94,7 @@ func TestAddLog(t *testing.T) {
 				args:  []interface{}{47},
 			},
 			want: []*pb.Log{
-				&pb.Log{
+				{
 					Level:       pb.Log_ERROR,
 					Description: "Testus 47",
 				},
@@ -146,7 +146,7 @@ func TestCreateConfirm(t *testing.T) {
 				Id:        "TestIdent",
 				ProcessId: "4711",
 				Logs: []*pb.Log{
-					&pb.Log{
+					{
 						Level:       pb.Log_ERROR,
 						Description: "Test message",
 					},
@@ -166,7 +166,7 @@ func TestCreateConfirm(t *testing.T) {
 				Id:        "TestIdent",
 				ProcessId: "4711",
 				Logs: []*pb.Log{
-					&pb.Log{
+					{
 						Level:       pb.Log_INFO,
 						Description: "Test message",
 					},

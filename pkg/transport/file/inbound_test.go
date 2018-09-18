@@ -18,7 +18,6 @@ import (
 
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/transport"
-
 )
 
 func TestNewInboundFilePlugin(t *testing.T) {

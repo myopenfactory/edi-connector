@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/transport"
+	"github.com/pkg/errors"
 )
 
 // InboundFilePlugin type

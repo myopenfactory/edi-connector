@@ -3,28 +3,28 @@ package file
 import (
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
-	"io"
 
-	"github.com/pkg/errors"
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/transport"
+	"github.com/pkg/errors"
 )
 
 type folder struct {
-	path string
+	path      string
 	extension string
 }
 
 type outboundFilePlugin struct {
-	msgFolders []folder
-	atcFolders []folder
+	msgFolders    []folder
+	atcFolders    []folder
 	successFolder string
 	errorFolder   string
 	processID     string
@@ -57,7 +57,7 @@ func NewOutboundPlugin(pid string, msgProcessor transport.MessageProcessor, atcP
 			return nil, fmt.Errorf("error outbound folder does not exist: %v", path)
 		}
 		p.msgFolders = append(p.msgFolders, folder{
-			path: path,
+			path:      path,
 			extension: ext,
 		})
 	}
@@ -71,7 +71,7 @@ func NewOutboundPlugin(pid string, msgProcessor transport.MessageProcessor, atcP
 			return nil, fmt.Errorf("error attachment folder does not exist: %v", path)
 		}
 		p.atcFolders = append(p.atcFolders, folder{
-			path: path,
+			path:      path,
 			extension: ext,
 		})
 	}

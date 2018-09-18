@@ -1,12 +1,12 @@
 package log
 
 import (
-	"os"
 	"github.com/sirupsen/logrus"
+	"os"
 
-	"github.com/myopenfactory/client/pkg/log/syslog"
 	"github.com/myopenfactory/client/pkg/log/file"
 	"github.com/myopenfactory/client/pkg/log/mail"
+	"github.com/myopenfactory/client/pkg/log/syslog"
 )
 
 type Logger struct {
@@ -71,7 +71,7 @@ func WithSyslog(address string) {
 }
 
 func WithFolder(path string) {
-	hook := file.New(path)	
+	hook := file.New(path)
 	defaultLogger.Logger.AddHook(hook)
 }
 

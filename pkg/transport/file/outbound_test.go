@@ -9,9 +9,9 @@ import (
 
 	"gotest.tools/fs"
 
-	"github.com/pkg/errors"
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/transport"
+	"github.com/pkg/errors"
 )
 
 func Test_outboundFilePlugin_backupFileToFolder(t *testing.T) {
@@ -448,17 +448,17 @@ func Test_outboundFilePlugin_convertToMessages(t *testing.T) {
 			processID: "testID",
 			files:     files,
 			want: []*pb.Message{
-				&pb.Message{
+				{
 					Id:        files[0],
 					ProcessId: "testID",
 					Content:   []byte("Hello World"),
 				},
-				&pb.Message{
+				{
 					Id:        files[1],
 					ProcessId: "testID",
 					Content:   []byte("Hello World"),
 				},
-				&pb.Message{
+				{
 					Id:        files[2],
 					ProcessId: "testID",
 					Content:   []byte("Hello World"),
@@ -523,19 +523,19 @@ func Test_outboundFilePlugin_convertToAttachments(t *testing.T) {
 			processID: "testID",
 			files:     files,
 			want: []*pb.Attachment{
-				&pb.Attachment{
+				{
 					Filename: files[0],
 					Content: &pb.Attachment_Data{
 						Data: []byte("Hello World"),
 					},
 				},
-				&pb.Attachment{
+				{
 					Filename: files[1],
 					Content: &pb.Attachment_Data{
 						Data: []byte("Hello World"),
 					},
 				},
-				&pb.Attachment{
+				{
 					Filename: files[2],
 					Content: &pb.Attachment_Data{
 						Data: []byte("Hello World"),
