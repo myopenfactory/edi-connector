@@ -343,7 +343,7 @@ func Test_Client_Run(t *testing.T) {
 			ret: testReturns{
 				configs: &pb.Configuration{
 					Inbound: []*pb.ProcessConfig{
-						&pb.ProcessConfig{
+						{
 							ProcessId: "4900",
 							Type:      "FILE",
 							Parameter: map[string]string{},
@@ -365,7 +365,7 @@ func Test_Client_Run(t *testing.T) {
 			ret: testReturns{
 				configs: &pb.Configuration{
 					Outbound: []*pb.ProcessConfig{
-						&pb.ProcessConfig{
+						{
 							ProcessId: "",
 							Type:      "FILE",
 						},
@@ -389,7 +389,7 @@ func Test_Client_Run(t *testing.T) {
 			ret: testReturns{
 				configs: &pb.Configuration{
 					Inbound: []*pb.ProcessConfig{
-						&pb.ProcessConfig{
+						{
 							ProcessId: "4900",
 							Type:      "FILE",
 							Parameter: map[string]string{
@@ -418,7 +418,7 @@ func Test_Client_Run(t *testing.T) {
 			ret: testReturns{
 				configs: &pb.Configuration{
 					Inbound: []*pb.ProcessConfig{
-						&pb.ProcessConfig{
+						{
 							ProcessId: "4900",
 							Type:      "FILE",
 							Parameter: map[string]string{
@@ -429,7 +429,7 @@ func Test_Client_Run(t *testing.T) {
 				},
 				Messages: &pb.Messages{
 					Messages: []*pb.Message{
-						&pb.Message{
+						{
 							ProcessId: "4900",
 							Test:      false,
 							Id:        "4711",
@@ -459,7 +459,7 @@ func Test_Client_Run(t *testing.T) {
 			ret: testReturns{
 				configs: &pb.Configuration{
 					Inbound: []*pb.ProcessConfig{
-						&pb.ProcessConfig{
+						{
 							ProcessId: "4900",
 							Type:      "FILE",
 							Parameter: map[string]string{
@@ -470,7 +470,7 @@ func Test_Client_Run(t *testing.T) {
 				},
 				Messages: &pb.Messages{
 					Messages: []*pb.Message{
-						&pb.Message{
+						{
 							ProcessId:  "4900",
 							Test:       false,
 							Id:         "4711",
@@ -497,7 +497,7 @@ func Test_Client_Run(t *testing.T) {
 			ret: testReturns{
 				configs: &pb.Configuration{
 					Outbound: []*pb.ProcessConfig{
-						&pb.ProcessConfig{
+						{
 							ProcessId: "4900",
 							Type:      "FILE",
 							Parameter: map[string]string{
@@ -526,7 +526,7 @@ func Test_Client_Run(t *testing.T) {
 			ret: testReturns{
 				configs: &pb.Configuration{
 					Outbound: []*pb.ProcessConfig{
-						&pb.ProcessConfig{
+						{
 							ProcessId: "4900",
 							Type:      "FILE",
 							Parameter: map[string]string{

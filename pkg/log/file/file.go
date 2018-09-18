@@ -2,20 +2,20 @@ package file
 
 import (
 	"os"
-	
+
 	"github.com/sirupsen/logrus"
 )
 
 var defaultFormatter = &logrus.TextFormatter{DisableColors: true}
 
 type FileHook struct {
-	path string
+	path      string
 	formatter logrus.Formatter
 }
 
 func New(path string) *FileHook {
 	return &FileHook{
-		path:  path,
+		path:      path,
 		formatter: defaultFormatter,
 	}
 }
@@ -44,4 +44,3 @@ func (h *FileHook) Fire(entry *logrus.Entry) error {
 func (h *FileHook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }
-

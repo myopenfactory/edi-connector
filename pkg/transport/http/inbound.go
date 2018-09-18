@@ -10,9 +10,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/pkg/errors"
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/transport"
+	"github.com/pkg/errors"
 )
 
 type HttpClient interface {

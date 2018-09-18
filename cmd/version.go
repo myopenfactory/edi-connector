@@ -7,11 +7,11 @@ import (
 )
 
 var (
-	version = "DEV"
+	version = "0.0.0-DEV"
 )
 
 func init() {
-	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(versionCmd)
 }
 
 // versionCmd represents the version command
