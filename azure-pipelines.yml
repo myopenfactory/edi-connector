@@ -9,48 +9,34 @@ jobs:
     vmImage: 'Ubuntu 16.04'
 
   variables:
-    GOBIN:  '$(GOPATH)/bin' # Go binaries path
     GOROOT: '/usr/local/go1.11' # Go installation path
-    GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
-    modulePath: '$(system.defaultWorkingDirectory)/src/github.com/$(build.repository.name)' # Path to the module's code
 
   steps:
   - script: |
-      mkdir -p '$(GOBIN)'
-      mkdir -p '$(GOPATH)/pkg'
-      mkdir -p '$(modulePath)'
-      shopt -s extglob
-      mv !(gopath) '$(modulePath)'
-      cd $(modulePath)
       export CLIENT_VERSION=`git describe --tags --dirty --always`
-      echo '##vso[task.prependpath]$(GOBIN)'
-      echo '##vso[task.prependpath]$(GOROOT)/bin'
+      [[ ${CLIENT_VERSION} =~ v[0-9]+.[0-9]+.[0-9]+$ ]] && echo '##vso[build.addbuildtag]Release'
       echo '##vso[task.setvariable variable=Client.Version;]'${CLIENT_VERSION}
-    displayName: 'Set up the Go workspace'
+      echo '##vso[task.prependpath]$(GOROOT)/bin'
+      echo ${CLIENT_VERSION}
+      mkdir -p $(Build.ArtifactStagingDirectory)/artifact
+      echo ${CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
+    displayName: 'Set up the workspace'
 
   - script: |
-      echo $(Client.Version)
       go version
       go get -v -t -d ./...
+      go test -v ./...
       GOOS=linux GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/amd64/myof-client
       GOOS=linux GOARCH=386 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/386/myof-client
       GOOS=windows GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/amd64/myof-client.exe
       GOOS=windows GOARCH=386 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/386/myof-client.exe
-    workingDirectory: '$(modulePath)'
-    displayName: 'Get dependencies, then build'
-
-  - script: |
-      go version
-      go test ./...
-    workingDirectory: '$(modulePath)'
-    displayName: 'Run Tests'
+    displayName: 'Get dependencies, then test and build'
 
   - script: |
       echo $(Client.Version)
       docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine -f Dockerfile --build-arg VERSION=$(Client.Version) .
       docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
-    workingDirectory: '$(modulePath)'
     displayName: 'Build Docker'
 
   - task: ArchiveFiles@2
@@ -81,20 +67,11 @@ jobs:
       includeRootFolder: False
       archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
 
-  - script: |
-      echo $(Client.Version) > version.txt
-    displayName: 'Generate version information'
-    workingDirectory: '$(Build.ArtifactStagingDirectory)/artifact'
-
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifacts'
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifact'
       artifactName: myof-client
-
-  - script: |
-      [[ $(Client.Version) =~ v[0-9]+.[0-9]+.[0-9]+$ ]] && echo '##vso[build.addbuildtag]Release'
-    displayName: 'Generate build tags'
 
 - job: Windows
   pool:
