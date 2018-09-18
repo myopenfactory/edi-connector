@@ -21,13 +21,15 @@ jobs:
       mkdir -p '$(modulePath)'
       shopt -s extglob
       mv !(gopath) '$(modulePath)'
+      cd $(modulePath)
       export CLIENT_VERSION=`git describe --tags --dirty --always`
       echo '##vso[task.prependpath]$(GOBIN)'
       echo '##vso[task.prependpath]$(GOROOT)/bin'
-      echo '##vso[task.setvariable variable=Client.Version;]$(CLIENT_VERSION)'
+      echo '##vso[task.setvariable variable=Client.Version;]'${CLIENT_VERSION}
     displayName: 'Set up the Go workspace'
 
   - script: |
+      echo $(Client.Version)
       go version
       go get -v -t -d ./...
       GOOS=linux GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/amd64/myof-client
@@ -44,8 +46,7 @@ jobs:
     displayName: 'Run Tests'
 
   - script: |
-      export CLIENT_VERSION=`git describe --tags --dirty --always`
-      echo '##vso[task.setvariable variable=Client.Version;]$(CLIENT_VERSION)'
+      echo $(Client.Version)
       docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine -f Dockerfile --build-arg VERSION=$(Client.Version) .
       docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
@@ -80,6 +81,11 @@ jobs:
       includeRootFolder: False
       archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
 
+  - script: |
+      echo $(Client.Version) > version.txt
+    displayName: 'Generate version information'
+    workingDirectory: '$(Build.ArtifactStagingDirectory)/artifact'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifacts'
     inputs:
@@ -98,6 +104,7 @@ jobs:
       echo '##vso[task.setvariable variable=Client.Version;]%CLIENT_VERSION%'
     displayName: 'Set up variables'
   - script: |
+      echo $(Client.Version)
       docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore -f windows.Dockerfile --build-arg VERSION=$(Client.Version) .
       docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore
