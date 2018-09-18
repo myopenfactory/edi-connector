@@ -92,6 +92,10 @@ jobs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifact'
       artifactName: myof-client
 
+  - script: |
+      [[ $(Client.Version) =~ v[0-9]+.[0-9]+.[0-9]+$ ]] && echo '##vso[build.addbuildtag]Release'
+    displayName: 'Generate build tags'
+
 - job: Windows
   pool:
     vmImage: 'vs2017-win2016'
