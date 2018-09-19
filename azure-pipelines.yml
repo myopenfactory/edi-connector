@@ -5,6 +5,7 @@
 
 jobs:
 - job: Linux
+
   pool:
     vmImage: 'Ubuntu 16.04'
 
@@ -82,7 +83,7 @@ jobs:
       git describe --tags --dirty --always  > version
       set /p CLIENT_VERSION= < version
       del version
-      echo '##vso[task.setvariable variable=Client.Version;]%CLIENT_VERSION%'
+      echo ##vso[task.setvariable variable=Client.Version;]%CLIENT_VERSION%
     displayName: 'Set up variables'
   - script: |
       echo $(Client.Version)
