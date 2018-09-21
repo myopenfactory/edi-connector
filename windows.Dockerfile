@@ -6,8 +6,10 @@ ARG VERSION
 
 WORKDIR C:\client
 COPY . C:\client
-RUN New-Item -ItemType directory -Path C:\build | Out-Null
-RUN go build -ldflags '-X github.com/myopenfactory/client/cmd.version=$VERSION'
+
+SHELL ["cmd", "/S", "/C"]
+RUN mkdir C:\build
+RUN go build -ldflags="-X github.com/myopenfactory/client/cmd.version=%VERSION%"
 
 FROM golang:1.11.0-windowsservercore
 COPY myOpenFactoryCA.crt C:\
