@@ -3,8 +3,9 @@ package log
 import (
 	"github.com/sirupsen/logrus"
 	"os"
+	"fmt"
 
-	"github.com/myopenfactory/client/pkg/log/file"
+	"github.com/myopenfactory/client/pkg/log/filesystem"
 	"github.com/myopenfactory/client/pkg/log/mail"
 	"github.com/myopenfactory/client/pkg/log/syslog"
 )
@@ -70,8 +71,12 @@ func WithSyslog(address string) {
 	defaultLogger.Logger.AddHook(hook)
 }
 
-func WithFolder(path string) {
-	hook := file.New(path)
+func WithFilesystem(path string) {
+	hook, err := filesystem.New(path)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	defaultLogger.Logger.AddHook(hook)
 }
 
