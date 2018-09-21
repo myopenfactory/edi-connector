@@ -32,7 +32,6 @@ jobs:
 
   - script: |
       go version
-      go get -v -t -d ./...
       go test -v ./... 2>&1 | go-junit-report > $(Build.ArtifactStagingDirectory)/report.xml
       cp $(Build.ArtifactStagingDirectory)/report.xml $(Build.ArtifactStagingDirectory)/artifact/report.xml
       GOOS=linux GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/amd64/myof-client
