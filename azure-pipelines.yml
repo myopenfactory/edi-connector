@@ -10,6 +10,8 @@ jobs:
     vmImage: 'Ubuntu 16.04'
 
   variables:
+    GOPATH: '/tmp/gopath'
+    GOBIN:  '$(GOPATH)/bin' # Go binaries path 
     GOROOT: '/usr/local/go1.11' # Go installation path
 
   steps:
@@ -21,12 +23,18 @@ jobs:
       echo ${CLIENT_VERSION}
       mkdir -p $(Build.ArtifactStagingDirectory)/artifact
       echo ${CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
+      echo '##vso[task.prependpath]$(GOBIN)' 
+      echo '##vso[task.prependpath]$(GOROOT)/bin'
+      pushd /tmp
+      go get -u github.com/jstemmer/go-junit-report
+      popd
     displayName: 'Set up the workspace'
 
   - script: |
       go version
       go get -v -t -d ./...
-      go test -v ./...
+      go test -v ./... 2>&1 | go-junit-report > $(Build.ArtifactStagingDirectory)/report.xml
+      cp $(Build.ArtifactStagingDirectory)/report.xml $(Build.ArtifactStagingDirectory)/artifact/report.xml
       GOOS=linux GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/amd64/myof-client
       GOOS=linux GOARCH=386 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/386/myof-client
       GOOS=windows GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/amd64/myof-client.exe
@@ -67,6 +75,11 @@ jobs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/windows/386'
       includeRootFolder: False
       archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '$(Build.ArtifactStagingDirectory)/report.xml' 
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifacts'
