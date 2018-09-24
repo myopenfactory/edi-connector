@@ -92,7 +92,7 @@ func runClient(cmd *cobra.Command, args []string) {
 
 	logFolder := viper.GetString("log.folder")
 	if logFolder != "" {
-		log.WithFolder(logFolder)
+		log.WithFilesystem(logFolder)
 	}
 
 	log.Infof("Stating myOpenFactory client %v", version)
