@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"path/filepath"
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
@@ -17,8 +18,8 @@ type FilesystemHook struct {
 
 func New(path string) (*FilesystemHook, error) {
 	writer, err := rotatelogs.New(
-		path+".%Y%m%d%H%M",
-		rotatelogs.WithMaxAge(24 * time.Hour),
+		filepath.Join(path, "log.%Y%m%d%H%M.log"),
+		rotatelogs.WithMaxAge(24*time.Hour),
 		rotatelogs.WithRotationTime(time.Hour),
 	)
 

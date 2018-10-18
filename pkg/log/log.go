@@ -8,6 +8,7 @@ import (
 	"github.com/myopenfactory/client/pkg/log/filesystem"
 	"github.com/myopenfactory/client/pkg/log/mail"
 	"github.com/myopenfactory/client/pkg/log/syslog"
+	"github.com/myopenfactory/client/pkg/log/eventlog"
 )
 
 type Logger struct {
@@ -82,5 +83,14 @@ func WithFilesystem(path string) {
 
 func WithMail(appname, address, sender, receiver, username, password string) {
 	hook := mail.New(appname, address, sender, receiver, username, password)
+	defaultLogger.Logger.AddHook(hook)
+}
+
+func WithEventlog(name string) {
+	hook, err := eventlog.New(name)
+	if err != nil {
+		Errorf("failed to initialize eventlog: %q: %v", name, err)
+		os.Exit(1)
+	}
 	defaultLogger.Logger.AddHook(hook)
 }
