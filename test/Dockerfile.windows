@@ -1,0 +1,10 @@
+# escape=`
+
+FROM golang:1.11.0-windowsservercore
+
+ENV GOPROXY=https://modules.myopenfactory.io
+
+WORKDIR C:\app
+COPY . C:\app\
+RUN go build -o test.exe .\test
+CMD ["C:\app\test.exe"]
