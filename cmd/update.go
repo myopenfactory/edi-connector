@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/blang/semver"
 	"github.com/spf13/cobra"
@@ -24,6 +25,10 @@ var updateCmd = &cobra.Command{
 		if err != nil {
 			fmt.Println("Error occurred while detecting version:", err)
 			os.Exit(1)
+		}
+		
+		if strings.HasPrefix(version, "v") {
+			version = version[1:]
 		}
 
 		v := semver.MustParse(version)
