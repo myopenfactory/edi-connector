@@ -18,9 +18,8 @@ type FilesystemHook struct {
 func New(path string) (*FilesystemHook, error) {
 	writer, err := rotatelogs.New(
 		path+".%Y%m%d%H%M",
-		rotatelogs.WithLinkName(path),
-		rotatelogs.WithMaxAge(time.Duration(86400)*time.Second),
-		rotatelogs.WithRotationTime(time.Duration(604800)*time.Second),
+		rotatelogs.WithMaxAge(24 * time.Hour),
+		rotatelogs.WithRotationTime(time.Hour),
 	)
 
 	if err != nil {
