@@ -11,6 +11,7 @@ import (
 
 func Test() error {
 	defer func() {
+		sh.RunV("docker-compose", "-f", "docker-compose.linux.yml", "down", "-v")
 		os.Remove("logs")
 		os.Remove("inbound")
 		os.Remove("outbound")
