@@ -1,8 +1,9 @@
 # escape=`
 
-FROM golang:1.11.0-windowsservercore AS build
+FROM golang:1.11.1-windowsservercore AS build
 
 ARG VERSION
+ENV GOPROXY=https://modules.myopenfactory.io
 
 WORKDIR C:\client
 COPY . C:\client
@@ -11,8 +12,9 @@ SHELL ["cmd", "/S", "/C"]
 RUN mkdir C:\build
 RUN go build -ldflags="-X github.com/myopenfactory/client/cmd.version=%VERSION%"
 
-FROM golang:1.11.0-windowsservercore
+FROM microsoft/windowsservercore:latest
 COPY myOpenFactoryCA.crt C:\
+SHELL ["powershell", "-command"]
 RUN Import-Certificate -FilePath C:\myOpenFactoryCA.crt -CertStoreLocation cert:\LocalMachine\Root
 
 WORKDIR C:\app\
