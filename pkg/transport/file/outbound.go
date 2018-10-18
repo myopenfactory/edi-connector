@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
@@ -29,7 +28,7 @@ type outboundFilePlugin struct {
 	errorFolder   string
 	processID     string
 	parameter     map[string]string
-	waitTime      int
+	waitTime      time.Duration
 	msgProcessor  transport.MessageProcessor
 	atcProcessor  transport.AttachmentProcessor
 }
@@ -37,7 +36,7 @@ type outboundFilePlugin struct {
 // NewOutboundFilePlugin returns new OutPlugin and checks for success, error and waittime parameter.
 func NewOutboundPlugin(pid string, msgProcessor transport.MessageProcessor, atcProcessor transport.AttachmentProcessor, parameter map[string]string) (transport.OutboundPlugin, error) {
 	p := &outboundFilePlugin{
-		waitTime:     15,
+		waitTime:     15*time.Second,
 		parameter:    parameter,
 		processID:    pid,
 		msgProcessor: msgProcessor,
@@ -90,14 +89,14 @@ func NewOutboundPlugin(pid string, msgProcessor transport.MessageProcessor, atcP
 	}
 
 	if v := parameter["waittime"]; v != "" {
-		wt, err := strconv.Atoi(v)
-		if wt < 0 || err != nil {
-			return nil, errors.Wrapf(err, "error while converting waittime to integer: %v", v)
+		d, err := time.ParseDuration(v)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error while parsing waittime %q: %v", v, err)
 		}
-		p.waitTime = wt
+		p.waitTime = d
 	}
 
-	log.Infof("using waittime=%v, successFolder=%v, errorFolder=%v", p.waitTime, p.successFolder, p.errorFolder)
+	log.Infof("using waittime=%s, successFolder=%v, errorFolder=%v", p.waitTime, p.successFolder, p.errorFolder)
 
 	return p, nil
 }
@@ -323,6 +322,15 @@ func move(src, dst string) (int64, error) {
 	}
 	defer out.Close()
 
-	defer os.Remove(src)
-	return io.Copy(out, in)
+	n, err := io.Copy(out, in)
+	if err != nil {
+		return n, err
+	}
+
+	in.Close()
+	if err := os.Remove(src); err != nil {
+		return 0, err
+	}
+
+	return n, nil
 }

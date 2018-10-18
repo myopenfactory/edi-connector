@@ -171,6 +171,8 @@ func (c *Client) Run() error {
 		}
 	}
 
+	log.Infof("using runwaittime=%s and healthwaittime=%s", c.RunWaitTime, c.HealthWaitTime)
+
 	healthTicker := time.NewTicker(c.HealthWaitTime)
 	go func() {
 		cc, err := loadKeyPair(c.ClientCert)
