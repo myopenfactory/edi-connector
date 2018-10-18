@@ -73,3 +73,7 @@ func Protogen() error {
 	}
 	return nil
 }
+
+func Test() error {
+	return sh.RunV("mage", "-d", "test", "test")
+}

@@ -5,9 +5,11 @@
 
 jobs:
 - job: Linux
-
   pool:
-    vmImage: 'Ubuntu 16.04'
+    name: default
+    demands:
+      - agent.location -equals local
+      - agent.os -equals Linux
 
   variables:
     GOPATH: '/tmp/gopath'
@@ -17,31 +19,62 @@ jobs:
   steps:
   - script: |
       export CLIENT_VERSION=`git describe --tags --dirty --always`
-      [[ ${CLIENT_VERSION} =~ v[0-9]+.[0-9]+.[0-9]+$ ]] && echo '##vso[build.addbuildtag]Release'
       echo '##vso[task.setvariable variable=Client.Version;]'${CLIENT_VERSION}
-      echo '##vso[task.prependpath]$(GOROOT)/bin'
-      echo ${CLIENT_VERSION}
-      mkdir -p $(Build.ArtifactStagingDirectory)/artifact
-      echo ${CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
       echo '##vso[task.prependpath]$(GOBIN)' 
       echo '##vso[task.prependpath]$(GOROOT)/bin'
+      export PATH="${GOROOT}/bin:${PATH}"
+      export PATH="${GOBIN}:${PATH}"
+      mkdir -p $(Build.ArtifactStagingDirectory)/artifact
+      echo ${CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
       pushd /tmp
       go get -u github.com/jstemmer/go-junit-report
+      go get -u -d github.com/magefile/mage
       popd
+      pushd ${GOPATH}/src/github.com/magefile/mage
+      go run bootstrap.go
+      popd
+      go version
+      mage --version
+      echo ${CLIENT_VERSION}
     displayName: 'Set up the workspace'
 
   - script: |
-      go version
       go test -v ./... 2>&1 | go-junit-report > $(Build.ArtifactStagingDirectory)/report.xml
       cp $(Build.ArtifactStagingDirectory)/report.xml $(Build.ArtifactStagingDirectory)/artifact/report.xml
-      GOOS=linux GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/amd64/myof-client
-      GOOS=linux GOARCH=386 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/386/myof-client
-      GOOS=windows GOARCH=amd64 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/amd64/myof-client.exe
-      GOOS=windows GOARCH=386 go build -v -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/386/myof-client.exe
-    displayName: 'Get dependencies, then test and build'
+    displayName: 'Unit Tests'
+
+  - task: DownloadSecureFile@1
+    displayName: 'Download Alpine Properties'
+    inputs:
+      secureFile: 'ab6d4017-c393-4e83-9a70-61e54520fc81'
+
+  - task: DownloadSecureFile@1
+    displayName: 'Download Windows Properties'
+    inputs:
+      secureFile: '0f0e6d24-eed9-4d6b-a60a-665139190909'
+
+  - task: DownloadSecureFile@1
+    displayName: 'Download Client Certificate'
+    inputs:
+      secureFile: 'fe048ca3-83a7-4258-857c-db117beea9a2'
+
+  - task: DownloadSecureFile@1
+    displayName: 'Download Root CA'
+    inputs:
+      secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
 
   - script: |
-      echo $(Client.Version)
+      MYOF_CLIENT_CONFIG=$(Agent.TempDirectory) mage test
+    displayName: 'E2E Tests'
+
+  - script: |
+      CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/amd64/myof-client
+      CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/386/myof-client
+      CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/amd64/myof-client.exe
+      CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/386/myof-client.exe
+    displayName: 'Build'
+
+  - script: |
       docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine -f Dockerfile --build-arg VERSION=$(Client.Version) .
       docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
@@ -86,20 +119,65 @@ jobs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifact'
       artifactName: myof-client
 
-- job: Windows
-  pool:
-    vmImage: 'vs2017-win2016'
+# - job: Windows
+#   pool:
+#     name: default
+#     demands:
+#       - agent.location -equals local
+#       - agent.os -equals Windows_NT
 
-  steps:
-  - script: |
-      git describe --tags --dirty --always  > version
-      set /p CLIENT_VERSION= < version
-      del version
-      echo ##vso[task.setvariable variable=Client.Version;]%CLIENT_VERSION%
-    displayName: 'Set up variables'
-  - script: |
-      echo $(Client.Version)
-      docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore -f windows.Dockerfile --build-arg VERSION=$(Client.Version) .
-      docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
-      docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore
-    displayName: 'Build Docker'
+#   variables:
+#     GOPATH: 'C:/tmp/gopath'
+#     GOBIN:  '$(GOPATH)/bin' # Go binaries path 
+#     GOROOT: 'C:/tools/go1.11' # Go installation path
+
+  # steps:
+  # - powershell: |
+  #     Write-Host "##vso[task.prependpath]${env:GOBIN}"
+  #     $env:PATH = "${env:PATH};$(GOBIN)"
+  #     Write-Host "##vso[task.prependpath]${env:GOROOT}/bin"
+  #     $env:PATH = "${env:PATH};${env:GOROOT}/bin"
+  #     $env:CLIENT_VERSION = git describe --tags --dirty --always
+  #     Write-Host "##vso[task.setvariable variable=Client.Version;]${env:CLIENT_VERSION}"
+  #     New-Item -Path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -Name artifact -ItemType "directory" | Out-Null
+  #     Write-Host ${env:CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
+  #     Push-Location C:/tmp
+  #     & "$env:GOROOT/bin/go" get -u github.com/jstemmer/go-junit-report
+  #     & "$env:GOROOT/bin/go" get -u -d github.com/magefile/mage
+  #     Pop-Location
+  #     Push-Location $env:GOPATH/src/github.com/magefile/mage
+  #     go run bootstrap.go
+  #     Pop-Location
+  #     & "$env:GOROOT/bin/go" version
+  #     & "$env:GOPATH/bin/mage" --version
+  #     Write-Host ${env:CLIENT_VERSION}
+  #   displayName: 'Set up the workspace'
+
+  # - task: DownloadSecureFile@1
+  #   displayName: 'Download Windows Properties'
+  #   inputs:
+  #     secureFile: '0f0e6d24-eed9-4d6b-a60a-665139190909'
+
+  # - task: DownloadSecureFile@1
+  #   displayName: 'Download Client Certificate'
+  #   inputs:
+  #     secureFile: 'fe048ca3-83a7-4258-857c-db117beea9a2'
+
+  # - task: DownloadSecureFile@1
+  #   displayName: 'Download Root CA'
+  #   inputs:
+  #     secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
+
+  # - powershell: |
+  #     $env:MYOF_CLIENT_CONFIG="$(Agent.TempDirectory)"
+  #     Write-Host $env:MYOF_CLIENT_CONFIG
+  #     Write-Host $env:PATH
+  #     mage test
+  #   displayName: 'E2E Tests'
+
+  # - script: |
+  #     echo $(Client.Version)
+  #     docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore -f Dockerfile.windows --build-arg VERSION=$(Client.Version) .
+  #     docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
+  #     docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore
+  #   displayName: 'Build Docker'

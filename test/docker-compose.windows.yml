@@ -1,0 +1,40 @@
+version: '3.4'
+services:
+  client:
+    build:
+      context: ..
+      dockerfile: Dockerfile.windows
+      args:
+        VERSION: test-build
+    volumes:
+      - "${MYOF_CLIENT_CONFIG}:C:/myof/config"
+      - "./logs:C:/myof/logs"
+      - "./inbound:C:/myof/inbound/"
+      - "./outbound:C:/myof/outbound/"
+      - "./success:C:/myof/success/"
+      - "./error:C:/myof/error/"
+    entrypoint:
+      - C:/app/client.exe
+      - --config
+      - C:/myof/config/windowsservercore.properties
+
+  test:
+    build:
+      context: ..
+      dockerfile: test/Dockerfile.windows
+    volumes:
+      - "${MYOF_CLIENT_CONFIG}:C:/myof/config"
+      - "./logs:C:/myof/logs/"
+      - "./inbound:C:/myof/inbound/"
+      - "./outbound:C:/myof/outbound/"
+      - "./success:C:/myof/success/"
+      - "./error:C:/myof/error/"
+    entrypoint:
+      - C:/app/test.exe
+      - --config
+      - C:/myof/config/windowsservercore.properties
+
+networks:
+  default:
+    external:
+      name: nat

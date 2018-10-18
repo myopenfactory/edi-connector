@@ -1,0 +1,42 @@
+version: '3.4'
+services:
+  client:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VERSION: test-build
+    volumes:
+      - "${MYOF_CLIENT_CONFIG}:/myof/config"
+      - "logs:/myof/logs"
+      - "inbound:/myof/inbound"
+      - "outbound:/myof/outbound"
+      - "success:/myof/success"
+      - "error:/myof/error"
+    entrypoint:
+      - /app/client
+      - --config
+      - /myof/config/alpine.properties
+
+  test:
+    build:
+      context: ..
+      dockerfile: test/Dockerfile
+    volumes:
+      - "${MYOF_CLIENT_CONFIG}:/myof/config"
+      - "logs:/myof/logs"
+      - "inbound:/myof/inbound"
+      - "outbound:/myof/outbound"
+      - "success:/myof/success"
+      - "error:/myof/error"
+    entrypoint:
+      - /app/test.bin
+      - --config
+      - /myof/config/alpine.properties
+
+volumes:
+  logs:
+  inbound:
+  outbound:
+  success:
+  error:
