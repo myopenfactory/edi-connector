@@ -1,15 +1,11 @@
-FROM golang:1.11.0-alpine AS build
+FROM golang:1.11.1-alpine AS build
 
 ARG VERSION
-
-RUN apk add --update \
-		gcc \
-		musl-dev \
-		git
+ENV GOPROXY=https://modules.myopenfactory.io
 
 WORKDIR /client
 COPY . /client/
-RUN go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$VERSION"
+RUN CGO_ENABLED=0 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$VERSION"
 
 FROM alpine:latest
 RUN apk add --no-cache tzdata ca-certificates
