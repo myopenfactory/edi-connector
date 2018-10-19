@@ -46,7 +46,8 @@ func init() {
 // bootstrapCmd represents the bootstrap command
 var bootstrapCmd = &cobra.Command{
 	Use:   "bootstrap",
-	Short: "shows version",
+	Short: "bootstrap the client [EXPERIMENTAL]",
+	Long:  "bootstrap the client.\n\nDO NOT USE IN PRODUCTION",
 	Run: func(cmd *cobra.Command, args []string) {
 		folder := os.Getenv("ProgramFiles") + "\\myOpenFactory\\Client\\"
 		if err := os.MkdirAll(folder, 0644); err != nil {
