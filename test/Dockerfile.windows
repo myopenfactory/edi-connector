@@ -1,6 +1,6 @@
 # escape=`
 
-FROM golang:1.11.0-windowsservercore
+FROM golang:1.11.1-windowsservercore
 
 ENV GOPROXY=https://modules.myopenfactory.io
 
