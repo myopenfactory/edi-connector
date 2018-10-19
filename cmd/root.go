@@ -24,9 +24,7 @@ var (
 )
 
 func init() {
-	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file")
-
 
 	rootCmd.Flags().StringP("username", "u", "", "username")
 	viper.BindPFlag("username", rootCmd.Flags().Lookup("username"))
@@ -46,32 +44,37 @@ func init() {
 	rootCmd.Flags().String("proxy", "", "proxy url")
 	viper.BindPFlag("proxy", rootCmd.Flags().Lookup("proxy"))
 
-	rootCmd.Flags().String("log.level", "INFO", "log level")
-	viper.BindPFlag("log.level", rootCmd.Flags().Lookup("log.level"))
+	rootCmd.Flags().String("logLevel", "INFO", "log level")
+	viper.BindPFlag("log.level", rootCmd.Flags().Lookup("logLevel"))
 
-	rootCmd.Flags().String("log.folder", "", "folder for log files")
-	viper.BindPFlag("log.folder", rootCmd.Flags().Lookup("log.folder"))
+	rootCmd.Flags().String("logFolder", "", "folder for log files")
+	viper.BindPFlag("log.folder", rootCmd.Flags().Lookup("logFolder"))
 
-	rootCmd.Flags().String("log.syslog", "", "syslog server address")
-	viper.BindPFlag("log.syslog", rootCmd.Flags().Lookup("log.syslog"))
+	rootCmd.Flags().String("logSyslog", "", "syslog server address")
+	viper.BindPFlag("log.syslog", rootCmd.Flags().Lookup("logSyslog"))
 
-	rootCmd.Flags().String("log.mail.host", "", "mail server address")
-	viper.BindPFlag("log.mail.host", rootCmd.Flags().Lookup("log.mail.host"))
+	rootCmd.Flags().String("logEventlog", "", "eventlog name")
+	viper.BindPFlag("log.eventlog", rootCmd.Flags().Lookup("logEventlog"))
 
-	rootCmd.Flags().Int("log.mail.port", 25, "mail server port")
-	viper.BindPFlag("log.mail.port", rootCmd.Flags().Lookup("log.mail.port"))
+	rootCmd.Flags().String("logMailHost", "", "mail server address")
+	viper.BindPFlag("log.mail.host", rootCmd.Flags().Lookup("logMailHost"))
 
-	rootCmd.Flags().String("log.mail.from", "", "sender email address")
-	viper.BindPFlag("log.mail.from", rootCmd.Flags().Lookup("log.mail.from"))
+	rootCmd.Flags().Int("logMailPort", 25, "mail server port")
+	viper.BindPFlag("log.mail.port", rootCmd.Flags().Lookup("logMailPort"))
 
-	rootCmd.Flags().String("log.mail.to", "", "receiver email address")
-	viper.BindPFlag("log.mail.to", rootCmd.Flags().Lookup("log.mail.to"))
+	rootCmd.Flags().String("logMailFrom", "", "sender email address")
+	viper.BindPFlag("log.mail.from", rootCmd.Flags().Lookup("logMailFrom"))
 
-	rootCmd.Flags().String("log.mail.username", "", "mail server username")
-	viper.BindPFlag("log.mail.username", rootCmd.Flags().Lookup("log.mail.username"))
+	rootCmd.Flags().String("logMailTo", "", "receiver email address")
+	viper.BindPFlag("log.mail.to", rootCmd.Flags().Lookup("logMailTo"))
 
-	rootCmd.Flags().String("log.mail.password", "", "mail server password")
-	viper.BindPFlag("log.mail.password", rootCmd.Flags().Lookup("log.mail.password"))
+	rootCmd.Flags().String("logMailUsername", "", "mail server username")
+	viper.BindPFlag("log.mail.username", rootCmd.Flags().Lookup("logMailUsername"))
+
+	rootCmd.Flags().String("logMailPassword", "", "mail server password")
+	viper.BindPFlag("log.mail.password", rootCmd.Flags().Lookup("logMailPassword"))
+
+	cobra.OnInitialize(initConfig)
 }
 
 func initConfig() {
@@ -110,6 +113,8 @@ func initConfig() {
 		}
 	}
 
+	fmt.Println(cfgFile)
+
 	viper.SetConfigFile(cfgFile)
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println("Couldn't read config:", err)
@@ -129,6 +134,11 @@ Run: func(cmd *cobra.Command, args []string) {
 		logSyslog := viper.GetString("log.syslog")
 		if logSyslog != "" {
 			log.WithSyslog(logSyslog)
+		}
+
+		eventLog := viper.GetString("log.eventlog")
+		if eventLog != "" {
+			log.WithEventlog(eventLog)
 		}
 
 		logMailHost := viper.GetString("log.mail.host")
