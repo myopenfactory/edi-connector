@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	version = "1.0.0-DEV"
+	version = "1.0.1-DEV"
 )
 
 func init() {
