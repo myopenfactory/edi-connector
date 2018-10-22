@@ -175,8 +175,8 @@ Run: func(cmd *cobra.Command, args []string) {
 			client.WithURL(viper.GetString("url")),
 			client.WithCA(cafile),
 			client.WithCert(clientcert),
-			client.WithProxy(viper.GetString("proxy")),
 		}
+		os.Setenv("HTTP_PROXY", viper.GetString("proxy"))
 
 		cl, err := client.New(fmt.Sprintf("Core_"+version), opts...)
 		if err != nil {

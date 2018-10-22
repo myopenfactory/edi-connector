@@ -18,7 +18,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/twitchtv/twirp"
-	"golang.org/x/net/proxy"
 
 	pb "github.com/myopenfactory/client/api"
 
@@ -39,7 +38,6 @@ type Client struct {
 	URL            string // URL of the plattform https://myopenfactory.net/pb/ for example
 	ClientCert     string // User client certificate in pem format
 	CA             string // ca file for connections to the plattform
-	ProxyURL       string // Proxy url for connections
 	ctx            context.Context
 	cancel         context.CancelFunc
 	ID             string
@@ -66,7 +64,7 @@ func New(identifier string, options ...Option) (*Client, error) {
 	c.ctx, c.cancel = context.WithCancel(context.Background())
 	if c.client == nil {
 		var err error
-		c.client, err = createHTTPClient(c.ClientCert, c.CA, c.ProxyURL)
+		c.client, err = createHTTPClient(c.ClientCert, c.CA)
 		if err != nil {
 			return nil, errors.Wrap(err, "http client creation failed")
 		}
@@ -89,12 +87,6 @@ func WithPassword(password string) Option {
 func WithURL(url string) Option {
 	return func(c *Client) {
 		c.URL = url
-	}
-}
-
-func WithProxy(url string) Option {
-	return func(c *Client) {
-		c.ProxyURL = url
 	}
 }
 
@@ -354,7 +346,7 @@ func (c *Client) Shutdown(ctx context.Context) error {
 func processMessage() {
 }
 
-func createHTTPClient(cert, ca, proxyAddress string) (*http.Client, error) {
+func createHTTPClient(cert, ca string) (*http.Client, error) {
 	tlsConfig := &tls.Config{
 		MinVersion:               tls.VersionTLS12,
 		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
@@ -385,14 +377,7 @@ func createHTTPClient(cert, ca, proxyAddress string) (*http.Client, error) {
 
 	tr := &http.Transport{
 		TLSClientConfig: tlsConfig,
-	}
-	if proxyAddress != "" {
-		dialer, err := proxy.SOCKS5("tcp", proxyAddress, nil, proxy.Direct)
-		if err != nil {
-			return nil, errors.Wrapf(err, "error while loading socks5 proxy")
-		}
-		tr.Dial = dialer.Dial
-		tr.DialTLS = dialer.Dial
+		Proxy: http.ProxyFromEnvironment,
 	}
 	return &http.Client{
 		Transport: tr,
