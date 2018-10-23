@@ -119,65 +119,15 @@ jobs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifact'
       artifactName: myof-client
 
-# - job: Windows
-#   pool:
-#     name: default
-#     demands:
-#       - agent.location -equals local
-#       - agent.os -equals Windows_NT
+- job: Windows
+  pool:
+    name: default
+    demands:
+      - agent.location -equals local
+      - agent.os -equals Windows_NT
 
-#   variables:
-#     GOPATH: 'C:/tmp/gopath'
-#     GOBIN:  '$(GOPATH)/bin' # Go binaries path 
-#     GOROOT: 'C:/tools/go1.11' # Go installation path
-
-  # steps:
-  # - powershell: |
-  #     Write-Host "##vso[task.prependpath]${env:GOBIN}"
-  #     $env:PATH = "${env:PATH};$(GOBIN)"
-  #     Write-Host "##vso[task.prependpath]${env:GOROOT}/bin"
-  #     $env:PATH = "${env:PATH};${env:GOROOT}/bin"
-  #     $env:CLIENT_VERSION = git describe --tags --dirty --always
-  #     Write-Host "##vso[task.setvariable variable=Client.Version;]${env:CLIENT_VERSION}"
-  #     New-Item -Path $env:BUILD_ARTIFACTSTAGINGDIRECTORY -Name artifact -ItemType "directory" | Out-Null
-  #     Write-Host ${env:CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
-  #     Push-Location C:/tmp
-  #     & "$env:GOROOT/bin/go" get -u github.com/jstemmer/go-junit-report
-  #     & "$env:GOROOT/bin/go" get -u -d github.com/magefile/mage
-  #     Pop-Location
-  #     Push-Location $env:GOPATH/src/github.com/magefile/mage
-  #     go run bootstrap.go
-  #     Pop-Location
-  #     & "$env:GOROOT/bin/go" version
-  #     & "$env:GOPATH/bin/mage" --version
-  #     Write-Host ${env:CLIENT_VERSION}
-  #   displayName: 'Set up the workspace'
-
-  # - task: DownloadSecureFile@1
-  #   displayName: 'Download Windows Properties'
-  #   inputs:
-  #     secureFile: '0f0e6d24-eed9-4d6b-a60a-665139190909'
-
-  # - task: DownloadSecureFile@1
-  #   displayName: 'Download Client Certificate'
-  #   inputs:
-  #     secureFile: 'fe048ca3-83a7-4258-857c-db117beea9a2'
-
-  # - task: DownloadSecureFile@1
-  #   displayName: 'Download Root CA'
-  #   inputs:
-  #     secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
-
-  # - powershell: |
-  #     $env:MYOF_CLIENT_CONFIG="$(Agent.TempDirectory)"
-  #     Write-Host $env:MYOF_CLIENT_CONFIG
-  #     Write-Host $env:PATH
-  #     mage test
-  #   displayName: 'E2E Tests'
-
-  # - script: |
-  #     echo $(Client.Version)
-  #     docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore -f Dockerfile.windows --build-arg VERSION=$(Client.Version) .
-  #     docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
-  #     docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore
-  #   displayName: 'Build Docker'
+  - powershell: |
+      docker build -t $env:AZURECR_URL/client:$env:BUILD_BUILDNUMBER-windowsservercore -f Dockerfile.windows --build-arg VERSION=$env:CLIENT_VERSION .
+      docker login -u $env:AZURECR_USER) -p $env:AZURECR_TOKEN $env:AZURECR_URL
+      docker push $env:AZURECR_URL)/client:$env:BUILD_BUILDNUMBER-windowsservercore
+    displayName: 'Build Docker'
