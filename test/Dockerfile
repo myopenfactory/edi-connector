@@ -1,4 +1,4 @@
-FROM golang:1.11.0-alpine
+FROM golang:1.11.1-alpine
 
 RUN apk add --update \
 		gcc \
