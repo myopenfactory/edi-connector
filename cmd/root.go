@@ -113,8 +113,6 @@ func initConfig() {
 		}
 	}
 
-	fmt.Println(cfgFile)
-
 	viper.SetConfigFile(cfgFile)
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println("Couldn't read config:", err)

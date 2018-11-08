@@ -9,38 +9,43 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
+	"github.com/magiconair/properties"
 	"github.com/spf13/cobra"
 )
 
-var (
-	bootstrapURL        string
-	bootstrapUsername   string
-	bootstrapClientcert string
-	bootstrapProxy      string
-	bootstrapFolder     string
-	serviceInstall      bool
-)
+var rootCA = []byte(`-----BEGIN CERTIFICATE-----
+MIIExjCCA66gAwIBAgIJAJUA5AJG0Ys6MA0GCSqGSIb3DQEBCwUAMIGJMQswCQYD
+VQQGEwJERTEMMAoGA1UECAwDTlJXMSQwIgYDVQQKDBtteU9wZW5GYWN0b3J5IFNv
+ZnR3YXJlIEdtYkgxHjAcBgNVBAMMFW15T3BlbkZhY3RvcnkgUm9vdCBDQTEmMCQG
+CSqGSIb3DQEJARYXYWRtaW5AbXlvcGVuZmFjdG9yeS5jb20wHhcNMTYwNTE2MDk1
+NDM3WhcNNDEwNTEwMDk1NDM3WjCBiTELMAkGA1UEBhMCREUxDDAKBgNVBAgMA05S
+VzEkMCIGA1UECgwbbXlPcGVuRmFjdG9yeSBTb2Z0d2FyZSBHbWJIMR4wHAYDVQQD
+DBVteU9wZW5GYWN0b3J5IFJvb3QgQ0ExJjAkBgkqhkiG9w0BCQEWF2FkbWluQG15
+b3BlbmZhY3RvcnkuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+04B+3jJP/8gpw3c7SEBHXKDCkxOFH6NjkEw0C1dHHK67WRA47yxJow2nte31JePv
+rtJtJrWL+7e858i0KkVxZ39Nd+T83TB+7swNBrKmlVDXytFVy+Fd3yhnR3piJAjV
+I+Wm1M0axr6bQFHuZR9Uyv6W7a5nz+HVRmwwCyeeCiKSGYW7+4wrKnv2LAy+gS6d
+82IPGSU13pF7Sj0Y+WmZb6J8es2I6pWEhVDAmQCFBcGPmmuOSjXP2mcI7x7Wgv5u
+gu3fwhtH4tIUbsvLMOF4GrIB4vYBfCsLrTViFkx7dW3e/hlFHX5F+BmSoLxMd8OX
+qzmn8b2z9PxQyEQonwvFCQIDAQABo4IBLTCCASkwHQYDVR0OBBYEFPNz6mb+EFE8
+LuP1OaFdAtWNwkOjMIG+BgNVHSMEgbYwgbOAFPNz6mb+EFE8LuP1OaFdAtWNwkOj
+oYGPpIGMMIGJMQswCQYDVQQGEwJERTEMMAoGA1UECAwDTlJXMSQwIgYDVQQKDBtt
+eU9wZW5GYWN0b3J5IFNvZnR3YXJlIEdtYkgxHjAcBgNVBAMMFW15T3BlbkZhY3Rv
+cnkgUm9vdCBDQTEmMCQGCSqGSIb3DQEJARYXYWRtaW5AbXlvcGVuZmFjdG9yeS5j
+b22CCQCVAOQCRtGLOjAMBgNVHRMEBTADAQH/MDkGA1UdHwQyMDAwLqAsoCqGKGh0
+dHBzOi8vY2EubXlvcGVuZmFjdG9yeS5jb20vcm9vdF9jYS5jcmwwDQYJKoZIhvcN
+AQELBQADggEBAFcO8nf4BRoJl3h00O83FHibnACdQ1i8LKRp2Hy3GMcduCZ5i2BD
+D4bUMIMFVg9H8S3wI5adX/XeI0wcRINYB2/MVzFuJIT7xvM8YFNCarMunrLuA8au
+Je13FzJSVemxTrF9b3pjkY2RbEMk+PlPWhXn9hknyxPtv0qUFyphrbC7hCbBS26x
+2cH6ghwInFw/NWuHbb9aWPlaUOe2/p0IltyVv0fIFIZWLoZi1cto7n+N6C0dQXBp
+TuDwjJf1lUs36S0W1vxqfdryRBlnWDHevtfYVOloXpkDVnsZEiB8F5viH2l4h9+b
+pn/VbRGrrKzMkF97nfiquISpJ+HwTBAU1TQ=
+-----END CERTIFICATE-----`)
 
 func init() {
 	rootCmd.AddCommand(bootstrapCmd)
-
-	bootstrapCmd.Flags().StringVar(&bootstrapURL, "url", "https://myopenfactory.net", "portal url")
-	setCmd.MarkFlagRequired("url")
-
-	bootstrapCmd.Flags().StringVar(&bootstrapUsername, "username", "", "username")
-	setCmd.MarkFlagRequired("username")
-
-	bootstrapCmd.Flags().StringVar(&bootstrapClientcert, "clientcert", "certificate.pem", "file for client certificate")
-	setCmd.MarkFlagRequired("clientcert")
-
-	bootstrapCmd.Flags().StringVar(&bootstrapProxy, "proxy", "", "proxy url")
-	bootstrapCmd.Flags().StringVar(&bootstrapFolder, "log", os.Getenv("ProgramData")+"/myOpenFactory/client/logs", "folder for logs")
-	setCmd.MarkFlagRequired("log")
-
-	bootstrapCmd.Flags().BoolVar(&serviceInstall, "service", true, "install as service?")
-
-	setCmd.MarkFlagRequired("key")
 }
 
 // bootstrapCmd represents the bootstrap command
@@ -49,73 +54,82 @@ var bootstrapCmd = &cobra.Command{
 	Short: "bootstrap the client [EXPERIMENTAL]",
 	Long:  "bootstrap the client.\n\nDO NOT USE IN PRODUCTION",
 	Run: func(cmd *cobra.Command, args []string) {
-		folder := os.Getenv("ProgramFiles") + "\\myOpenFactory\\Client\\"
-		if err := os.MkdirAll(folder, 0644); err != nil {
-			fmt.Printf("failed to create folder: %v", err)
-			os.Exit(1)
-		}
-		command := exec.Command("setx", "/M", "PATH", fmt.Sprintf("\"%%PATH%%;%s\"", folder))
-		if err := command.Run(); err != nil {
-			fmt.Printf("failed to update PATH var: %v", err)
+		defaultInstallPath := filepath.ToSlash(filepath.Join(os.Getenv("ProgramFiles"), "myOpenFactory", "Client"))
+		defaultConfigPath := filepath.ToSlash(filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "Client"))
+		installPath := promptUser("Installation Folder", defaultInstallPath)
+		configPath := promptUser("Configuration Folder", defaultConfigPath)
+
+		if err := os.MkdirAll(installPath, 0644); err != nil {
+			fmt.Printf("failed to create install folder: %v", err)
 			os.Exit(1)
 		}
 
-		destinationFile := folder + "myof-client.exe"
-		input, err := ioutil.ReadFile(os.Args[0])
+		binary, err := ioutil.ReadFile(os.Args[0])
 		if err != nil {
-			fmt.Printf("failed to read source file")
-			os.Exit(1)
-		}
-		err = ioutil.WriteFile(destinationFile, input, 0644)
-		if err != nil {
-			fmt.Printf("failed to create target file: %q", destinationFile)
+			fmt.Printf("failed to read source binary file: %v", err)
 			os.Exit(1)
 		}
 
-		destCertFile := folder + "cert.pem"
-		input, err = ioutil.ReadFile(bootstrapClientcert)
-		if err != nil {
-			fmt.Printf("failed to read client certificate file: %q", bootstrapClientcert)
-			os.Exit(1)
-		}
-		err = ioutil.WriteFile(destCertFile, input, 0644)
-		if err != nil {
-			fmt.Printf("failed to create target file: %q", destCertFile)
+		binaryFile := filepath.Join(installPath, "myof-client.exe")
+		if err := ioutil.WriteFile(binaryFile, binary, 0644); err != nil {
+			fmt.Printf("failed to create target binary file: %v", err)
 			os.Exit(1)
 		}
 
-		input, err = ioutil.ReadFile("ca.pem")
-		if err != nil {
-			fmt.Printf("failed to read ca file: %q", bootstrapClientcert)
-			os.Exit(1)
-		}
-		cafile := fmt.Sprintf("%s\\%s", filepath.Base(cfgFile), "ca.pem")
-		err = ioutil.WriteFile(cafile, input, 0644) //TODO input load
-		if err != nil {
-			fmt.Printf("failed to create target file: %q", cafile)
+		caFile := filepath.Join(configPath, "myOpenFactoryCA.crt")
+		if err := ioutil.WriteFile(caFile, rootCA, 0644); err != nil {
+			fmt.Printf("failed to create target CA file: %v", err)
 			os.Exit(1)
 		}
 
-		f, err := os.OpenFile(cfgFile, os.O_RDWR, 0644)
+		url := promptUser("URL", "https://myopenfactory.net")
+		username := promptUser("Username", "")
+		password := promptUser("Password", "")
+		clientCert := promptUserMultiline("Client Certificate")
+		logLevel := promptUser("Log Level", "INFO")
+		logFolder := promptUser("Log Folder", filepath.ToSlash(filepath.Join(configPath, "logs")))
+
+		certFile := filepath.Join(configPath, "client.crt")
+		if err := ioutil.WriteFile(certFile, []byte(clientCert), 0644); err != nil {
+			fmt.Printf("failed to create client cert file: %v", err)
+			os.Exit(1)
+		}
+
+		if err := os.MkdirAll(logFolder, 0655); err != nil {
+			fmt.Printf("failed to create log folder: %v", err)
+			os.Exit(1)
+		}
+
+		prop := properties.NewProperties()
+		prop.Set("url", url)
+		prop.Set("username", username)
+		prop.Set("password", password)
+		prop.Set("cafile", filepath.ToSlash(caFile))
+		prop.Set("clientcert", filepath.ToSlash(certFile))
+		prop.Set("log.level", logLevel)
+		prop.Set("log.folder", filepath.ToSlash(logFolder))
+
+		cfgFile := filepath.Join(configPath, "config.properties")
+		f, err := os.OpenFile(cfgFile, os.O_RDWR | os.O_TRUNC, 0)
 		if err != nil {
-			fmt.Printf("failed to create target file: %q", cfgFile)
+			fmt.Printf("failed to open config file: %v", err)
 			os.Exit(1)
 		}
 		defer f.Close()
 
-		fmt.Fprintf(f, "cafile = %s\n", cafile)
-		fmt.Fprintf(f, "url = %s\n", bootstrapURL)
-		fmt.Fprintf(f, "username = %s\n", bootstrapUsername)
-		fmt.Fprintf(f, "password = %s\n", readLine("Password: "))
-		fmt.Fprintf(f, "clientcert = %s\n", destCertFile)
-		if bootstrapProxy != "" {
-			fmt.Fprintf(f, "proxy = %s\n", bootstrapProxy)
+		if _, err := prop.Write(f, properties.UTF8); err != nil {
+			fmt.Printf("failed to write config: %v", err)
+			os.Exit(1)
 		}
-		fmt.Fprintf(f, "log.folder = %s\n", bootstrapFolder)
 
+		serviceInstall := strings.ToLower(promptUser("Install Service", "y")) == "y"
+		serviceName := promptUser("Service Name", "client")
+		serviceName = "myof-"+serviceName
 		if serviceInstall {
-			command = exec.Command(destinationFile, "service", "install", "--config", cfgFile)
-			if err := command.Run(); err != nil {
+			cmd := exec.Command(binaryFile, "service", "install", "--config", cfgFile, "--name", serviceName)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
 				fmt.Printf("failed to install service: %v", err)
 				os.Exit(1)
 			}
@@ -123,15 +137,30 @@ var bootstrapCmd = &cobra.Command{
 	},
 }
 
-func readLine(text string) string {
-	fmt.Print(text)
+func promptUser(value, defaultValue string) string {
+	fmt.Printf("%s [%s]: ", value, defaultValue)
 	scanner := bufio.NewScanner(os.Stdin)
+	var val string
 	if scanner.Scan() {
-		return scanner.Text()
+		val = scanner.Text()
 	}
-	if scanner.Err() != nil {
-		fmt.Printf("failed to read line: %v", scanner.Err())
-		os.Exit(1)
+	if val == "" {
+		return defaultValue
 	}
-	return ""
+	return val
+}
+
+func promptUserMultiline(value string) string {
+	fmt.Printf("%s []: ", value)
+	scanner := bufio.NewScanner(os.Stdin)
+	var lines []string
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" {
+			break
+		}
+		lines = append(lines, line)
+	}
+
+	return strings.Join(lines, "\n")
 }
