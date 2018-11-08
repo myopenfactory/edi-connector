@@ -5,12 +5,30 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"encoding/pem"
+	"crypto/x509"
+	"crypto/ecdsa"
 
 	"github.com/blang/semver"
 	"github.com/spf13/cobra"
 
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
+
+var certificatePEM = []byte(`-----BEGIN CERTIFICATE-----
+MIICMDCCAdagAwIBAgIIaSFNcTwQ5fAwCgYIKoZIzj0EAwIwgY8xCzAJBgNVBAYT
+AkRFMQwwCgYDVQQIEwNOUlcxJDAiBgNVBAoTG215T3BlbkZhY3RvcnkgU29mdHdh
+cmUgR21iSDEiMCAGA1UEAxMZbXlPcGVuRmFjdG9yeSBEZXZlbG9wbWVudDEoMCYG
+CSqGSIb3DQEJARYZc3VwcG9ydEBteW9wZW5mYWN0b3J5LmNvbTAeFw0xODExMDcw
+OTE3MDBaFw0yMzExMDcwOTE3MDBaMIGPMQswCQYDVQQGEwJERTEMMAoGA1UECBMD
+TlJXMSQwIgYDVQQKExtteU9wZW5GYWN0b3J5IFNvZnR3YXJlIEdtYkgxIjAgBgNV
+BAMTGW15T3BlbkZhY3RvcnkgRGV2ZWxvcG1lbnQxKDAmBgkqhkiG9w0BCQEWGXN1
+cHBvcnRAbXlvcGVuZmFjdG9yeS5jb20wWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC
+AAQogpx+sRI7Cchzt1YdGZ12DgGtnZQIr3/+tUi+OyixE7c2bVL6g2LEt3tmB/tC
+M4Zee4LzHZkZUc2RA14hEmfAoxowGDAJBgNVHRMEAjAAMAsGA1UdDwQEAwIHgDAK
+BggqhkjOPQQDAgNIADBFAiAfv00cEbCSz8R9p72pb7Qgad+LdtEWU84f4clYgze/
+SgIhAOeU4LO4eLRsbPeDsc+uI8Em2Gmy2N6bQ/1vYFZdi0n2
+-----END CERTIFICATE-----`)
 
 func init() {
 	rootCmd.AddCommand(updateCmd)
@@ -21,7 +39,29 @@ var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update the executable from github",
 	Run: func(cmd *cobra.Command, args []string) {
-		latest, found, err := selfupdate.DetectLatest("myopenfactory/client")
+		block, _ := pem.Decode(certificatePEM)
+		if block == nil || block.Type != "CERTIFICATE" {
+			fmt.Println("failed to decode PEM block containing certificate")
+			os.Exit(1)
+		}
+
+		cert, err := x509.ParseCertificate(block.Bytes)
+		if err != nil {
+			fmt.Println("failed to parse certificate")
+			os.Exit(1)
+		}
+
+		pubKey, ok := cert.PublicKey.(*ecdsa.PublicKey)
+		if !ok {
+			fmt.Println("failed converting pubkey")
+			os.Exit(1)
+		}
+
+		updater, err := selfupdate.NewUpdater(selfupdate.Config{
+			Validator: &selfupdate.ECDSAValidator{PublicKey: pubKey},
+		})
+
+		latest, found, err := updater.DetectLatest("myopenfactory/client")
 		if err != nil {
 			fmt.Println("Error occurred while detecting version:", err)
 			os.Exit(1)
@@ -43,7 +83,7 @@ var updateCmd = &cobra.Command{
 			fmt.Println("faild to scan rune")
 			os.Exit(1)
 		}
-		input := scanner.Text()
+		input := strings.ToLower(scanner.Text())
 		if scanner.Err() != nil {
 			fmt.Println("Invalid input:", scanner.Err())
 			os.Exit(1)
@@ -59,7 +99,11 @@ var updateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if err := selfupdate.UpdateTo(latest.AssetURL, os.Args[0]); err != nil {
+		if err != nil {
+			fmt.Println("Error occured while creating updater", err)
+			os.Exit(1)
+		}
+		if err := updater.UpdateTo(latest, os.Args[0]); err != nil {
 			fmt.Println("Error occurred while updating binary:", err)
 			os.Exit(1)
 		}

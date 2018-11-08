@@ -91,6 +91,11 @@ var serviceInstallCmd = &cobra.Command{
 		}
 		defer s.Close()
 
+		if err := s.Start(); err != nil {
+			fmt.Printf("failed to start service: %v", err)
+			os.Exit(1)
+		}
+
 		err = eventlog.InstallAsEventCreate(serviceName, eventlog.Error|eventlog.Warning|eventlog.Info)
 		if err != nil {
 			s.Delete()
