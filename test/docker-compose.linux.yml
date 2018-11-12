@@ -10,7 +10,7 @@ services:
       - "success:/myof/success"
       - "error:/myof/error"
     entrypoint:
-      - /app/client
+      - /myof-client
       - --config
       - /myof/config/alpine.properties
 

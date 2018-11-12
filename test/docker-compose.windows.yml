@@ -10,7 +10,7 @@ services:
       - "./success:C:/myof/success/"
       - "./error:C:/myof/error/"
     entrypoint:
-      - C:/app/client.exe
+      - C:/myof-client.exe
       - --config
       - C:/myof/config/windowsservercore.properties
 
