@@ -84,6 +84,7 @@ jobs:
     displayName: 'E2E Tests'
 
   - script: |
+      docker tag $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine $(AzureCR.URL)/client:alpine-latest 
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
     displayName: 'Upload Docker Images'
 
