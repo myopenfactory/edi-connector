@@ -37,6 +37,10 @@ jobs:
     inputs:
       secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
 
+  - task: DownloadSecureFile@1
+    inputs:
+    secureFile: myOpenFactory_Development.pem
+
   - script: |
       export CLIENT_VERSION=`git describe --tags --dirty --always`
       echo '##vso[task.setvariable variable=Client.Version;]'${CLIENT_VERSION}
@@ -75,6 +79,7 @@ jobs:
     displayName: 'E2E Tests'
 
   - script: |
+      cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
       goreleaser --snapshot --rm-dist
     displayName: 'Build and Bundle'
 
