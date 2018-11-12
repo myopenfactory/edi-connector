@@ -129,6 +129,5 @@ jobs:
   steps:
   - powershell: |
       docker build -t ${env:AZURECR_URL}/client:${env:BUILD_BUILDNUMBER}-windowsservercore -f Dockerfile.windows --build-arg VERSION=${env:CLIENT_VERSION} .
-      docker login -u "${env:AZURECR_USER}" -p "${env:AZURECR_TOKEN}" ${env:AZURECR_URL}
       docker push ${env:AZURECR_URL}/client:${env:BUILD_BUILDNUMBER}-windowsservercore
     displayName: 'Build Docker'
