@@ -16,33 +16,6 @@ jobs:
     GOBIN:  '$(GOPATH)/bin' # Go binaries path 
     GOROOT: '/usr/local/go1.11' # Go installation path
 
-  steps:
-  - script: |
-      export CLIENT_VERSION=`git describe --tags --dirty --always`
-      echo '##vso[task.setvariable variable=Client.Version;]'${CLIENT_VERSION}
-      echo '##vso[task.prependpath]$(GOBIN)' 
-      echo '##vso[task.prependpath]$(GOROOT)/bin'
-      export PATH="${GOROOT}/bin:${PATH}"
-      export PATH="${GOBIN}:${PATH}"
-      mkdir -p $(Build.ArtifactStagingDirectory)/artifact
-      echo ${CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
-      pushd /tmp
-      go get -u github.com/jstemmer/go-junit-report
-      go get -u -d github.com/magefile/mage
-      popd
-      pushd ${GOPATH}/src/github.com/magefile/mage
-      go run bootstrap.go
-      popd
-      go version
-      mage --version
-      echo ${CLIENT_VERSION}
-    displayName: 'Set up the workspace'
-
-  - script: |
-      go test -v ./... 2>&1 | go-junit-report > $(Build.ArtifactStagingDirectory)/report.xml
-      cp $(Build.ArtifactStagingDirectory)/report.xml $(Build.ArtifactStagingDirectory)/artifact/report.xml
-    displayName: 'Unit Tests'
-
   - task: DownloadSecureFile@1
     displayName: 'Download Alpine Properties'
     inputs:
@@ -63,10 +36,38 @@ jobs:
     inputs:
       secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
 
-  - task: DownloadSecureFile@1
-    displayName: 'Download Signing Key'
+  steps:
+  - script: |
+      export CLIENT_VERSION=`git describe --tags --dirty --always`
+      echo '##vso[task.setvariable variable=Client.Version;]'${CLIENT_VERSION}
+      echo '##vso[task.prependpath]$(GOBIN)' 
+      echo '##vso[task.prependpath]$(GOROOT)/bin'
+      export PATH="${GOROOT}/bin:${PATH}"
+      export PATH="${GOBIN}:${PATH}"
+      mkdir -p $(Build.ArtifactStagingDirectory)/artifact
+      echo ${CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
+      pushd /tmp
+      go get -u github.com/jstemmer/go-junit-report
+      go get -u -d github.com/magefile/mage
+      popd
+      pushd ${GOPATH}/src/github.com/magefile/mage
+      go run bootstrap.go
+      popd
+      go version
+      mage --version
+      echo ${CLIENT_VERSION}
+      docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
+    displayName: 'Set up the workspace'
+
+  - script: |
+      go test -v ./... 2>&1 | go-junit-report > $(Build.ArtifactStagingDirectory)/report.xml
+      cp $(Build.ArtifactStagingDirectory)/report.xml $(Build.ArtifactStagingDirectory)/artifact/report.xml
+    displayName: 'Unit Tests'
+
+  - task: PublishTestResults@2
     inputs:
-      secureFile: 'e70ae1f1-4895-4efb-bb5c-bf2ac24d0c4a'
+      testResultsFormat: 'JUnit'
+      testResultsFiles: '$(Build.ArtifactStagingDirectory)/report.xml' 
 
   - script: |
       MYOF_CLIENT_CONFIG=$(Agent.TempDirectory) mage test
@@ -81,7 +82,6 @@ jobs:
 
   - script: |
       docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine -f Dockerfile --build-arg VERSION=$(Client.Version) .
-      docker login -u "$(AzureCR.USER)" -p "$(AzureCR.TOKEN)" $(AzureCR.URL)
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
     displayName: 'Build Docker'
 
@@ -113,17 +113,6 @@ jobs:
       includeRootFolder: False
       archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
 
-  - script: |
-      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_amd64.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_amd64.zip'
-      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_386.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_386.zip'
-      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_amd64.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_amd64.zip'
-      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
-    displayName: 'Sign Artifacts'
-
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'JUnit'
-      testResultsFiles: '$(Build.ArtifactStagingDirectory)/report.xml' 
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifacts'

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -76,4 +77,26 @@ func Protogen() error {
 
 func Test() error {
 	return sh.RunV("mage", "-d", "test", "test")
+}
+
+func CI() error {
+	for _, goos := range []string{"linux", "windows"} {
+		for _, goarch := range []string{"amd64", "386"} {
+			ldflags := fmt.Sprintf("\" -X github.com/myopenfactory/client/cmd.version=%s\"", "1.0.0")
+			name := fmt.Sprintf("myof-client_%s_%s", goos, goarch)
+			if goos == "windows" {
+				name += ".exe"
+			}
+			cmd := exec.Command("go", "build", "-ldflags", ldflags, "-o", name)
+			cmd.Env = append(os.Environ(),
+				"CGO_ENABLED=false",
+				fmt.Sprintf("GOOS=%s", goos),
+				fmt.Sprintf("GOARCH=%s", goarch),
+			)
+			if err := cmd.Run(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
