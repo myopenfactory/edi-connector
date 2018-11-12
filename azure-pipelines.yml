@@ -66,7 +66,7 @@ jobs:
   - task: DownloadSecureFile@1
     displayName: 'Download Signing Key'
     inputs:
-      secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
+      secureFile: 'e70ae1f1-4895-4efb-bb5c-bf2ac24d0c4a'
 
   - script: |
       MYOF_CLIENT_CONFIG=$(Agent.TempDirectory) mage test
