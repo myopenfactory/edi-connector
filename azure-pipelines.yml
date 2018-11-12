@@ -74,61 +74,19 @@ jobs:
     displayName: 'E2E Tests'
 
   - script: |
-      CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/amd64/myof-client
-      CGO_ENABLED=0 GOOS=linux GOARCH=386 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/linux/386/myof-client
-      CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/amd64/myof-client.exe
-      CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -ldflags "-X github.com/myopenfactory/client/cmd.version=$(Client.Version)" -o $(Build.ArtifactStagingDirectory)/windows/386/myof-client.exe
-    displayName: 'Build'
+      docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
+      docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore
+    displayName: 'Upload Docker Images'
 
   - script: |
-      docker build -t $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine -f Dockerfile --build-arg VERSION=$(Client.Version) .
-      docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
-    displayName: 'Build Docker'
-
-  - task: ArchiveFiles@2
-    displayName: 'Archive Linux amd64'
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/linux/amd64'
-      includeRootFolder: False
-      archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_amd64.zip'
-
-  - task: ArchiveFiles@2
-    displayName: 'Archive Linux 386'
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/linux/386'
-      includeRootFolder: False
-      archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_386.zip'
-
-  - task: ArchiveFiles@2
-    displayName: 'Archive Windows x64'
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/windows/amd64'
-      includeRootFolder: False
-      archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_amd64.zip'
-
-  - task: ArchiveFiles@2
-    displayName: 'Archive Windows 386'
-    inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/windows/386'
-      includeRootFolder: False
-      archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
-
+      cp *.zip $(Build.ArtifactStagingDirectory)/artifact/
+      cp *.tar.gz $(Build.ArtifactStagingDirectory)/artifact/
+      cp checksums.txt $(Build.ArtifactStagingDirectory)/artifact/
+      cp *.sig $(Build.ArtifactStagingDirectory)/artifact/
+    displayName: 'Bundle Artifact'
 
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifacts'
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifact'
       artifactName: myof-client
-
-- job: Windows
-  pool:
-    name: default
-    demands:
-      - agent.location -equals local
-      - agent.os -equals Windows_NT
-
-  steps:
-  - powershell: |
-      docker build -t ${env:AZURECR_URL}/client:${env:BUILD_BUILDNUMBER}-windowsservercore -f Dockerfile.windows --build-arg VERSION=${env:CLIENT_VERSION} .
-      docker push ${env:AZURECR_URL}/client:${env:BUILD_BUILDNUMBER}-windowsservercore
-    displayName: 'Build Docker'
+    displayName: 'Publish Artifacts'

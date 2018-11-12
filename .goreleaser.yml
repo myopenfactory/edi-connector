@@ -1,26 +1,58 @@
 before:
   hooks:
     - go mod download
-build:
-  env:
-    - CGO_ENABLED=0
-  goos:
-    - linux
-    - windows
-  goarch:
-    - amd64
-    - 386
+builds:
+  -
+    binary: myof-client
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - 386
+    ldflags:
+      - -X github.com/myopenfactory/client/cmd.Version={{.Version}}
 archive:
-  replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
+  name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
+# dockers:
+#   -
+#     goos: linux
+#     goarch: amd64
+#     binary: myof-client
+#     dockerfile: Dockerfile
+#     image_templates:
+#       - "myopenfactory/client:latest"
+#       - "myopenfactory.azurecr.io/client:latest"
+#     skip_push: true
+#     extra_files:
+#       - myOpenFactoryCA.crt
+#   -
+#     goos: windows
+#     goarch: amd64
+#     goarm: ''
+#     binary: myof-client
+#     dockerfile: Dockerfile.windows
+#     image_templates:
+#       - "myopenfactory/client:windowsservercore"
+#       - "myopenfactory.azurecr.io/client:windowsservercore"
+#     skip_push: true
+#     extra_files:
+#       - myOpenFactoryCA.crt
+sign:
+  signature: "${artifact}.sig"
+  cmd: openssl
+  args: ["dgst", "-sha256", "-sign", "myOpenFactory_Development.pem", "-out", "${signature}", "${artifact}"]
+  artifacts: all
 changelog:
   sort: asc
   filters:

@@ -71,11 +71,11 @@ var updateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if strings.HasPrefix(version, "v") {
-			version = version[1:]
+		if strings.HasPrefix(Version, "v") {
+			Version = Version[1:]
 		}
 
-		v := semver.MustParse(version)
+		v := semver.MustParse(Version)
 		if !found || latest.Version.Equals(v) {
 			fmt.Println("Current version is the latest")
 			os.Exit(1)

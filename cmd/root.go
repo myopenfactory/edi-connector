@@ -17,7 +17,7 @@ var rootCmd = &cobra.Command{
 	Use:   "myof-client",
 	Short: "myof-client is a very simple message acces for the myopenfactory platform",
 Run: func(cmd *cobra.Command, args []string) {
-		log.Infof("Starting myOpenFactory client %v", version)
+		log.Infof("Starting myOpenFactory client %v", Version)
 
 		opts := []client.Option{
 			client.WithUsername(viper.GetString("username")),
@@ -28,7 +28,7 @@ Run: func(cmd *cobra.Command, args []string) {
 		}
 		os.Setenv("HTTP_PROXY", viper.GetString("proxy"))
 
-		cl, err := client.New(fmt.Sprintf("Core_"+version), opts...)
+		cl, err := client.New(fmt.Sprintf("Core_"+Version), opts...)
 		if err != nil {
 			log.Errorf("error while creating client: %v", err)
 			os.Exit(1)

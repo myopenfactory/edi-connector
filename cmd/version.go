@@ -7,7 +7,9 @@ import (
 )
 
 var (
-	version = "1.1.0-DEV"
+	Version = "1.1.0-DEV"
+	Commit  = ""
+	Date    = ""
 )
 
 func init() {
@@ -19,6 +21,6 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "show version information",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Version:", version)
+		fmt.Println("Version:", Version)
 	},
 }
