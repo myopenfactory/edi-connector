@@ -52,7 +52,7 @@ func init() {
 var bootstrapCmd = &cobra.Command{
 	Use:   "bootstrap",
 	Short: "bootstrap the client [EXPERIMENTAL]",
-	Long:  "bootstrap the client.\n\nDO NOT USE IN PRODUCTION",
+	Long:  "bootstrap the client.\n\nUSE WITH CARE",
 	Run: func(cmd *cobra.Command, args []string) {
 		defaultInstallPath := filepath.ToSlash(filepath.Join(os.Getenv("ProgramFiles"), "myOpenFactory", "Client"))
 		defaultConfigPath := filepath.ToSlash(filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "Client"))
