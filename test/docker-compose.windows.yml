@@ -1,11 +1,7 @@
 version: '3.4'
 services:
   client:
-    build:
-      context: ..
-      dockerfile: Dockerfile.windows
-      args:
-        VERSION: test-build
+    image: myopenfactory.azurecr.io/client:windowsservercore-latest
     volumes:
       - "${MYOF_CLIENT_CONFIG}:C:/myof/config"
       - "./logs:C:/myof/logs"

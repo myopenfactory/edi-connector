@@ -65,6 +65,11 @@ jobs:
     displayName: 'Set up the workspace'
 
   - script: |
+      cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
+      goreleaser --snapshot --rm-dist
+    displayName: 'Build and Bundle'
+
+  - script: |
       go test -v ./... 2>&1 | go-junit-report > $(Build.ArtifactStagingDirectory)/report.xml
       cp $(Build.ArtifactStagingDirectory)/report.xml $(Build.ArtifactStagingDirectory)/artifact/report.xml
     displayName: 'Unit Tests'

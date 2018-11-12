@@ -1,11 +1,7 @@
 version: '3.4'
 services:
   client:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      args:
-        VERSION: test-build
+    image: myopenfactory.azurecr.io/client:alpine-latest
     volumes:
       - "${MYOF_CLIENT_CONFIG}:/myof/config"
       - "logs:/myof/logs"
