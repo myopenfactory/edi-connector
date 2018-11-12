@@ -84,13 +84,7 @@ jobs:
     displayName: 'E2E Tests'
 
   - script: |
-      cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
-      goreleaser --snapshot --rm-dist
-    displayName: 'Build and Bundle'
-
-  - script: |
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
-      docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-windowsservercore
     displayName: 'Upload Docker Images'
 
   - script: |
