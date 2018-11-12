@@ -2,17 +2,16 @@ package cmd
 
 import (
 	"bufio"
+	"crypto/ecdsa"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"os"
 	"strings"
-	"encoding/pem"
-	"crypto/x509"
-	"crypto/ecdsa"
 
 	"github.com/blang/semver"
-	"github.com/spf13/cobra"
-
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
+	"github.com/spf13/cobra"
 )
 
 var certificatePEM = []byte(`-----BEGIN CERTIFICATE-----
@@ -39,6 +38,11 @@ var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update the executable from github",
 	Run: func(cmd *cobra.Command, args []string) {
+		if err := preUpdate(); err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+
 		block, _ := pem.Decode(certificatePEM)
 		if block == nil || block.Type != "CERTIFICATE" {
 			fmt.Println("failed to decode PEM block containing certificate")
@@ -66,7 +70,7 @@ var updateCmd = &cobra.Command{
 			fmt.Println("Error occurred while detecting version:", err)
 			os.Exit(1)
 		}
-		
+
 		if strings.HasPrefix(version, "v") {
 			version = version[1:]
 		}
@@ -107,6 +111,11 @@ var updateCmd = &cobra.Command{
 			fmt.Println("Error occurred while updating binary:", err)
 			os.Exit(1)
 		}
-		fmt.Println("Successfully updated to version", latest.Version)
+		fmt.Println("Successfully updated to version:", latest.Version)
+
+		if err := postUpdate(); err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
 	},
 }

@@ -20,7 +20,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.0-20180912035003-be2c049b30cc
 	github.com/pelletier/go-toml v1.2.0 // indirect
 	github.com/pkg/errors v0.8.0
-	github.com/rhysd/go-github-selfupdate v0.0.0-20180520142321-41c1bbb0804a
+	github.com/rhysd/go-github-selfupdate v1.0.1-0.20181109110026-a77177617aaa
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/sirupsen/logrus v1.1.0
 	github.com/spf13/afero v1.1.1 // indirect
@@ -31,9 +31,10 @@ require (
 	github.com/spf13/viper v1.0.2
 	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
 	github.com/twitchtv/twirp v0.0.0-20180622202558-cafc5e80fca7
+	github.com/ulikunitz/xz v0.5.5 // indirect
+	golang.org/x/net v0.0.0-20181108082009-03003ca0c849 // indirect
+	golang.org/x/oauth2 v0.0.0-20181106182150-f42d05182288 // indirect
 	golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e
 	gopkg.in/yaml.v2 v2.2.1
 	gotest.tools v2.1.0+incompatible
 )
-
-replace github.com/rhysd/go-github-selfupdate v0.0.0-20180520142321-41c1bbb0804a => github.com/tobiaskohlbau/go-github-selfupdate v0.0.0-20181106152806-9e7f322bd7a0

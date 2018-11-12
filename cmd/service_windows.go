@@ -50,20 +50,21 @@ var serviceInstallCmd = &cobra.Command{
 	Use:   "install",
 	Short: "install as windows service",
 	Run: func(cmd *cobra.Command, args []string) {
+		cfgFile := viper.GetString("config")
 		if cfgFile == "" {
-			fmt.Printf("config file is required")
+			fmt.Println("config file is required")
 			os.Exit(1)
 		}
-		fmt.Printf("Install as service: %s\n", serviceName)
+		fmt.Println("Install as service:", serviceName)
 		exepath, err := exePath()
 		if err != nil {
-			fmt.Printf("could not get the exe path: %v", err)
+			fmt.Println("could not get the exe path:", err)
 			os.Exit(1)
 		}
 
 		m, err := mgr.Connect()
 		if err != nil {
-			fmt.Printf("could not connect to mgr: %v", err)
+			fmt.Println("could not connect to mgr:", err)
 			os.Exit(1)
 		}
 		defer m.Disconnect()
@@ -71,7 +72,7 @@ var serviceInstallCmd = &cobra.Command{
 		s, err := m.OpenService(serviceName)
 		if err == nil {
 			s.Close()
-			fmt.Printf("service %s already exists", serviceName)
+			fmt.Println("service %s already exists", serviceName)
 			os.Exit(1)
 		}
 		config := mgr.Config{
@@ -86,20 +87,20 @@ var serviceInstallCmd = &cobra.Command{
 		}
 		s, err = m.CreateService(serviceName, exepath, config, "service", "run", "--config", cfgFile, "--name", serviceName)
 		if err != nil {
-			fmt.Printf("could not create service: %v", err)
+			fmt.Println("could not create service:", err)
 			os.Exit(1)
 		}
 		defer s.Close()
 
 		if err := s.Start(); err != nil {
-			fmt.Printf("failed to start service: %v", err)
+			fmt.Println("failed to start service:", err)
 			os.Exit(1)
 		}
 
 		err = eventlog.InstallAsEventCreate(serviceName, eventlog.Error|eventlog.Warning|eventlog.Info)
 		if err != nil {
 			s.Delete()
-			fmt.Printf("SetupEventLogSource() failed: %s", err)
+			fmt.Println("SetupEventLogSource() failed:", err)
 			os.Exit(1)
 		}
 	},
@@ -110,30 +111,28 @@ var serviceUninstallCmd = &cobra.Command{
 	Use:   "uninstall",
 	Short: "uninstall the windows service",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Uninstall service: %s", serviceName)
+		fmt.Println("Uninstall service:", serviceName)
 		m, err := mgr.Connect()
 		if err != nil {
-			fmt.Printf("could not connect to mgr: %v", err)
+			fmt.Println("could not connect to mgr:", err)
 			os.Exit(1)
 		}
 		defer m.Disconnect()
 
 		s, err := m.OpenService(serviceName)
 		if err != nil {
-			fmt.Printf("service %s is not installed", serviceName)
+			fmt.Println("service not installed:", err)
 			os.Exit(1)
 		}
 		defer s.Close()
 
-		err = s.Delete()
-		if err != nil {
-			fmt.Printf("could not delete server: %v", err)
+		if err = s.Delete(); err != nil {
+			fmt.Println("could not delete server:", err)
 			os.Exit(1)
 		}
 
-		err = eventlog.Remove(serviceName)
-		if err != nil {
-			fmt.Printf("RemoveEventLogSource() failed: %s", err)
+		if err = eventlog.Remove(serviceName); err != nil {
+			fmt.Println("RemoveEventLogSource() failed:", err)
 			os.Exit(1)
 		}
 	},
@@ -143,55 +142,14 @@ var serviceRunCmd = &cobra.Command{
 	Use: "run",
 	Short: "run the windows service",
 	Run: func(cmd *cobra.Command, args []string) {
-		logLevel := viper.GetString("log.level")
-		if logLevel != "" {
-			log.WithLevel(logLevel)
-		}
-
-		logSyslog := viper.GetString("log.syslog")
-		if logSyslog != "" {
-			log.WithSyslog(logSyslog)
-		}
-
-		eventLog := viper.GetString("log.eventlog")
-		if eventLog != "" {
-			log.WithEventlog(eventLog)
-		}
-
-		logMailHost := viper.GetString("log.mail.host")
-		if logMailHost != "" {
-			addr := fmt.Sprintf("%s:%d", logMailHost, viper.GetInt("log.mail.port"))
-			logMailFrom := viper.GetString("log.mail.from")
-			logMailTo := viper.GetString("log.mail.to")
-			logMailUsername := viper.GetString("log.mail.username")
-			logMailPassword := viper.GetString("log.mail.password")
-			log.WithMail("myOpenFactory Client", addr, logMailFrom, logMailTo, logMailUsername, logMailPassword)
-		}
-
-		logFolder := viper.GetString("log.folder")
-		if logFolder != "" {
-			log.WithFilesystem(logFolder)
-		}
-
 		log.Infof("Starting myOpenFactory client %v", version)
-
-		cafile := viper.GetString("cafile")
-		clientcert := viper.GetString("clientcert")
-
-		if _, err := os.Stat(cafile); os.IsNotExist(err) {
-			cafile = filepath.Join(filepath.Dir(cfgFile), cafile)
-		}
-
-		if _, err := os.Stat(clientcert); os.IsNotExist(err) {
-			clientcert = filepath.Join(filepath.Dir(cfgFile), clientcert)
-		}
 
 		opts := []client.Option{
 			client.WithUsername(viper.GetString("username")),
 			client.WithPassword(viper.GetString("password")),
 			client.WithURL(viper.GetString("url")),
-			client.WithCA(cafile),
-			client.WithCert(clientcert),
+			client.WithCA(viper.GetString("cafile")),
+			client.WithCert(viper.GetString("clientcert")),
 		}
 		os.Setenv("HTTP_PROXY", viper.GetString("proxy"))
 
@@ -201,18 +159,6 @@ var serviceRunCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if serviceDebug {
-			elog = debug.New(serviceName)
-		} else {
-			elog, err = eventlog.Open(serviceName)
-			if err != nil {
-				log.Errorf("failed to open eventlog: %v", err)
-				os.Exit(1)
-			}
-		}
-		defer elog.Close()
-
-		elog.Info(1, fmt.Sprintf("starting service: %q", serviceName))
 		run := svc.Run
 		if serviceDebug {
 			run = debug.Run
@@ -230,12 +176,11 @@ var serviceRunCmd = &cobra.Command{
 			}
 		}()
 
-		err = run(serviceName, &service{client: cl})
-		if err != nil {
-			elog.Error(1, fmt.Sprintf("service failed: %q: %v", serviceName, err))
+		if err := run(serviceName, &service{client: cl}); err != nil {
+			log.Errorf("service failed: %q: %v", serviceName, err)
 			return
 		}
-		elog.Info(1, fmt.Sprintf("service stopped: %q", serviceName))
+		log.Infof("service stopped: %q", serviceName)
 	},
 }
 

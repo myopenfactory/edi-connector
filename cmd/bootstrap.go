@@ -9,9 +9,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 
-	"github.com/magiconair/properties"
 	"github.com/spf13/cobra"
 )
 
@@ -88,6 +88,8 @@ var bootstrapCmd = &cobra.Command{
 		clientCert := promptUserMultiline("Client Certificate")
 		logLevel := promptUser("Log Level", "INFO")
 		logFolder := promptUser("Log Folder", filepath.ToSlash(filepath.Join(configPath, "logs")))
+		eventlogName := promptUser("Eventlog Name", "client")
+		eventlogName = "myof-" + eventlogName
 
 		certFile := filepath.Join(configPath, "client.crt")
 		if err := ioutil.WriteFile(certFile, []byte(clientCert), 0644); err != nil {
@@ -100,32 +102,37 @@ var bootstrapCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		prop := properties.NewProperties()
-		prop.Set("url", url)
-		prop.Set("username", username)
-		prop.Set("password", password)
-		prop.Set("cafile", filepath.ToSlash(caFile))
-		prop.Set("clientcert", filepath.ToSlash(certFile))
-		prop.Set("log.level", logLevel)
-		prop.Set("log.folder", filepath.ToSlash(logFolder))
+		properties := make(map[string]string)
+		properties["url"] = url
+		properties["username"] = username
+		properties["password"] = password
+		properties["cafile"] = filepath.ToSlash(caFile)
+		properties["clientcert"] = filepath.ToSlash(certFile)
+		properties["log.level"] = logLevel
+		properties["log.folder"] = filepath.ToSlash(logFolder)
+		properties["log.eventlog"] = eventlogName
 
 		cfgFile := filepath.Join(configPath, "config.properties")
-		f, err := os.OpenFile(cfgFile, os.O_RDWR | os.O_TRUNC, 0)
+		f, err := os.OpenFile(cfgFile, os.O_RDWR|os.O_TRUNC, 0)
 		if err != nil {
 			fmt.Printf("failed to open config file: %v", err)
 			os.Exit(1)
 		}
 		defer f.Close()
 
-		if _, err := prop.Write(f, properties.UTF8); err != nil {
-			fmt.Printf("failed to write config: %v", err)
-			os.Exit(1)
+		var keys []string
+		for k := range properties {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			fmt.Fprintf(f, "%s = %s\r\n", key, properties[key])
 		}
 
 		serviceInstall := strings.ToLower(promptUser("Install Service", "y")) == "y"
-		serviceName := promptUser("Service Name", "client")
-		serviceName = "myof-"+serviceName
 		if serviceInstall {
+			serviceName := promptUser("Service Name", "client")
+			serviceName = "myof-" + serviceName
 			cmd := exec.Command(binaryFile, "service", "install", "--config", cfgFile, "--name", serviceName)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
