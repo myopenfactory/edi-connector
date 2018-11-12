@@ -63,6 +63,11 @@ jobs:
     inputs:
       secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
 
+  - task: DownloadSecureFile@1
+    displayName: 'Download Signing Key'
+    inputs:
+      secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
+
   - script: |
       MYOF_CLIENT_CONFIG=$(Agent.TempDirectory) mage test
     displayName: 'E2E Tests'
@@ -107,6 +112,13 @@ jobs:
       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/windows/386'
       includeRootFolder: False
       archiveFile: '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
+
+  - script: |
+      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_amd64.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_amd64.zip'
+      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_386.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_linux_386.zip'
+      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_amd64.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_amd64.zip'
+      openssl dgst -sha256 -sign $(Agent.TempDirectory)/myOpenFactory_Development.pem -out '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip.sig' '$(Build.ArtifactStagingDirectory)/artifact/myof-client_windows_386.zip'
+    displayName: 'Sign Artifacts'
 
   - task: PublishTestResults@2
     inputs:
