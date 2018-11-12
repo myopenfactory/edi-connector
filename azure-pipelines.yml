@@ -61,7 +61,7 @@ jobs:
       go version
       mage --version
       echo ${CLIENT_VERSION}
-      docker login -u $(AzureCR.USER) -p $(AzureCR.TOKEN) $(AzureCR.URL)
+      docker login -u "$(AzureCR.USER)" -p "$(AzureCR.TOKEN)" $(AzureCR.URL)
     displayName: 'Set up the workspace'
 
   - script: |
