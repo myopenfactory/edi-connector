@@ -48,6 +48,7 @@ jobs:
       echo ${CLIENT_VERSION} > $(Build.ArtifactStagingDirectory)/artifact/version.txt
       pushd /tmp
       go get -u github.com/jstemmer/go-junit-report
+      go get -u github.com/goreleaser/goreleaser
       go get -u -d github.com/magefile/mage
       popd
       pushd ${GOPATH}/src/github.com/magefile/mage
@@ -72,6 +73,10 @@ jobs:
   - script: |
       MYOF_CLIENT_CONFIG=$(Agent.TempDirectory) mage test
     displayName: 'E2E Tests'
+
+  - script: |
+      goreleaser --snapshot --rm-dist
+    displayName: 'Build and Bundle'
 
   - script: |
       docker push $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine
