@@ -113,6 +113,12 @@ var bootstrapCmd = &cobra.Command{
 			eventlogName = "myof-" + eventlogName
 			properties["log.eventlog"] = eventlogName
 		}
+		serviceInstall := strings.ToLower(promptUser("Install Service", "y")) == "y"
+		if serviceInstall {
+			serviceName := promptUser("Service Name", "client")
+			serviceName = "myof-" + serviceName
+			properties["service.name"] = serviceName
+		}
 
 		cfgFile := filepath.Join(configPath, "config.properties")
 		f, err := os.OpenFile(cfgFile, os.O_RDWR|os.O_TRUNC, 0)
@@ -131,10 +137,7 @@ var bootstrapCmd = &cobra.Command{
 			fmt.Fprintf(f, "%s = %s\r\n", key, properties[key])
 		}
 
-		serviceInstall := strings.ToLower(promptUser("Install Service", "y")) == "y"
 		if serviceInstall {
-			serviceName := promptUser("Service Name", "client")
-			serviceName = "myof-" + serviceName
 			cmd := exec.Command(binaryFile, "service", "install", "--config", cfgFile, "--name", serviceName)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr

@@ -5,12 +5,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/pkg/errors"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
 )
 
 func preUpdate() error {
+	// Skip preUpdate if no service is registered
+	if viper.GetString("service.name") == "" {
+		return nil
+	}
+
 	serviceManager, err := mgr.Connect()
 	if err != nil {
 		return errors.Wrap(err, "service manager: connection failed")
@@ -35,6 +41,11 @@ func preUpdate() error {
 }
 
 func postUpdate() error {
+	// Skip postUpdate if no service is registered
+	if viper.GetString("service.name") == "" {
+		return nil
+	}
+
 	serviceManager, err := mgr.Connect()
 	if err != nil {
 		return errors.Wrap(err, "service manager: connection failed")
