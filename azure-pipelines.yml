@@ -89,10 +89,10 @@ jobs:
     displayName: 'Upload Docker Images'
 
   - script: |
-      cp *.zip $(Build.ArtifactStagingDirectory)/artifact/
-      cp *.tar.gz $(Build.ArtifactStagingDirectory)/artifact/
-      cp checksums.txt $(Build.ArtifactStagingDirectory)/artifact/
-      cp *.sig $(Build.ArtifactStagingDirectory)/artifact/
+      cp ./dist/*.zip $(Build.ArtifactStagingDirectory)/artifact/
+      cp ./dist/*.tar.gz $(Build.ArtifactStagingDirectory)/artifact/
+      cp ./dist/checksums.txt $(Build.ArtifactStagingDirectory)/artifact/
+      cp ./dist/*.sig $(Build.ArtifactStagingDirectory)/artifact/
     displayName: 'Bundle Artifact'
 
   - task: PublishBuildArtifacts@1
