@@ -16,6 +16,7 @@ jobs:
     GOBIN:  '$(GOPATH)/bin' # Go binaries path 
     GOROOT: '/usr/local/go1.11' # Go installation path
 
+  steps:
   - task: DownloadSecureFile@1
     displayName: 'Download Alpine Properties'
     inputs:
@@ -36,7 +37,6 @@ jobs:
     inputs:
       secureFile: '82883b39-9ca3-4615-ab04-98496959f145'
 
-  steps:
   - script: |
       export CLIENT_VERSION=`git describe --tags --dirty --always`
       echo '##vso[task.setvariable variable=Client.Version;]'${CLIENT_VERSION}
