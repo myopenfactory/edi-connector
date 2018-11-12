@@ -39,7 +39,7 @@ jobs:
 
   - task: DownloadSecureFile@1
     inputs:
-    secureFile: myOpenFactory_Development.pem
+      secureFile: myOpenFactory_Development.pem
 
   - script: |
       export CLIENT_VERSION=`git describe --tags --dirty --always`
