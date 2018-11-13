@@ -22,5 +22,7 @@ var versionCmd = &cobra.Command{
 	Short: "show version information",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Version:", Version)
+		fmt.Println("Date:", Date)
+		fmt.Println("Commit:", Commit)
 	},
 }

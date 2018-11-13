@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/magefile/mage/sh"
 )
@@ -29,7 +30,13 @@ func init() {
 
 func Build() error {
 	fmt.Println("Building...")
-	return sh.RunV("go", "build", "-o", name, ".")
+	date := time.Now().Format(time.RFC3339)
+	commit, err := exec.Command("git", "rev-parse", "--short", "HEAD").Output()
+	if err != nil {
+		return err
+	}
+	ldflags := fmt.Sprintf("-X github.com/myopenfactory/client/cmd.Date=%s -X github.com/myopenfactory/client/cmd.Commit=%s", date, strings.TrimSpace(string(commit)))
+	return sh.RunV("go", "build", "-o", name, "-ldflags", ldflags, ".")
 }
 
 func Clean() {
@@ -77,26 +84,4 @@ func Protogen() error {
 
 func Test() error {
 	return sh.RunV("mage", "-d", "test", "test")
-}
-
-func CI() error {
-	for _, goos := range []string{"linux", "windows"} {
-		for _, goarch := range []string{"amd64", "386"} {
-			ldflags := fmt.Sprintf("\" -X github.com/myopenfactory/client/cmd.version=%s\"", "1.0.0")
-			name := fmt.Sprintf("myof-client_%s_%s", goos, goarch)
-			if goos == "windows" {
-				name += ".exe"
-			}
-			cmd := exec.Command("go", "build", "-ldflags", ldflags, "-o", name)
-			cmd.Env = append(os.Environ(),
-				"CGO_ENABLED=false",
-				fmt.Sprintf("GOOS=%s", goos),
-				fmt.Sprintf("GOARCH=%s", goarch),
-			)
-			if err := cmd.Run(); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
 }
