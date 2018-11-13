@@ -88,7 +88,6 @@ var bootstrapCmd = &cobra.Command{
 		clientCert := promptUserMultiline("Client Certificate")
 		logLevel := promptUser("Log Level", "INFO")
 		logFolder := promptUser("Log Folder", filepath.ToSlash(filepath.Join(configPath, "logs")))
-		eventlogName := promptUser("Eventlog Name", "")
 
 		certFile := filepath.Join(configPath, "client.crt")
 		if err := ioutil.WriteFile(certFile, []byte(clientCert), 0644); err != nil {
@@ -109,10 +108,6 @@ var bootstrapCmd = &cobra.Command{
 		properties["clientcert"] = filepath.ToSlash(certFile)
 		properties["log.level"] = logLevel
 		properties["log.folder"] = filepath.ToSlash(logFolder)
-		if eventlogName != "" {
-			eventlogName = "myof-" + eventlogName
-			properties["log.eventlog"] = eventlogName
-		}
 		serviceInstall := strings.ToLower(promptUser("Install Service", "y")) == "y"
 		if serviceInstall {
 			serviceName := promptUser("Service Name", "client")
