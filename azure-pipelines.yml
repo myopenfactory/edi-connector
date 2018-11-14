@@ -116,6 +116,7 @@ jobs:
     GOBIN:  '$(GOPATH)/bin' # Go binaries path 
     GOROOT: '/usr/local/go1.11' # Go installation path
 
+  steps:
   - script: |
       echo '##vso[task.prependpath]$(GOBIN)' 
       echo '##vso[task.prependpath]$(GOROOT)/bin'
@@ -131,7 +132,6 @@ jobs:
     inputs:
       secureFile: myOpenFactory_Development.pem
   
-  steps:
   - script: |
       cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
       goreleaser --rm-dist
