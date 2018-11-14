@@ -37,12 +37,9 @@ func init() {
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update the executable from github",
+	PreRunE: preUpdate,
+	PostRunE: postUpdate,
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := preUpdate(); err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
-
 		block, _ := pem.Decode(certificatePEM)
 		if block == nil || block.Type != "CERTIFICATE" {
 			fmt.Println("failed to decode PEM block containing certificate")
@@ -112,10 +109,5 @@ var updateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		fmt.Println("Successfully updated to version:", latest.Version)
-
-		if err := postUpdate(); err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
 	},
 }

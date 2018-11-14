@@ -54,8 +54,8 @@ var bootstrapCmd = &cobra.Command{
 	Short: "bootstrap the client [EXPERIMENTAL]",
 	Long:  "bootstrap the client.\n\nUSE WITH CARE",
 	Run: func(cmd *cobra.Command, args []string) {
-		defaultInstallPath := filepath.ToSlash(filepath.Join(os.Getenv("ProgramFiles"), "myOpenFactory", "Client"))
-		defaultConfigPath := filepath.ToSlash(filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "Client"))
+		defaultInstallPath := filepath.ToSlash(installPath())
+		defaultConfigPath := filepath.ToSlash(configPath())
 		installPath := promptUser("Installation Folder", defaultInstallPath)
 		configPath := promptUser("Configuration Folder", defaultConfigPath)
 
@@ -109,10 +109,10 @@ var bootstrapCmd = &cobra.Command{
 		properties["log.level"] = logLevel
 		properties["log.folder"] = filepath.ToSlash(logFolder)
 		serviceInstall := strings.ToLower(promptUser("Install Service", "y")) == "y"
+		var serviceName string
 		if serviceInstall {
-			serviceName := promptUser("Service Name", "client")
+			serviceName = promptUser("Service Name", "client")
 			serviceName = "myof-" + serviceName
-			properties["service.name"] = serviceName
 		}
 
 		cfgFile := filepath.Join(configPath, "config.properties")

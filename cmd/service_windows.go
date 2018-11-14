@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"context"
 	"time"
-
+	
 	"github.com/spf13/cobra"
 	"golang.org/x/sys/windows/svc/eventlog"
 	"golang.org/x/sys/windows/svc/mgr"
@@ -17,26 +17,21 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	serviceName     string
-	serviceUsername string
-	servicePassword string
-	serviceDebug    bool
-)
-
 func init() {
 	rootCmd.AddCommand(serviceCmd)
-
-	serviceCmd.PersistentFlags().StringVar(&serviceName, "name", "myOpenFactory Client", "name of the service")
-
-	serviceCmd.AddCommand(serviceUninstallCmd)
-
-	serviceInstallCmd.Flags().StringVar(&serviceUsername, "logon", "", "windows logon name for the service")
-	serviceInstallCmd.Flags().StringVar(&servicePassword, "password", "", "windows logon password for the service")
 	serviceCmd.AddCommand(serviceInstallCmd)
-
-	serviceRunCmd.Flags().BoolVar(&serviceDebug, "debug", false, "debug windows service")
+	serviceCmd.AddCommand(serviceUninstallCmd)
 	serviceCmd.AddCommand(serviceRunCmd)
+
+	serviceCmd.PersistentFlags().String("name", "myOpenFactory Client", "name of the service")
+	serviceRunCmd.Flags().Bool("debug", false, "debug windows service")
+	serviceInstallCmd.Flags().String("logon", "", "windows logon name for the service")
+	serviceInstallCmd.Flags().String("password", "", "windows logon password for the service")
+
+	viper.BindPFlag("service.name", serviceCmd.PersistentFlags().Lookup("name"))
+	viper.BindPFlag("service.logon", serviceInstallCmd.Flags().Lookup("logon"))
+	viper.BindPFlag("service.password", serviceInstallCmd.Flags().Lookup("password"))
+	viper.BindPFlag("service.debug", serviceRunCmd.Flags().Lookup("debug"))
 }
 
 // serviceCmd represents the service command
@@ -50,11 +45,7 @@ var serviceInstallCmd = &cobra.Command{
 	Use:   "install",
 	Short: "install as windows service",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfgFile := viper.GetString("config")
-		if cfgFile == "" {
-			fmt.Println("config file is required")
-			os.Exit(1)
-		}
+		serviceName := viper.GetString("service.name")
 		fmt.Println("Install as service:", serviceName)
 		exepath, err := exePath()
 		if err != nil {
@@ -72,7 +63,7 @@ var serviceInstallCmd = &cobra.Command{
 		s, err := m.OpenService(serviceName)
 		if err == nil {
 			s.Close()
-			fmt.Println("service %s already exists", serviceName)
+			fmt.Printf("service %s already exists", serviceName)
 			os.Exit(1)
 		}
 		config := mgr.Config{
@@ -81,11 +72,11 @@ var serviceInstallCmd = &cobra.Command{
 			StartType:    mgr.StartAutomatic,
 			ErrorControl: mgr.ServiceRestart,
 		}
-		if serviceUsername != "" {
-			config.ServiceStartName = serviceUsername
-			config.Password = servicePassword
+		if viper.IsSet("service.logon") && viper.IsSet("service.password") {
+			config.ServiceStartName = viper.GetString("service.logon")
+			config.Password = viper.GetString("service.password")
 		}
-		s, err = m.CreateService(serviceName, exepath, config, "service", "run", "--config", cfgFile, "--name", serviceName)
+		s, err = m.CreateService(serviceName, exepath, config, "service", "run", "--config", viper.ConfigFileUsed(), "--name", serviceName)
 		if err != nil {
 			fmt.Println("could not create service:", err)
 			os.Exit(1)
@@ -111,6 +102,7 @@ var serviceUninstallCmd = &cobra.Command{
 	Use:   "uninstall",
 	Short: "uninstall the windows service",
 	Run: func(cmd *cobra.Command, args []string) {
+		serviceName := viper.GetString("service.name")
 		fmt.Println("Uninstall service:", serviceName)
 		m, err := mgr.Connect()
 		if err != nil {
@@ -160,7 +152,7 @@ var serviceRunCmd = &cobra.Command{
 		}
 
 		run := svc.Run
-		if serviceDebug {
+		if viper.GetBool("service.debug") {
 			run = debug.Run
 		}
 
@@ -176,6 +168,7 @@ var serviceRunCmd = &cobra.Command{
 			}
 		}()
 
+		serviceName := viper.GetString("service.name")
 		if err := run(serviceName, &service{client: cl}); err != nil {
 			log.Errorf("service failed: %q: %v", serviceName, err)
 			return

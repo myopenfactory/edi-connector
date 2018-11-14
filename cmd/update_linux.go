@@ -1,9 +1,13 @@
 package cmd
 
-func preUpdate() error {
+import (
+	"github.com/spf13/cobra"
+)
+
+func preUpdate(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func postUpdate() error {
+func postUpdate(cmd *cobra.Command, args []string) error {
 	return nil
 }
