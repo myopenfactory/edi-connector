@@ -126,7 +126,7 @@ jobs:
       go get -u github.com/goreleaser/goreleaser
       popd
       docker login -u "$(AzureCR.USER)" -p "$(AzureCR.TOKEN)" $(AzureCR.URL)
-      docker login -u "${DockerCI.USER}" -p "${DockerCI.TOKEN}"
+      docker login -u "$(DockerCI.USER)" -p "$(DockerCI.TOKEN)"
     displayName: 'Set up the workspace'
 
   - task: DownloadSecureFile@1
