@@ -105,6 +105,12 @@ jobs:
   dependsOn: Linux
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags'))
 
+  pool:
+    name: default
+    demands:
+      - agent.location -equals local
+      - agent.os -equals Linux
+
   variables:
     GOPATH: '/tmp/gopath'
     GOBIN:  '$(GOPATH)/bin' # Go binaries path 
