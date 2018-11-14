@@ -100,3 +100,33 @@ jobs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)/artifact'
       artifactName: myof-client
     displayName: 'Publish Artifacts'
+
+- job: Release
+  dependsOn: Linux
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags'))
+
+  variables:
+    GOPATH: '/tmp/gopath'
+    GOBIN:  '$(GOPATH)/bin' # Go binaries path 
+    GOROOT: '/usr/local/go1.11' # Go installation path
+
+  - script: |
+      echo '##vso[task.prependpath]$(GOBIN)' 
+      echo '##vso[task.prependpath]$(GOROOT)/bin'
+      export PATH="${GOROOT}/bin:${PATH}"
+      export PATH="${GOBIN}:${PATH}"
+      pushd /tmp
+      go get -u github.com/goreleaser/goreleaser
+      popd
+      docker login -u "$(AzureCR.USER)" -p "$(AzureCR.TOKEN)" $(AzureCR.URL)
+    displayName: 'Set up the workspace'
+
+  - task: DownloadSecureFile@1
+    inputs:
+      secureFile: myOpenFactory_Development.pem
+  
+  steps:
+  - script: |
+      cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
+      goreleaser --rm-dist
+    displayName: 'Build and Release'
