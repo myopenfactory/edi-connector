@@ -126,6 +126,7 @@ jobs:
       go get -u github.com/goreleaser/goreleaser
       popd
       docker login -u "$(AzureCR.USER)" -p "$(AzureCR.TOKEN)" $(AzureCR.URL)
+      docker login -u "${DockerCI.USER}" -p "${DockerCI.TOKEN}"
     displayName: 'Set up the workspace'
 
   - task: DownloadSecureFile@1
@@ -135,6 +136,10 @@ jobs:
   - bash: |
       cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
       goreleaser --rm-dist
+      docker tag $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine myopenfactory/client:alpine
+      docker tag myopenfactory/client:alpine myopenfactory/client:latest
+      docker push myopenfactory/client:alpine
+      docker push myopenfactory/client:latest
     env:
       GITHUB_TOKEN: $(Github.Token)
     displayName: 'Build and Release'
