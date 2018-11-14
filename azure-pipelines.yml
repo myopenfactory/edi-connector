@@ -132,7 +132,9 @@ jobs:
     inputs:
       secureFile: myOpenFactory_Development.pem
   
-  - script: |
+  - bash: |
       cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
       goreleaser --rm-dist
+    env:
+      GITHUB_TOKEN: $(Github.Token)
     displayName: 'Build and Release'
