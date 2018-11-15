@@ -137,7 +137,7 @@ var bootstrapCmd = &cobra.Command{
 		}
 
 		cfgFile := filepath.Join(configPath, "config.properties")
-		f, err := os.OpenFile(cfgFile, os.O_RDWR|os.O_TRUNC, 0)
+		f, err := os.Create(cfgFile)
 		if err != nil {
 			fmt.Printf("failed to open config file: %v", err)
 			os.Exit(1)
