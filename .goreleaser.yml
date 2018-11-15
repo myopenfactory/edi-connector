@@ -33,20 +33,8 @@ dockers:
     image_templates:
       - "myopenfactory.azurecr.io/client:alpine-latest"
       - "myopenfactory.azurecr.io/client:alpine-{{ .Version }}"
-    skip_push: true
     extra_files:
       - myOpenFactoryCA.crt
-  # -
-  #   goos: windows
-  #   goarch: amd64
-  #   goarm: ''
-  #   binary: myof-client
-  #   dockerfile: Dockerfile.windows
-  #   image_templates:
-  #     - "myopenfactory.azurecr.io/client:windowsservercore-latest"
-  #   skip_push: true
-  #   extra_files:
-  #     - myOpenFactoryCA.crt
 sign:
   signature: "${artifact}.sig"
   cmd: openssl
