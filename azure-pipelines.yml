@@ -136,7 +136,7 @@ jobs:
   - bash: |
       cp $(Agent.TempDirectory)/myOpenFactory_Development.pem .
       goreleaser --rm-dist
-      docker tag $(AzureCR.URL)/client:$(Build.BuildNumber)-alpine myopenfactory/client:alpine
+      docker tag $(AzureCR.URL)/client:alpine-latest myopenfactory/client:alpine
       docker tag myopenfactory/client:alpine myopenfactory/client:latest
       docker push myopenfactory/client:alpine
       docker push myopenfactory/client:latest
