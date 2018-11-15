@@ -85,6 +85,11 @@ var bootstrapCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if err := os.MkdirAll(configPath, 0644); err != nil {
+			fmt.Printf("failed to create config folder: %v", err)
+			os.Exit(1)
+		}
+
 		binary, err := ioutil.ReadFile(os.Args[0])
 		if err != nil {
 			fmt.Printf("failed to read source binary file: %v", err)
