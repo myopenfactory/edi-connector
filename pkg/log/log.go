@@ -1,14 +1,15 @@
 package log
 
 import (
-	"github.com/sirupsen/logrus"
-	"os"
 	"fmt"
+	"os"
 
+	"github.com/sirupsen/logrus"
+
+	"github.com/myopenfactory/client/pkg/log/eventlog"
 	"github.com/myopenfactory/client/pkg/log/filesystem"
 	"github.com/myopenfactory/client/pkg/log/mail"
 	"github.com/myopenfactory/client/pkg/log/syslog"
-	"github.com/myopenfactory/client/pkg/log/eventlog"
 )
 
 type Logger struct {
@@ -81,8 +82,8 @@ func WithFilesystem(path string) {
 	defaultLogger.Logger.AddHook(hook)
 }
 
-func WithMail(appname, address, sender, receiver, username, password string) {
-	hook := mail.New(appname, address, sender, receiver, username, password)
+func WithMail(appname, address, sender, receiver, username, password, level string) {
+	hook := mail.New(appname, address, sender, receiver, username, password, level)
 	defaultLogger.Logger.AddHook(hook)
 }
 

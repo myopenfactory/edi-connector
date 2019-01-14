@@ -24,10 +24,15 @@ type MailHook struct {
 	Username string
 	Password string
 	send     func(string, smtp.Auth, string, []string, []byte) error
+	levels   []logrus.Level
 }
 
 // NewMailHook creates a MailHook and configures it from parameters.
-func New(appname, address, sender, receiver, username, password string) *MailHook {
+func New(appname, address, sender, receiver, username, password, level string) *MailHook {
+	logLevel, err := logrus.ParseLevel(level)
+	if err != nil {
+		panic(err)
+	}
 	return &MailHook{
 		AppName:  appname,
 		Address:  address,
@@ -36,6 +41,9 @@ func New(appname, address, sender, receiver, username, password string) *MailHoo
 		Username: username,
 		Password: password,
 		send:     smtp.SendMail,
+		levels: []logrus.Level{
+			logLevel,
+		},
 	}
 }
 
@@ -64,9 +72,5 @@ func (h *MailHook) sendMail(to []string, body []byte) error {
 
 // Levels returns the available logging levels.
 func (h *MailHook) Levels() []logrus.Level {
-	return []logrus.Level{
-		logrus.PanicLevel,
-		logrus.FatalLevel,
-		logrus.ErrorLevel,
-	}
+	return h.levels
 }

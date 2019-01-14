@@ -1,18 +1,18 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
 	"context"
-	"time"
-	"os/signal"
-	"strings"
+	"fmt"
 	"io/ioutil"
-	"runtime"
+	"os"
+	"os/signal"
 	"path/filepath"
+	"runtime"
+	"strings"
+	"time"
 
-	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/client"
+	"github.com/myopenfactory/client/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -131,7 +131,8 @@ func initConfig() {
 		logMailTo := viper.GetString("log.mail.to")
 		logMailUsername := viper.GetString("log.mail.username")
 		logMailPassword := viper.GetString("log.mail.password")
-		log.WithMail("myOpenFactory Client", addr, logMailFrom, logMailTo, logMailUsername, logMailPassword)
+		logMailLevel := viper.GetString("log.mail.level")
+		log.WithMail("myOpenFactory Client", addr, logMailFrom, logMailTo, logMailUsername, logMailPassword, logMailLevel)
 	}
 
 	logFolder := viper.GetString("log.folder")
