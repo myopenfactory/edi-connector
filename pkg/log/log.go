@@ -23,6 +23,10 @@ func New(level string) *Logger {
 	if err != nil {
 		panic(err)
 	}
+	log.SetFormatter(&log.TextFormatter{
+		DisableColors: true,
+		FullTimestamp: true,
+	})
 	l.Level = logLevel
 
 	return &Logger{Logger: l}
