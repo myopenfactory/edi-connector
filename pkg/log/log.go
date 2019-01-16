@@ -1,14 +1,15 @@
 package log
 
 import (
-	"github.com/sirupsen/logrus"
-	"os"
 	"fmt"
+	"os"
 
+	"github.com/sirupsen/logrus"
+
+	"github.com/myopenfactory/client/pkg/log/eventlog"
 	"github.com/myopenfactory/client/pkg/log/filesystem"
 	"github.com/myopenfactory/client/pkg/log/mail"
 	"github.com/myopenfactory/client/pkg/log/syslog"
-	"github.com/myopenfactory/client/pkg/log/eventlog"
 )
 
 type Logger struct {
@@ -23,7 +24,7 @@ func New(level string) *Logger {
 	if err != nil {
 		panic(err)
 	}
-	log.SetFormatter(&log.TextFormatter{
+	l.SetFormatter(&logrus.TextFormatter{
 		DisableColors: true,
 		FullTimestamp: true,
 	})
