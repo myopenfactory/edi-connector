@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/smtp"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -50,7 +51,8 @@ func (h *MailHook) Fire(entry *logrus.Entry) error {
 	fields, _ := json.MarshalIndent(entry.Data, "", "\t")
 	message := fmt.Sprintf("Subject: %s\r\n\r\n%s\r\n\r\n%s", subject, body, fields)
 
-	err := h.sendMail([]string{h.To}, []byte(message))
+	receivers := strings.Split(h.To, ";")
+	err := h.sendMail(receivers, []byte(message))
 	return errors.Wrapf(err, "failed sending log mail")
 }
 
