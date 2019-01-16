@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -220,7 +221,9 @@ func (c *Client) Run() error {
 
 			msgs, err := clientpb.ListMessages(reqCxt, &pb.Empty{})
 			if err != nil {
-				log.Errorf("error while loading remote files: %v", err)
+				if err != io.EOF {
+					log.Errorf("error while loading remote files: %v", err)
+				}
 				continue
 			}
 			for _, msg := range msgs.Messages {
@@ -377,7 +380,7 @@ func createHTTPClient(cert, ca string) (*http.Client, error) {
 
 	tr := &http.Transport{
 		TLSClientConfig: tlsConfig,
-		Proxy: http.ProxyFromEnvironment,
+		Proxy:           http.ProxyFromEnvironment,
 	}
 	return &http.Client{
 		Transport: tr,
