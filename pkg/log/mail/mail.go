@@ -3,6 +3,7 @@ package mail
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/smtp"
 	"strings"
 	"time"
@@ -59,7 +60,11 @@ func (h *MailHook) Fire(entry *logrus.Entry) error {
 func (h *MailHook) sendMail(to []string, body []byte) error {
 	var auth smtp.Auth
 	if h.Username != "" {
-		auth = smtp.PlainAuth("", h.Username, h.Password, h.Address)
+		host, _, err := net.SplitHostPort(h.Address)
+		if err != nil {
+			return errors.Wrap(err, "failed to split host port for smtp auth")
+		}
+		auth = smtp.PlainAuth("", h.Username, h.Password, host)
 	}
 	return h.send(h.Address, auth, h.From, to, body)
 }
