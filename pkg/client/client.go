@@ -221,10 +221,10 @@ func (c *Client) Run() error {
 
 			msgs, err := clientpb.ListMessages(reqCxt, &pb.Empty{})
 			if err != nil {
-				if err != io.EOF {
-					log.Errorf("error while loading remote files: %v", err)
+				if errors.Cause(err) == io.EOF {
+					continue
 				}
-				continue
+				log.Errorf("error while loading remote files: %v", err)
 			}
 			for _, msg := range msgs.Messages {
 				p, ok := inPP[msg.ProcessId]
