@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"mime"
 	"net/http"
@@ -221,10 +220,8 @@ func (c *Client) Run() error {
 
 			msgs, err := clientpb.ListMessages(reqCxt, &pb.Empty{})
 			if err != nil {
-				if errors.Cause(err) == io.EOF {
-					continue
-				}
-				log.Errorf("error while loading remote files: %v", err)
+				log.Infof("failed listing remote messages: %v", err)
+				continue
 			}
 			for _, msg := range msgs.Messages {
 				p, ok := inPP[msg.ProcessId]
