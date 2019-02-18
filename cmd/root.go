@@ -1,18 +1,19 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
 	"context"
-	"time"
-	"os/signal"
-	"strings"
+	"fmt"
 	"io/ioutil"
-	"runtime"
+	"os"
+	"os/signal"
 	"path/filepath"
+	"runtime"
+	"runtime/debug"
+	"strings"
+	"time"
 
-	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/client"
+	"github.com/myopenfactory/client/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -52,6 +53,7 @@ var rootCmd = &cobra.Command{
 			defer func() {
 				if r := recover(); r != nil {
 					log.Errorf("recover client: %v", r)
+					log.Errorf("%s", debug.Stack())
 				}
 			}()
 			if err := cl.Run(); err != nil {

@@ -1,20 +1,22 @@
 package cmd
 
 import (
-	"github.com/myopenfactory/client/pkg/client"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
-	"context"
+	rdbg "runtime/debug"
 	"time"
-	
+
+	"github.com/myopenfactory/client/pkg/client"
+
+	"github.com/myopenfactory/client/pkg/log"
 	"github.com/spf13/cobra"
-	"golang.org/x/sys/windows/svc/eventlog"
-	"golang.org/x/sys/windows/svc/mgr"
+	"github.com/spf13/viper"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/debug"
-	"github.com/myopenfactory/client/pkg/log"
-	"github.com/spf13/viper"
+	"golang.org/x/sys/windows/svc/eventlog"
+	"golang.org/x/sys/windows/svc/mgr"
 )
 
 func init() {
@@ -131,7 +133,7 @@ var serviceUninstallCmd = &cobra.Command{
 }
 
 var serviceRunCmd = &cobra.Command{
-	Use: "run",
+	Use:   "run",
 	Short: "run the windows service",
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Infof("Starting myOpenFactory client %v", Version)
@@ -160,6 +162,7 @@ var serviceRunCmd = &cobra.Command{
 			defer func() {
 				if r := recover(); r != nil {
 					log.Errorf("recover client: %v", r)
+					log.Errorf("%s", rdbg.Stack())
 				}
 			}()
 			if err := cl.Run(); err != nil {
@@ -209,17 +212,17 @@ func exePath() (string, error) {
 
 var elog debug.Log
 
-type service struct{
+type service struct {
 	client *client.Client
 }
 
-func (m *service) Execute(args []string, r <- chan svc.ChangeRequest, changes chan <- svc.Status) (bool, uint32) {
-	deadline := 5*time.Second
+func (m *service) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (bool, uint32) {
+	deadline := 5 * time.Second
 	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown
 	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted, WaitHint: uint32(deadline.Seconds()) * 1000}
 	for {
 		select {
-		case c := <- r:
+		case c := <-r:
 			switch c.Cmd {
 			case svc.Stop, svc.Shutdown:
 				changes <- svc.Status{State: svc.StopPending}
