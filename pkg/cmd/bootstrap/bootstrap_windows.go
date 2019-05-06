@@ -1,3 +1,5 @@
+// +build !windows
+
 package bootstrap
 
 import (
@@ -199,6 +201,17 @@ func installPath() string {
 		return filepath.Join(os.Getenv("ProgramFiles"), "myOpenFactory", "Client")
 	case runtime.GOOS == "linux":
 		return filepath.Join("opt", "myopenfactory", "client")
+	default:
+		return ""
+	}
+}
+
+func configPath() string {
+	switch {
+	case runtime.GOOS == "windows":
+		return filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "Client")
+	case runtime.GOOS == "linux":
+		return filepath.Join("etc", "myopenfactory", "client")
 	default:
 		return ""
 	}

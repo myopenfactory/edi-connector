@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/myopenfactory/client/pkg/client"
+	cmdpkg "github.com/myopenfactory/client/pkg/cmd"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -19,16 +20,16 @@ import (
 )
 
 func init() {
-	serviceCmd.AddCommand(serviceInstallCmd)
-	serviceCmd.AddCommand(serviceUninstallCmd)
-	serviceCmd.AddCommand(serviceRunCmd)
+	Command.AddCommand(serviceInstallCmd)
+	Command.AddCommand(serviceUninstallCmd)
+	Command.AddCommand(serviceRunCmd)
 
-	serviceCmd.PersistentFlags().String("name", "myOpenFactory Client", "name of the service")
-	serviceRunCmd.Flags().Bool("debug", false, "debug windows service")
+	Command.PersistentFlags().String("name", "myOpenFactory Client", "name of the service")
+	Command.Flags().Bool("debug", false, "debug windows service")
 	serviceInstallCmd.Flags().String("logon", "", "windows logon name for the service")
 	serviceInstallCmd.Flags().String("password", "", "windows logon password for the service")
 
-	viper.BindPFlag("service.name", serviceCmd.PersistentFlags().Lookup("name"))
+	viper.BindPFlag("service.name", Command.PersistentFlags().Lookup("name"))
 	viper.BindPFlag("service.logon", serviceInstallCmd.Flags().Lookup("logon"))
 	viper.BindPFlag("service.password", serviceInstallCmd.Flags().Lookup("password"))
 	viper.BindPFlag("service.debug", serviceRunCmd.Flags().Lookup("debug"))
@@ -128,10 +129,10 @@ var serviceRunCmd = &cobra.Command{
 	Use:   "run",
 	Short: "run the windows service",
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := initalizeLogger()
+		logger := cmdpkg.InitializeLogger()
 		logger.Infof("Using config: %s", viper.ConfigFileUsed())
 
-		cl, err := initializeClient()
+		cl, err := cmdpkg.InitializeClient()
 		if err != nil {
 			logger.Errorf("error while creating client: %v", err)
 			os.Exit(1)
