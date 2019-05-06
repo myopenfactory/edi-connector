@@ -1,4 +1,4 @@
-package cmd
+package config
 
 import (
 	"fmt"
@@ -11,16 +11,13 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(configCmd)
-
-	configCmd.AddCommand(listCmd)
-	configCmd.AddCommand(getCmd)
-	configCmd.AddCommand(setCmd)
+	Command.AddCommand(listCmd)
+	Command.AddCommand(getCmd)
+	Command.AddCommand(setCmd)
 }
 
-
 // configCmd represents the config command
-var configCmd = &cobra.Command{
+var Command = &cobra.Command{
 	Use:   "config",
 	Short: "manage the configuration",
 }
@@ -51,7 +48,7 @@ var getCmd = &cobra.Command{
 		cfgFile := viper.ConfigFileUsed()
 		p, err := properties.LoadFile(cfgFile, properties.UTF8)
 		if err != nil {
-			fmt.Println("failed to parse config file: %s", err)
+			fmt.Printf("failed to parse config file: %s", err)
 			os.Exit(1)
 		}
 		table := tablewriter.NewWriter(os.Stdout)
@@ -74,12 +71,12 @@ var setCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if len(args) % 2 != 0 {
+		if len(args)%2 != 0 {
 			fmt.Println("uneven key-value-pairs")
 			os.Exit(1)
 		}
 
-		for i := 0; i < len(args); i+=2 {
+		for i := 0; i < len(args); i += 2 {
 			_, _, err = p.Set(args[i], args[i+1])
 			if err != nil {
 				fmt.Printf("failed to set %q: %v\n", args[i], err)

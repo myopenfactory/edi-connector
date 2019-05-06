@@ -1,4 +1,4 @@
-package cmd
+package service
 
 import (
 	"context"
@@ -10,7 +10,6 @@ import (
 
 	"github.com/myopenfactory/client/pkg/client"
 
-	"github.com/myopenfactory/client/pkg/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/sys/windows/svc"
@@ -20,7 +19,6 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(serviceCmd)
 	serviceCmd.AddCommand(serviceInstallCmd)
 	serviceCmd.AddCommand(serviceUninstallCmd)
 	serviceCmd.AddCommand(serviceRunCmd)
@@ -34,12 +32,6 @@ func init() {
 	viper.BindPFlag("service.logon", serviceInstallCmd.Flags().Lookup("logon"))
 	viper.BindPFlag("service.password", serviceInstallCmd.Flags().Lookup("password"))
 	viper.BindPFlag("service.debug", serviceRunCmd.Flags().Lookup("debug"))
-}
-
-// serviceCmd represents the service command
-var serviceCmd = &cobra.Command{
-	Use:   "service",
-	Short: "administrate windows service",
 }
 
 // serviceInstallCmd represents the install service command
@@ -136,20 +128,12 @@ var serviceRunCmd = &cobra.Command{
 	Use:   "run",
 	Short: "run the windows service",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Infof("Starting myOpenFactory client %v", Version)
+		logger := initalizeLogger()
+		logger.Infof("Using config: %s", viper.ConfigFileUsed())
 
-		opts := []client.Option{
-			client.WithUsername(viper.GetString("username")),
-			client.WithPassword(viper.GetString("password")),
-			client.WithURL(viper.GetString("url")),
-			client.WithCA(viper.GetString("cafile")),
-			client.WithCert(viper.GetString("clientcert")),
-		}
-		os.Setenv("HTTP_PROXY", viper.GetString("proxy"))
-
-		cl, err := client.New(fmt.Sprintf("Core_"+Version), opts...)
+		cl, err := initializeClient()
 		if err != nil {
-			log.Errorf("error while creating client: %v", err)
+			logger.Errorf("error while creating client: %v", err)
 			os.Exit(1)
 		}
 
@@ -161,22 +145,22 @@ var serviceRunCmd = &cobra.Command{
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
-					log.Errorf("recover client: %v", r)
-					log.Errorf("%s", rdbg.Stack())
+					logger.Errorf("recover client: %v", r)
+					logger.Errorf("%s", rdbg.Stack())
 				}
 			}()
 			if err := cl.Run(); err != nil {
-				log.Errorf("error while running client: %v", err)
+				logger.Errorf("error while running client: %v", err)
 				os.Exit(1)
 			}
 		}()
 
 		serviceName := viper.GetString("service.name")
 		if err := run(serviceName, &service{client: cl}); err != nil {
-			log.Errorf("service failed: %q: %v", serviceName, err)
+			logger.Errorf("service failed: %q: %v", serviceName, err)
 			return
 		}
-		log.Infof("service stopped: %q", serviceName)
+		logger.Infof("service stopped: %q", serviceName)
 	},
 }
 

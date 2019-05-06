@@ -16,12 +16,13 @@ import (
 
 // InboundFilePlugin type
 type inboundFilePlugin struct {
-	base  string
-	exist string
+	logger *log.Logger
+	base   string
+	exist  string
 }
 
 // NewInboundFilePlugin returns new InPlugin and checks for basefolder and exist parameter.
-func NewInboundPlugin(parameter map[string]string) (transport.InboundPlugin, error) {
+func NewInboundPlugin(logger *log.Logger, parameter map[string]string) (transport.InboundPlugin, error) {
 	base, ok := parameter["basefolder"]
 	if !ok {
 		return nil, fmt.Errorf("no basefolder found")
@@ -33,10 +34,11 @@ func NewInboundPlugin(parameter map[string]string) (transport.InboundPlugin, err
 	if exist != "append" {
 		exist = "count"
 	}
-	log.Infof("using strategy %s for double messages", exist)
+	logger.Infof("using strategy %s for double messages", exist)
 	return &inboundFilePlugin{
-		base:  base,
-		exist: exist,
+		base:   base,
+		exist:  exist,
+		logger: logger,
 	}, nil
 }
 
@@ -68,7 +70,7 @@ func (p *inboundFilePlugin) ProcessMessage(ctx context.Context, msg *pb.Message)
 	if err := createFolderFromFile(filename); err != nil {
 		return nil, errors.Wrapf(err, "error while creating message folder %s", filename)
 	}
-	log.Infof("Creating file '%v'", filename)
+	p.logger.Infof("Creating file '%v'", filename)
 	if err := ioutil.WriteFile(filename, msg.Content, 0644); err != nil {
 		return nil, errors.Wrapf(err, "error while writing file %s", filename)
 	}

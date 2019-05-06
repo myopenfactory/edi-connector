@@ -1,17 +1,16 @@
-package cmd
+package update
 
 import (
-	"github.com/myopenfactory/client/pkg/log"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
-	"github.com/spf13/cobra"
 )
 
 func isAdmin() (bool, error) {
@@ -24,14 +23,13 @@ func isAdmin() (bool, error) {
 	return token.IsMember(sid)
 }
 
-func preUpdate(cmd *cobra.Command, args[]string) error {
+func preUpdate(cmd *cobra.Command, args []string) error {
 	admin, err := isAdmin()
 	if err != nil {
 		return err
 	}
 	if !admin {
-		log.Infof("no admin rights provided, no service handling before update")
-		return nil
+		return errors.New("no admin right provided, can't stop service")
 	}
 
 	// Skip preUpdate if no service is registered
@@ -62,16 +60,7 @@ func preUpdate(cmd *cobra.Command, args[]string) error {
 	return nil
 }
 
-func postUpdate(cmd *cobra.Command, args[]string) error {
-	admin, err := isAdmin()
-	if err != nil {
-		return err
-	}
-	if !admin {
-		log.Infof("no admin rights provided, no service handling after update")
-		return nil
-	}
-
+func postUpdate(cmd *cobra.Command, args []string) error {
 	serviceManager, err := mgr.Connect()
 	if err != nil {
 		return errors.Wrap(err, "service manager: connection failed")

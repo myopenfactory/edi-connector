@@ -1,8 +1,6 @@
-package cmd
+package update
 
-import (
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 func preUpdate(cmd *cobra.Command, args []string) error {
 	return nil

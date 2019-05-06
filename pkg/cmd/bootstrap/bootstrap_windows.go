@@ -1,6 +1,4 @@
-// +build windows
-
-package cmd
+package bootstrap
 
 import (
 	"bufio"
@@ -9,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strings"
 
@@ -65,12 +64,8 @@ DKqC5JlR3XC321Y9YeRq4VzW9v493kHMB65jUr9TU/Qr6cf9tveCX4XSQRjbgbME
 HMUfpIBvFSDJ3gyICh3WZlXi/EjJKSZp4A==
 -----END CERTIFICATE-----`)
 
-func init() {
-	rootCmd.AddCommand(bootstrapCmd)
-}
-
-// bootstrapCmd represents the bootstrap command
-var bootstrapCmd = &cobra.Command{
+// Command represents the bootstrap command
+var Command = &cobra.Command{
 	Use:   "bootstrap",
 	Short: "bootstrap the client [EXPERIMENTAL]",
 	Long:  "bootstrap the client.\n\nUSE WITH CARE",
@@ -196,4 +191,15 @@ func promptUserMultiline(value string) string {
 	}
 
 	return strings.Join(lines, "\n")
+}
+
+func installPath() string {
+	switch {
+	case runtime.GOOS == "windows":
+		return filepath.Join(os.Getenv("ProgramFiles"), "myOpenFactory", "Client")
+	case runtime.GOOS == "linux":
+		return filepath.Join("opt", "myopenfactory", "client")
+	default:
+		return ""
+	}
 }

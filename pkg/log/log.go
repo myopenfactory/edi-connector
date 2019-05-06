@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -16,21 +15,20 @@ type Logger struct {
 	*logrus.Logger
 }
 
-var defaultLogger = New("INFO")
+type Option func(*Logger)
 
-func New(level string) *Logger {
+func New(opts []Option) *Logger {
 	l := logrus.New()
-	logLevel, err := logrus.ParseLevel(level)
-	if err != nil {
-		panic(err)
-	}
 	l.SetFormatter(&logrus.TextFormatter{
 		DisableColors: true,
 		FullTimestamp: true,
 	})
-	l.Level = logLevel
 
-	return &Logger{Logger: l}
+	logger := &Logger{Logger: l}
+	for _, opt := range opts {
+		opt(logger)
+	}
+	return logger
 }
 
 func (l *Logger) WithFields(fields map[string]interface{}) Entry {
@@ -39,63 +37,53 @@ func (l *Logger) WithFields(fields map[string]interface{}) Entry {
 	return &entry{e}
 }
 
-func Debugf(format string, args ...interface{}) {
-	defaultLogger.Debugf(format, args...)
-}
-
-func Infof(format string, args ...interface{}) {
-	defaultLogger.Infof(format, args...)
-}
-
-func Warnf(format string, args ...interface{}) {
-	defaultLogger.Warnf(format, args...)
-}
-
-func Errorf(format string, args ...interface{}) {
-	defaultLogger.Errorf(format, args...)
-}
-
-func WithFields(fields map[string]interface{}) Entry {
-	return defaultLogger.WithFields(fields)
-}
-
-func WithLevel(level string) {
-	lvl, err := logrus.ParseLevel(level)
-	if err != nil {
-		Errorf("failed parsing log level: %s", level)
-		os.Exit(1)
+func WithLevel(level string) Option {
+	return func(logger *Logger) {
+		lvl, err := logrus.ParseLevel(level)
+		if err != nil {
+			logger.Printf("failed parsing log level: %s", level)
+			os.Exit(1)
+		}
+		logger.SetLevel(lvl)
 	}
-	defaultLogger.SetLevel(lvl)
 }
 
-func WithSyslog(address string) {
-	hook, err := syslog.New(address)
-	if err != nil {
-		Errorf("failed to initialize syslog: %v", address)
-		os.Exit(1)
+func WithSyslog(address string) Option {
+	return func(logger *Logger) {
+		hook, err := syslog.New(address)
+		if err != nil {
+			logger.Errorf("failed to initialize syslog: %v", address)
+			os.Exit(1)
+		}
+		logger.Logger.AddHook(hook)
 	}
-	defaultLogger.Logger.AddHook(hook)
 }
 
-func WithFilesystem(path string) {
-	hook, err := filesystem.New(path)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func WithFilesystem(path string) Option {
+	return func(logger *Logger) {
+		hook, err := filesystem.New(path)
+		if err != nil {
+			logger.Errorf("failed to initalize filesystem: %v", err)
+			os.Exit(1)
+		}
+		logger.Logger.AddHook(hook)
 	}
-	defaultLogger.Logger.AddHook(hook)
 }
 
-func WithMail(appname, address, sender, receiver, username, password string) {
-	hook := mail.New(appname, address, sender, receiver, username, password)
-	defaultLogger.Logger.AddHook(hook)
-}
-
-func WithEventlog(name string) {
-	hook, err := eventlog.New(name)
-	if err != nil {
-		Errorf("failed to initialize eventlog: %q: %v", name, err)
-		os.Exit(1)
+func WithMail(appname, address, sender, receiver, username, password string) Option {
+	return func(logger *Logger) {
+		hook := mail.New(appname, address, sender, receiver, username, password)
+		logger.Logger.AddHook(hook)
 	}
-	defaultLogger.Logger.AddHook(hook)
+}
+
+func WithEventlog(name string) Option {
+	return func(logger *Logger) {
+		hook, err := eventlog.New(name)
+		if err != nil {
+			logger.Errorf("failed to initialize eventlog: %q: %v", name, err)
+			os.Exit(1)
+		}
+		logger.Logger.AddHook(hook)
+	}
 }

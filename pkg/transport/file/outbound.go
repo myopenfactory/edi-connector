@@ -22,6 +22,7 @@ type folder struct {
 }
 
 type outboundFilePlugin struct {
+	logger        *log.Logger
 	msgFolders    []folder
 	atcFolders    []folder
 	successFolder string
@@ -34,9 +35,10 @@ type outboundFilePlugin struct {
 }
 
 // NewOutboundFilePlugin returns new OutPlugin and checks for success, error and waittime parameter.
-func NewOutboundPlugin(pid string, msgProcessor transport.MessageProcessor, atcProcessor transport.AttachmentProcessor, parameter map[string]string) (transport.OutboundPlugin, error) {
+func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.MessageProcessor, atcProcessor transport.AttachmentProcessor, parameter map[string]string) (transport.OutboundPlugin, error) {
 	p := &outboundFilePlugin{
-		waitTime:     15*time.Second,
+		logger:       logger,
+		waitTime:     15 * time.Second,
 		parameter:    parameter,
 		processID:    pid,
 		msgProcessor: msgProcessor,
@@ -96,7 +98,7 @@ func NewOutboundPlugin(pid string, msgProcessor transport.MessageProcessor, atcP
 		p.waitTime = d
 	}
 
-	log.Infof("using waittime=%s, successFolder=%v, errorFolder=%v", p.waitTime, p.successFolder, p.errorFolder)
+	p.logger.Infof("using waittime=%s, successFolder=%v, errorFolder=%v", p.waitTime, p.successFolder, p.errorFolder)
 
 	return p, nil
 }
@@ -106,7 +108,7 @@ func NewOutboundPlugin(pid string, msgProcessor transport.MessageProcessor, atcP
 func (p *outboundFilePlugin) ListMessages(ctx context.Context) ([]*pb.Message, error) {
 	var files []string
 	for _, f := range p.msgFolders {
-		fs, err := listFilesLastModifiedBefore(f.path, f.extension, time.Now().Add(-time.Duration(p.waitTime)*time.Second))
+		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-time.Duration(p.waitTime)*time.Second))
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list files within %s", f.path)
 		}
@@ -125,7 +127,7 @@ func (p *outboundFilePlugin) ListMessages(ctx context.Context) ([]*pb.Message, e
 func (p *outboundFilePlugin) ListAttachments(ctx context.Context) ([]*pb.Attachment, error) {
 	var files []string
 	for _, f := range p.atcFolders {
-		fs, err := listFilesLastModifiedBefore(f.path, f.extension, time.Now().Add(-time.Duration(p.waitTime)*time.Second))
+		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-time.Duration(p.waitTime)*time.Second))
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list files within %s", f.path)
 		}
@@ -154,8 +156,8 @@ func (p *outboundFilePlugin) convertToMessages(files []string) ([]*pb.Message, e
 	for _, f := range files {
 		buffer, err := ioutil.ReadFile(f)
 		if err != nil {
-			if err := backupFileToFolder(f, p.errorFolder); err != nil {
-				log.Errorf("%v", err)
+			if err := backupFileToFolder(p.logger, f, p.errorFolder); err != nil {
+				p.logger.Errorf("%v", err)
 			}
 			return nil, errors.Wrapf(err, "error while reading message %s", f)
 		}
@@ -173,8 +175,8 @@ func (p *outboundFilePlugin) convertToAttachments(files []string) ([]*pb.Attachm
 	for _, f := range files {
 		buffer, err := ioutil.ReadFile(f)
 		if err != nil {
-			if err := backupFileToFolder(f, p.errorFolder); err != nil {
-				log.Errorf("%v", err)
+			if err := backupFileToFolder(p.logger, f, p.errorFolder); err != nil {
+				p.logger.Errorf("%v", err)
 			}
 			return nil, errors.Wrapf(err, "error while reading attachment %s", f)
 		}
@@ -212,11 +214,11 @@ func (p *outboundFilePlugin) process(ctx context.Context, obj interface{}) (*pb.
 	if confirm == nil {
 		return nil, fmt.Errorf("error no confirm received for file %s", file)
 	}
-	transport.PrintLogs(confirm.Logs)
+	transport.PrintLogs(p.logger, confirm.Logs)
 
 	if !confirm.Success {
-		if err := backupFileToFolder(file, p.errorFolder); err != nil {
-			log.Errorf("%v", err)
+		if err := backupFileToFolder(p.logger, file, p.errorFolder); err != nil {
+			p.logger.Errorf("%v", err)
 		}
 		var msgs []string
 		for _, l := range confirm.Logs {
@@ -230,23 +232,23 @@ func (p *outboundFilePlugin) process(ctx context.Context, obj interface{}) (*pb.
 		if _, err := move(file, newfile); err != nil {
 			return nil, errors.Wrapf(err, "error while moving file %s", file)
 		}
-		log.Infof("file %q moved to %q", file, newfile)
+		p.logger.Infof("file %q moved to %q", file, newfile)
 		return nil, nil
 	}
 
 	if err := os.Remove(file); err != nil {
 		return nil, errors.Wrapf(err, "error while deleting file %s", file)
 	}
-	log.Infof("file '%s' deleted", file)
+	p.logger.Infof("file '%s' deleted", file)
 
 	return confirm, nil
 }
 
 // listFilesLastModifiedBefore lists all files last modified before t for path and extension
-func listFilesLastModifiedBefore(path, extension string, t time.Time) ([]string, error) {
+func listFilesLastModifiedBefore(logger *log.Logger, path, extension string, t time.Time) ([]string, error) {
 	files := []string{}
 
-	log.Debugf("searching folder %s for files with extension %s", path, extension)
+	logger.Debugf("searching folder %s for files with extension %s", path, extension)
 
 	fs, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -268,18 +270,18 @@ func listFilesLastModifiedBefore(path, extension string, t time.Time) ([]string,
 }
 
 // backupFileToFolder backups a file prefixed with current timestamp
-func backupFileToFolder(filename, folder string) error {
+func backupFileToFolder(logger *log.Logger, filename, folder string) error {
 	if filename == "" || folder == "" {
 		return nil
 	}
 
 	f := filepath.Join(folder, fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(filename)))
 
-	log.Debugf("trying to backup file %v to %v", filename, f)
+	logger.Debugf("trying to backup file %v to %v", filename, f)
 	if _, err := move(filename, f); err != nil {
 		return errors.Wrapf(err, "failed to backup file %s to %s", filename, f)
 	}
-	log.Infof("backuped %s to %s", filename, f)
+	logger.Infof("backuped %s to %s", filename, f)
 
 	return nil
 }

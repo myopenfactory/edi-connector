@@ -9,12 +9,11 @@ import (
 	"io/ioutil"
 	"mime"
 	"net/http"
+	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
-
-	"os"
 
 	"github.com/pkg/errors"
 	"github.com/twitchtv/twirp"
@@ -33,6 +32,7 @@ var (
 
 // Config configures variables for the client
 type Client struct {
+	logger         *log.Logger
 	Username       string // Username for the plattform
 	Password       string // Password for teh plattform
 	URL            string // URL of the plattform https://myopenfactory.net/pb/ for example
@@ -52,8 +52,9 @@ type Client struct {
 type Option func(*Client)
 
 // New creates client with given options
-func New(identifier string, options ...Option) (*Client, error) {
+func New(logger *log.Logger, identifier string, options ...Option) (*Client, error) {
 	c := &Client{
+		logger:         logger,
 		RunWaitTime:    defaultRunWaitTime,
 		HealthWaitTime: defaultHealthWaitTime,
 	}
@@ -120,6 +121,12 @@ func WithClient(client pb.HTTPClient) Option {
 	}
 }
 
+func WithProxy(proxy string) Option {
+	return func(c *Client) {
+		os.Setenv("HTTP_PROXY", proxy)
+	}
+}
+
 // Runs client until context is closed
 func (c *Client) Run() error {
 	start := time.Now()
@@ -147,7 +154,7 @@ func (c *Client) Run() error {
 	for _, pc := range configs.Inbound {
 		switch pc.Type {
 		case "FILE":
-			inPP[pc.ProcessId], err = file.NewInboundPlugin(pc.Parameter)
+			inPP[pc.ProcessId], err = file.NewInboundPlugin(c.logger, pc.Parameter)
 			if err != nil {
 				return errors.Wrapf(err, "error while loading plugin from processid %s", pc.ProcessId)
 			}
@@ -156,27 +163,27 @@ func (c *Client) Run() error {
 	for _, pc := range configs.Outbound {
 		switch pc.Type {
 		case "FILE":
-			outPP[pc.ProcessId], err = file.NewOutboundPlugin(pc.ProcessId, clientpb.AddMessage, clientpb.AddAttachment, pc.Parameter)
+			outPP[pc.ProcessId], err = file.NewOutboundPlugin(c.logger, pc.ProcessId, clientpb.AddMessage, clientpb.AddAttachment, pc.Parameter)
 			if err != nil {
 				return errors.Wrapf(err, "error while loading plugin from processid %s", pc.ProcessId)
 			}
 		}
 	}
 
-	log.Infof("using runwaittime=%s and healthwaittime=%s", c.RunWaitTime, c.HealthWaitTime)
+	c.logger.Infof("using runwaittime=%s and healthwaittime=%s", c.RunWaitTime, c.HealthWaitTime)
 
 	healthTicker := time.NewTicker(c.HealthWaitTime)
 	go func() {
 		cc, err := loadKeyPair(c.ClientCert)
 		if err != nil {
-			log.Errorf("loading client cert din't work: %v", err)
+			c.logger.Errorf("loading client cert din't work: %v", err)
 			os.Exit(1)
 		}
 		var notAfter time.Time
 		for _, certbytes := range cc.Certificate {
 			x509Cert, err := x509.ParseCertificate(certbytes)
 			if err != nil {
-				log.Errorf("faild to load certificate: %v", err)
+				c.logger.Errorf("faild to load certificate: %v", err)
 				os.Exit(1)
 			}
 			if x509Cert.IsCA {
@@ -185,7 +192,7 @@ func (c *Client) Run() error {
 			notAfter = x509Cert.NotAfter
 		}
 		for range healthTicker.C {
-			sendHealthInformation(reqCxt, clientpb, c.ID, start, notAfter)
+			sendHealthInformation(c.logger, reqCxt, clientpb, c.ID, start, notAfter)
 		}
 	}()
 	defer healthTicker.Stop()
@@ -197,30 +204,30 @@ func (c *Client) Run() error {
 			for _, plugin := range outPP {
 				messages, err := plugin.ListMessages(reqCxt)
 				if err != nil {
-					log.Errorf("error while reading messages: %v", err)
+					c.logger.Errorf("error while reading messages: %v", err)
 				}
 
 				for _, msg := range messages {
 					if _, err := plugin.ProcessMessage(reqCxt, msg); err != nil {
-						log.Errorf("error while processing message %v: %v", msg.Id, err)
+						c.logger.Errorf("error while processing message %v: %v", msg.Id, err)
 					}
 				}
 
 				attachments, err := plugin.ListAttachments(reqCxt)
 				if err != nil {
-					log.Errorf("error while reading attachment: %v", err)
+					c.logger.Errorf("error while reading attachment: %v", err)
 				}
 
 				for _, atc := range attachments {
 					if _, err := plugin.ProcessAttachment(reqCxt, atc); err != nil {
-						log.Errorf("error while processing attachment %v: %v", atc.Filename, err)
+						c.logger.Errorf("error while processing attachment %v: %v", atc.Filename, err)
 					}
 				}
 			}
 
 			msgs, err := clientpb.ListMessages(reqCxt, &pb.Empty{})
 			if err != nil {
-				log.Infof("failed listing remote messages: %v", err)
+				c.logger.Infof("failed listing remote messages: %v", err)
 				continue
 			}
 			for _, msg := range msgs.Messages {
@@ -228,12 +235,12 @@ func (c *Client) Run() error {
 				if !ok {
 					confirm, err := transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusInternalError, "no process configured: %v", msg.ProcessId)
 					if err != nil {
-						log.Errorf("error while creating confirm: %v", err)
+						c.logger.Errorf("error while creating confirm: %v", err)
 						continue
 					}
 					_, err = clientpb.ConfirmMessage(reqCxt, confirm)
 					if err != nil {
-						log.Errorf("error while sending confirm: %v", err)
+						c.logger.Errorf("error while sending confirm: %v", err)
 					}
 					continue
 				}
@@ -242,12 +249,12 @@ func (c *Client) Run() error {
 					if err != nil {
 						confirm, err := transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusInternalError, "error while processing inbound attachment: %v", err)
 						if err != nil {
-							log.Errorf("error while creating confirm: %v", err)
+							c.logger.Errorf("error while creating confirm: %v", err)
 							continue
 						}
 						_, err = clientpb.ConfirmMessage(reqCxt, confirm)
 						if err != nil {
-							log.Errorf("error while sending confirm: %v", err)
+							c.logger.Errorf("error while sending confirm: %v", err)
 						}
 						continue
 					}
@@ -263,13 +270,13 @@ func (c *Client) Run() error {
 				if err != nil {
 					confirm, err = transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusInternalError, "error while processing inbound msg: %v", err)
 					if err != nil {
-						log.Errorf("error while creating confirm: %v", err)
+						c.logger.Errorf("error while creating confirm: %v", err)
 						continue
 					}
 				}
 				_, err = clientpb.ConfirmMessage(reqCxt, confirm)
 				if err != nil {
-					log.Errorf("error while sending confirm for inbound msg %s: %v", msg.Id, err)
+					c.logger.Errorf("error while sending confirm for inbound msg %s: %v", msg.Id, err)
 				}
 			}
 		case <-c.ctx.Done():
@@ -310,7 +317,7 @@ func downloadAttachment(attachment *pb.Attachment) ([]byte, string, error) {
 	return data, params["filename"], nil
 }
 
-func sendHealthInformation(ctx context.Context, srv pb.ClientService, id string, start time.Time, notAfter time.Time) {
+func sendHealthInformation(logger *log.Logger, ctx context.Context, srv pb.ClientService, id string, start time.Time, notAfter time.Time) {
 
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
@@ -323,10 +330,10 @@ func sendHealthInformation(ctx context.Context, srv pb.ClientService, id string,
 		Os:      fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
 	})
 	if err != nil {
-		log.Errorf("error sending health information to remote endpoint: %v", err)
+		logger.Errorf("error sending health information to remote endpoint: %v", err)
 		return
 	}
-	log.Infof("sent health information to remote endpoint")
+	logger.Infof("sent health information to remote endpoint")
 }
 
 func (c *Client) Shutdown(ctx context.Context) error {

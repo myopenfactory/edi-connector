@@ -47,17 +47,17 @@ func AddLog(logs []*pb.Log, Level pb.Log_Level, msg string, args ...interface{})
 }
 
 // PrintLogs prints all log entries to logging framework
-func PrintLogs(logs []*pb.Log) {
+func PrintLogs(logger *log.Logger, logs []*pb.Log) {
 	for _, logentry := range logs {
 		switch logentry.Level {
 		case pb.Log_ERROR:
-			log.Errorf("%s", logentry.Description)
+			logger.Errorf("%s", logentry.Description)
 		case pb.Log_WARN:
-			log.Warnf("%s", logentry.Description)
+			logger.Warnf("%s", logentry.Description)
 		case pb.Log_INFO:
-			log.Infof("%s", logentry.Description)
+			logger.Infof("%s", logentry.Description)
 		case pb.Log_DEBUG:
-			log.Debugf("%s", logentry.Description)
+			logger.Debugf("%s", logentry.Description)
 		}
 	}
 }
