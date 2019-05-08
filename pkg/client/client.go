@@ -202,17 +202,6 @@ func (c *Client) Run() error {
 		select {
 		case <-c.ticker.C:
 			for _, plugin := range outPP {
-				messages, err := plugin.ListMessages(reqCxt)
-				if err != nil {
-					c.logger.Errorf("error while reading messages: %v", err)
-				}
-
-				for _, msg := range messages {
-					if _, err := plugin.ProcessMessage(reqCxt, msg); err != nil {
-						c.logger.Errorf("error while processing message %v: %v", msg.Id, err)
-					}
-				}
-
 				attachments, err := plugin.ListAttachments(reqCxt)
 				if err != nil {
 					c.logger.Errorf("error while reading attachment: %v", err)
@@ -221,6 +210,17 @@ func (c *Client) Run() error {
 				for _, atc := range attachments {
 					if _, err := plugin.ProcessAttachment(reqCxt, atc); err != nil {
 						c.logger.Errorf("error while processing attachment %v: %v", atc.Filename, err)
+					}
+				}
+
+				messages, err := plugin.ListMessages(reqCxt)
+				if err != nil {
+					c.logger.Errorf("error while reading messages: %v", err)
+				}
+
+				for _, msg := range messages {
+					if _, err := plugin.ProcessMessage(reqCxt, msg); err != nil {
+						c.logger.Errorf("error while processing message %v: %v", msg.Id, err)
 					}
 				}
 			}
