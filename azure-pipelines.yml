@@ -114,7 +114,7 @@ jobs:
   variables:
     GOPATH: '/tmp/gopath'
     GOBIN:  '$(GOPATH)/bin' # Go binaries path 
-    GOROOT: '/usr/local/go1.11' # Go installation path
+    GOROOT: '/usr/local/go1.12' # Go installation path
 
   steps:
   - script: |
