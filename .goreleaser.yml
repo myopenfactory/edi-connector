@@ -13,7 +13,7 @@ builds:
       - amd64
       - 386
     ldflags:
-      - -X github.com/myopenfactory/client/cmd.Version={{.Version}} -X github.com/myopenfactory/client/cmd.Date={{.Date}} -X github.com/myopenfactory/client/cmd.Commit={{.Commit}}
+      - -X github.com/myopenfactory/client/pkg/version.Version={{.Version}} -X github.com/myopenfactory/client/pkg/version.Date={{.Date}} -X github.com/myopenfactory/client/pkg/version.Commit={{.Commit}}
 archive:
   name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
   format: tar.gz
