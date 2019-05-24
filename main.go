@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -20,6 +19,7 @@ import (
 	"github.com/myopenfactory/client/pkg/cmd/version"
 	versionpkg "github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -27,8 +27,6 @@ func main() {
 	var configFile = flag.String("config", "", "config file")
 	var logLevel = flag.String("log_level", "INFO", "log level")
 	flag.Parse()
-
-	fmt.Println(os.Args)
 
 	viper.SetEnvPrefix("client")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
@@ -42,7 +40,6 @@ func main() {
 	}
 
 	if *configFile != "" {
-		fmt.Println(*configFile)
 		viper.SetConfigFile(*configFile)
 	}
 
@@ -103,7 +100,7 @@ func main() {
 		},
 	}
 
-	cmds.PersistentFlags().AddGoFlagSet(flag.CommandLine)
+	cmds.PersistentFlags().AddFlagSet(flag.CommandLine)
 
 	cmds.AddCommand(version.Command)
 	cmds.AddCommand(config.Command)
