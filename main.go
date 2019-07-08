@@ -17,46 +17,47 @@ import (
 	"github.com/myopenfactory/client/pkg/cmd/service"
 	"github.com/myopenfactory/client/pkg/cmd/update"
 	"github.com/myopenfactory/client/pkg/cmd/version"
+	"github.com/myopenfactory/client/pkg/log"
 	versionpkg "github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/cobra"
-	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
 func main() {
-	var configFile = flag.String("config", "", "config file")
-	var logLevel = flag.String("log_level", "INFO", "log level")
-	flag.Parse()
+	var configFile string
+	var logLevel string
+	var log *log.Logger
 
-	viper.SetEnvPrefix("client")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.AutomaticEnv()
+	cobra.OnInitialize(func() {
+		viper.SetEnvPrefix("client")
+		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+		viper.AutomaticEnv()
 
-	switch {
-	case runtime.GOOS == "windows":
-		viper.AddConfigPath(filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "Client"))
-	case runtime.GOOS == "linux":
-		viper.AddConfigPath(filepath.Join("etc", "myopenfactory", "client"))
-	}
-
-	if *configFile != "" {
-		viper.SetConfigFile(*configFile)
-	}
-
-	if err := viper.ReadInConfig(); err != nil {
-		err, ok := err.(viper.ConfigFileNotFoundError)
-		if !ok {
-			fmt.Println("failed to read config:", err)
-			os.Exit(1)
+		switch {
+		case runtime.GOOS == "windows":
+			viper.AddConfigPath(filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "Client"))
+		case runtime.GOOS == "linux":
+			viper.AddConfigPath(filepath.Join("etc", "myopenfactory", "client"))
 		}
-	}
 
-	viper.Set("log.level", *logLevel)
+		if configFile != "" {
+			viper.SetConfigFile(configFile)
+		}
 
-	if proxy := viper.GetString("proxy"); proxy != "" {
-		os.Setenv("HTTP_PROXY", proxy)
-	}
-	log := cmdpkg.InitializeLogger()
+		if err := viper.ReadInConfig(); err != nil {
+			err, ok := err.(viper.ConfigFileNotFoundError)
+			if !ok {
+				fmt.Println("failed to read config: %s: %v\n", viper.ConfigFileUsed(), err)
+				os.Exit(1)
+			}
+		}
+
+		viper.Set("log.level", logLevel)
+		if proxy := viper.GetString("proxy"); proxy != "" {
+			os.Setenv("HTTP_PROXY", proxy)
+		}
+		log = cmdpkg.InitializeLogger()
+	})
 
 	cmds := &cobra.Command{
 		Use:   "myof-client",
@@ -100,7 +101,8 @@ func main() {
 		},
 	}
 
-	cmds.PersistentFlags().AddFlagSet(flag.CommandLine)
+	cmds.PersistentFlags().StringVar(&configFile, "config", "", "config file")
+	cmds.PersistentFlags().StringVar(&logLevel, "log_level", "INFO", "log level")
 
 	cmds.AddCommand(version.Command)
 	cmds.AddCommand(config.Command)
