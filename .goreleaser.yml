@@ -14,19 +14,18 @@ builds:
       - 386
     ldflags:
       - -X github.com/myopenfactory/client/pkg/version.Version={{.Version}} -X github.com/myopenfactory/client/pkg/version.Date={{.Date}} -X github.com/myopenfactory/client/pkg/version.Commit={{.Commit}}
-archive:
-  name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
+archives:
+  - name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
 checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-next"
 dockers:
-  -
-    goos: linux
+  - goos: linux
     goarch: amd64
     binaries:
       - myof-client
@@ -36,11 +35,11 @@ dockers:
       - "myopenfactory.azurecr.io/client:alpine-{{ .Version }}"
     extra_files:
       - myOpenFactoryCA.crt
-sign:
-  signature: "${artifact}.sig"
-  cmd: openssl
-  args: ["dgst", "-sha256", "-sign", "myOpenFactory_Development.pem", "-out", "${signature}", "${artifact}"]
-  artifacts: all
+signs:
+  - signature: "${artifact}.sig"
+    cmd: openssl
+    args: ["dgst", "-sha256", "-sign", "myOpenFactory_Development.pem", "-out", "${signature}", "${artifact}"]
+    artifacts: all
 changelog:
   sort: asc
   filters:
