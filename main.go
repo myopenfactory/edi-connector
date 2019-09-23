@@ -47,7 +47,7 @@ func main() {
 		if err := viper.ReadInConfig(); err != nil {
 			err, ok := err.(viper.ConfigFileNotFoundError)
 			if !ok {
-				fmt.Println("failed to read config: %s: %v\n", viper.ConfigFileUsed(), err)
+				fmt.Printf("failed to read config: %s: %v\n", viper.ConfigFileUsed(), err)
 				os.Exit(1)
 			}
 		}
