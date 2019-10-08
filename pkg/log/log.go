@@ -31,6 +31,11 @@ func New(opts []Option) *Logger {
 	return logger
 }
 
+func (l *Logger) SystemErr(err error) {
+	e := &entry{Entry: logrus.NewEntry(l.Logger)}
+	e.SystemErr(err)
+}
+
 func (l *Logger) WithFields(fields map[string]interface{}) Entry {
 	e := l.Logger.WithFields(fields)
 
