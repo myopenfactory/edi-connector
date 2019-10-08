@@ -15,11 +15,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/twitchtv/twirp"
 
 	pb "github.com/myopenfactory/client/api"
 
+	"github.com/myopenfactory/client/pkg/errors"
 	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/transport"
 	"github.com/myopenfactory/client/pkg/transport/file"
@@ -53,6 +53,7 @@ type Option func(*Client)
 
 // New creates client with given options
 func New(logger *log.Logger, identifier string, options ...Option) (*Client, error) {
+	const op errors.Op = "client.New"
 	c := &Client{
 		logger:         logger,
 		RunWaitTime:    defaultRunWaitTime,
@@ -67,7 +68,7 @@ func New(logger *log.Logger, identifier string, options ...Option) (*Client, err
 		var err error
 		c.client, err = createHTTPClient(c.ClientCert, c.CA)
 		if err != nil {
-			return nil, errors.Wrap(err, "http client creation failed")
+			return nil, errors.E(op, fmt.Errorf("http client creation failed: %w", err))
 		}
 	}
 	return c, nil
@@ -129,9 +130,10 @@ func WithProxy(proxy string) Option {
 
 // Runs client until context is closed
 func (c *Client) Run() error {
+	const op errors.Op = "client.Run"
 	start := time.Now()
 	if err := checkParams(c); err != nil {
-		return err
+		return errors.E(op, err)
 	}
 
 	clientpb := pb.NewClientServiceProtobufClient(c.URL, c.client)
@@ -141,12 +143,12 @@ func (c *Client) Run() error {
 	header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
 	reqCxt, err := twirp.WithHTTPRequestHeaders(context.Background(), header)
 	if err != nil {
-		return errors.Wrapf(err, "failed to set authorization header")
+		return errors.E(op, fmt.Errorf("failed to set authorization header: %w", err))
 	}
 
 	configs, err := clientpb.ListConfigs(reqCxt, &pb.Empty{})
 	if err != nil {
-		return errors.Wrapf(err, "failed to retrieve configs")
+		return errors.E(op, fmt.Errorf("failed to retrieve configs: %w", err))
 	}
 
 	inPP := make(map[string]transport.InboundPlugin)
@@ -156,7 +158,7 @@ func (c *Client) Run() error {
 		case "FILE":
 			inPP[pc.ProcessId], err = file.NewInboundPlugin(c.logger, pc.Parameter)
 			if err != nil {
-				return errors.Wrapf(err, "error while loading plugin from processid %s", pc.ProcessId)
+				return errors.E(op, fmt.Errorf("failed to load plugin: processid: %v: %w", pc.ProcessId, err))
 			}
 		}
 	}
@@ -165,7 +167,7 @@ func (c *Client) Run() error {
 		case "FILE":
 			outPP[pc.ProcessId], err = file.NewOutboundPlugin(c.logger, pc.ProcessId, clientpb.AddMessage, clientpb.AddAttachment, pc.Parameter)
 			if err != nil {
-				return errors.Wrapf(err, "error while loading plugin from processid %s", pc.ProcessId)
+				return errors.E(op, fmt.Errorf("failed to load plugin: processid: %v: %w", pc.ProcessId, err))
 			}
 		}
 	}
@@ -289,36 +291,37 @@ func (c *Client) Run() error {
 }
 
 func downloadAttachment(attachment *pb.Attachment) ([]byte, string, error) {
+	const op errors.Op = "client.downloadAttachment"
 	url := attachment.GetUrl()
 	if url == "" {
-		return nil, "", fmt.Errorf("attachment url couldn't be empty")
+		return nil, "", errors.E(op, fmt.Errorf("attachment url couldn't be empty"))
 	}
 	if attachment.Filename == "" {
-		return nil, "", fmt.Errorf("error no filename found for attachment %s", attachment.Filename)
+		return nil, "", errors.E(op, fmt.Errorf("error no filename found for attachment %s", attachment.Filename))
 	}
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, "", errors.Wrapf(err, "error while loading attachment with url %q", attachment.GetUrl())
+		return nil, "", errors.E(op, fmt.Errorf("error while loading attachment with url %q: %w", attachment.GetUrl(), err))
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, "", errors.Wrapf(err, "error bad response for attachment %q", attachment.GetUrl())
+		return nil, "", errors.E(op, fmt.Errorf("error bad response for attachment %q: %w", attachment.GetUrl(), err))
 	}
 
 	_, params, err := mime.ParseMediaType(resp.Header.Get("Content-Disposition"))
 	if err != nil {
-		return nil, "", errors.Wrapf(err, "error while parsing header for attachment %q", attachment.GetUrl())
+		return nil, "", errors.E(op, fmt.Errorf("error while parsing header for attachment %q: %w", attachment.GetUrl(), err))
 	}
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, "", errors.Wrapf(err, "error while writing response data for attachment %q", attachment.GetUrl())
+		return nil, "", errors.E(op, fmt.Errorf("error while writing response data for attachment %q: %w", attachment.GetUrl(), err))
 	}
 	return data, params["filename"], nil
 }
 
 func sendHealthInformation(logger *log.Logger, ctx context.Context, srv pb.ClientService, id string, start time.Time, notAfter time.Time) {
-
+	const op errors.Op = "client.sendHealthInformation"
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	_, err := srv.AddHealth(ctx, &pb.HealthInfo{
@@ -330,13 +333,14 @@ func sendHealthInformation(logger *log.Logger, ctx context.Context, srv pb.Clien
 		Os:      fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
 	})
 	if err != nil {
-		logger.Errorf("error sending health information to remote endpoint: %v", err)
+		logger.SystemErr(errors.E(op, fmt.Errorf("error sending health information: %w", err)))
 		return
 	}
 	logger.Infof("sent health information to remote endpoint")
 }
 
 func (c *Client) Shutdown(ctx context.Context) error {
+	const op errors.Op = "client.Shutdown"
 	c.cancel()
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -345,7 +349,8 @@ func (c *Client) Shutdown(ctx context.Context) error {
 	case <-c.done:
 		return nil
 	case <-ctx.Done():
-		return errors.New("server shutdown failed: timeout")
+		// return errors.New("server shutdown failed: timeout")
+		return errors.E(op, "server shutdown failed: timeout")
 	}
 	return nil
 }
@@ -354,6 +359,7 @@ func processMessage() {
 }
 
 func createHTTPClient(cert, ca string) (*http.Client, error) {
+	const op errors.Op = "client.createHTTPClient"
 	tlsConfig := &tls.Config{
 		MinVersion:               tls.VersionTLS12,
 		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
@@ -368,7 +374,7 @@ func createHTTPClient(cert, ca string) (*http.Client, error) {
 
 	cc, err := loadKeyPair(cert)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error while loading client certificate")
+		return nil, errors.E(op, fmt.Errorf("error while loading client certificate: %v", err))
 	}
 	if len(cc.Certificate) > 0 {
 		tlsConfig.Certificates = append(tlsConfig.Certificates, cc)
@@ -392,6 +398,7 @@ func createHTTPClient(cert, ca string) (*http.Client, error) {
 }
 
 func loadCertPool(capem string) (*x509.CertPool, error) {
+	const op errors.Op = "client.loadCertPool"
 	certs := x509.NewCertPool()
 	if capem == "" {
 		return certs, nil
@@ -405,38 +412,46 @@ func loadCertPool(capem string) (*x509.CertPool, error) {
 		pemData, err = ioutil.ReadFile(capem)
 	}
 	if err != nil {
-		return nil, errors.Wrapf(err, "error while loading ca certificates")
+		return nil, errors.E(op, fmt.Errorf("error while loading ca certificates: %w", err))
 	}
 	certs.AppendCertsFromPEM(pemData)
 	return certs, nil
 }
 
 func loadKeyPair(cert string) (tls.Certificate, error) {
+	const op errors.Op = "client.loadKeyPair"
 	if cert == "" {
 		return tls.Certificate{}, nil
 	}
+	var crt tls.Certificate
+	var err error
 	if strings.Contains(cert, "-----BEGIN RSA PRIVATE KEY-----") {
-		return tls.X509KeyPair([]byte(cert), []byte(cert))
+		crt, err = tls.X509KeyPair([]byte(cert), []byte(cert))
 	} else {
-		return tls.LoadX509KeyPair(cert, cert)
+		crt, err = tls.LoadX509KeyPair(cert, cert)
 	}
+	if err != nil {
+		return crt, errors.E(op, err)
+	}
+	return crt, nil
 }
 
 func checkParams(c *Client) error {
+	const op errors.Op = "client.checkParams"
 	if c == nil {
-		return errors.New("client not valid")
+		return errors.E(op, "client not valid", errors.KindBadRequest)
 	}
 	if c.ID == "" {
-		return errors.New("missing id")
+		return errors.E(op, "missing id", errors.KindBadRequest)
 	}
 	if c.Username == "" {
-		return errors.New("missing username")
+		return errors.E(op, "missing username", errors.KindBadRequest)
 	}
 	if c.Password == "" {
-		return errors.New("missing password")
+		return errors.E(op, "missing password", errors.KindBadRequest)
 	}
 	if c.URL == "" {
-		return errors.New("missing url")
+		return errors.E(op, "missing url", errors.KindBadRequest)
 	}
 	if c.RunWaitTime == 0 {
 		c.RunWaitTime = defaultRunWaitTime

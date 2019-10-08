@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
-	"runtime/debug"
 	"strings"
 	"time"
 
@@ -17,6 +16,7 @@ import (
 	"github.com/myopenfactory/client/pkg/cmd/service"
 	"github.com/myopenfactory/client/pkg/cmd/update"
 	"github.com/myopenfactory/client/pkg/cmd/version"
+	"github.com/myopenfactory/client/pkg/errors"
 	"github.com/myopenfactory/client/pkg/log"
 	versionpkg "github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/cobra"
@@ -64,26 +64,30 @@ func main() {
 		Use:   "myof-client",
 		Short: "myof-client controls the client",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			log.Debugf("Using config: %v", viper.ConfigFileUsed())
+			log.Infof("myOpenFactory Client: %v", versionpkg.Version)
+			if viper.ConfigFileUsed() == "" {
+				log.Debugf("Using config: no config found")
+			} else {
+				log.Debugf("Using config: %v", viper.ConfigFileUsed())
+			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Infof("Starting myOpenFactory client %v", versionpkg.Version)
+			const op errors.Op = "main.Run"
 
 			cl, err := cmdpkg.InitializeClient()
 			if err != nil {
-				log.Errorf("error while creating client: %v", err)
+				log.SystemErr(errors.E(op, err))
 				os.Exit(1)
 			}
 
 			go func() {
 				defer func() {
 					if r := recover(); r != nil {
-						log.Errorf("recover client: %v", r)
-						log.Errorf("%s", debug.Stack())
+						log.SystemErr(errors.E(op, err))
 					}
 				}()
 				if err := cl.Run(); err != nil {
-					log.Errorf("error while running client: %v", err)
+					log.SystemErr(errors.E(op, err))
 					os.Exit(1)
 				}
 			}()
