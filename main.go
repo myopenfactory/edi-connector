@@ -39,6 +39,7 @@ func main() {
 		case runtime.GOOS == "linux":
 			viper.AddConfigPath(filepath.Join("etc", "myopenfactory", "client"))
 		}
+		viper.AddConfigPath(".")
 
 		if configFile != "" {
 			viper.SetConfigFile(configFile)

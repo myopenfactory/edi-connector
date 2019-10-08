@@ -6,3 +6,4 @@ dist/
 vendor
 **/*.pem
 client
+config.properties
