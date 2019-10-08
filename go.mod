@@ -18,12 +18,12 @@ require (
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/sirupsen/logrus v1.3.0
 	github.com/spf13/cobra v0.0.5
-	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.4.0
 	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
 	github.com/twitchtv/twirp v0.0.0-20180622202558-cafc5e80fca7
 	github.com/ulikunitz/xz v0.5.6 // indirect
 	golang.org/x/oauth2 v0.0.0-20181106182150-f42d05182288 // indirect
 	golang.org/x/sys v0.0.0-20190310054646-10058d7d4faa
-	google.golang.org/genproto v0.0.0-20180831171423-11092d34479b // indirect
 )
+
+go 1.13
