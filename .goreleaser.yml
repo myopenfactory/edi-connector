@@ -31,8 +31,8 @@ dockers:
       - myof-client
     dockerfile: Dockerfile
     image_templates:
-      - "myopenfactory.azurecr.io/client:alpine-latest"
-      - "myopenfactory.azurecr.io/client:alpine-{{ .Version }}"
+      - "myopenfactory/client:alpine"
+      - "myopenfactory/client:latest"
     extra_files:
       - myOpenFactoryCA.crt
 signs:
