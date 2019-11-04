@@ -18,7 +18,7 @@ jobs:
           go-version: 1.13
       -
         name: Prepare sign certificate
-        run: echo $SIGN_CERTIFICATE > $HOME/key.asc
+        run: echo -n ${SIGN_CERTIFICATE} | base64 --decode > $HOME/key.asc
         env:
           SIGN_CERTIFICATE: ${{ secrets.SIGN_CERTIFICATE }}
       -
