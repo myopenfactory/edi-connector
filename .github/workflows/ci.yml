@@ -15,11 +15,15 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v1
       -
+        name: Prepare sign certificate
+        run: echo $SIGN_CERTIFICATE > $HOME/key.asc
+        env:
+          SIGN_CERTIFICATE: ${{ secrets.SIGN_CERTIFICATE }}
+      -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v1
         with:
           version: latest
           args: release
-          key: ${{ secrets.SIGN_CERTIFICATE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
