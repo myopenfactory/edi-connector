@@ -1,34 +1,34 @@
 version: '3.4'
 services:
   client:
-    image: myopenfactory.azurecr.io/client:alpine-latest
+    build:
+      context: ..
+      dockerfile: Dockerfile
     volumes:
-      - "${MYOF_CLIENT_CONFIG}:/myof/config"
+      - "${CONFIG_DIR}:/myof/config"
       - "logs:/myof/logs"
       - "inbound:/myof/inbound"
       - "outbound:/myof/outbound"
       - "success:/myof/success"
       - "error:/myof/error"
-    entrypoint:
-      - /myof-client
+    command:
       - --config
-      - /myof/config/alpine.properties
+      - /myof/config/config.properties
 
   test:
     build:
-      context: ..
-      dockerfile: test/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     volumes:
-      - "${MYOF_CLIENT_CONFIG}:/myof/config"
+      - "${CONFIG_DIR}:/myof/config"
       - "logs:/myof/logs"
       - "inbound:/myof/inbound"
       - "outbound:/myof/outbound"
       - "success:/myof/success"
       - "error:/myof/error"
-    entrypoint:
-      - /app/test.bin
+    command:
       - --config
-      - /myof/config/alpine.properties
+      - /myof/config/config.properties
 
 volumes:
   logs:

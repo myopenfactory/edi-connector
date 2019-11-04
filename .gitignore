@@ -7,3 +7,5 @@ vendor
 **/*.pem
 client
 config.properties
+myof-client
+./test/e2e-test

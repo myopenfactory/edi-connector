@@ -1,11 +1,3 @@
-FROM golang:1.11.1-alpine
-
-RUN apk add --update \
-		gcc \
-		musl-dev \
-		git
-
-WORKDIR /app
-COPY . /app/
-RUN go build -o test.bin ./test
-CMD ["/app/test.bin"]
+FROM alpine:latest
+COPY e2e-test /e2e-test
+ENTRYPOINT ["/e2e-test"]

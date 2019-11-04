@@ -3,10 +3,69 @@ name: CI
 on:
   pull_request:
   push:
+    branches:
+      - master 
 
 jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v1
+      -
+        name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+      -
+        name: Unit Tests
+        run: go test -v ./...
+
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
+
+      -
+        name: E2E Tests Linux
+        if: runner.os == 'Linux'
+        run: |
+          export CONFIG_DIR=$(mktemp -d)
+          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/client.crt
+          echo -n ${CONFIG} | base64 --decode > $CONFIG_DIR/config.properties
+          make test
+        env:
+          CONFIG: ${{ secrets.LINUX_CONFIG }}
+          CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+
+      -
+        name: E2E Tests Windows
+        shell: bash
+        if: runner.os == 'Windows'
+        run: |
+          export CONFIG_DIR=$(mktemp -d)
+          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/client.crt
+          echo -n ${CONFIG} | base64 --decode > $CONFIG_DIR/config.properties
+          make test
+        env:
+          CONFIG: ${{ secrets.WINDOWS_CONFIG }}
+          CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+
   goreleaser:
     runs-on: ubuntu-latest
+    needs: tests
     steps:
       -
         name: Checkout
