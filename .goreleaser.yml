@@ -38,7 +38,7 @@ dockers:
 signs:
   - signature: "${artifact}.sig"
     cmd: openssl
-    args: ["dgst", "-sha256", "-sign", "myOpenFactory_Development.pem", "-out", "${signature}", "${artifact}"]
+    args: ["dgst", "-sha256", "-sign", "$HOME/key.asc", "-out", "${signature}", "${artifact}"]
     artifacts: all
 changelog:
   sort: asc
