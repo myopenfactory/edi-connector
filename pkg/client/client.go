@@ -25,11 +25,6 @@ import (
 	"github.com/myopenfactory/client/pkg/transport/file"
 )
 
-var (
-	defaultRunWaitTime    = time.Minute
-	defaultHealthWaitTime = 15 * time.Minute
-)
-
 // Config configures variables for the client
 type Client struct {
 	logger         *log.Logger
@@ -55,9 +50,7 @@ type Option func(*Client)
 func New(logger *log.Logger, identifier string, options ...Option) (*Client, error) {
 	const op errors.Op = "client.New"
 	c := &Client{
-		logger:         logger,
-		RunWaitTime:    defaultRunWaitTime,
-		HealthWaitTime: defaultHealthWaitTime,
+		logger: logger,
 	}
 	for _, option := range options {
 		option(c)
@@ -452,12 +445,6 @@ func checkParams(c *Client) error {
 	}
 	if c.URL == "" {
 		return errors.E(op, "missing url", errors.KindBadRequest)
-	}
-	if c.RunWaitTime == 0 {
-		c.RunWaitTime = defaultRunWaitTime
-	}
-	if c.HealthWaitTime == 0 {
-		c.HealthWaitTime = defaultHealthWaitTime
 	}
 	c.mu.Lock()
 	if c.done == nil {
