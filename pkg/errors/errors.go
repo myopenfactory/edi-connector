@@ -103,7 +103,12 @@ func Kind(err error) int {
 }
 
 func KindText(err Error) string {
-	return http.StatusText(Kind(err))
+	switch Kind(err) {
+	case KindUnexpected:
+		return "Internal Client Error"
+	default:
+		return http.StatusText(Kind(err))
+	}
 }
 
 func Ops(err Error) []Op {
