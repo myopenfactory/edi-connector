@@ -1,10 +1,5 @@
 # escape=`
 
-FROM golang:1.11.1-windowsservercore
-
-ENV GOPROXY=https://modules.myopenfactory.io
-
-WORKDIR C:\app
-COPY . C:\app\
-RUN go build -o test.exe .\test
-CMD ["C:\app\test.exe"]
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+COPY e2e-test.exe C:\e2e-test.exe
+ENTRYPOINT ["C:\\e2e-test.exe"]

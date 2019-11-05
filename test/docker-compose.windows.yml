@@ -1,36 +1,38 @@
 version: '3.4'
 services:
   client:
-    image: myopenfactory.azurecr.io/client:windowsservercore-latest
+    build:
+      context: ..
+      dockerfile: Dockerfile.windows
     volumes:
-      - "${MYOF_CLIENT_CONFIG}:C:/myof/config"
-      - "./logs:C:/myof/logs"
-      - "./inbound:C:/myof/inbound/"
-      - "./outbound:C:/myof/outbound/"
-      - "./success:C:/myof/success/"
-      - "./error:C:/myof/error/"
-    entrypoint:
-      - C:/myof-client.exe
+      - "${CONFIG_DIR}:C:/myof/config"
+      - "logs:C:/myof/logs"
+      - "inbound:C:/myof/inbound/"
+      - "outbound:C:/myof/outbound/"
+      - "success:C:/myof/success/"
+      - "error:C:/myof/error/"
+    command:
       - --config
-      - C:/myof/config/windowsservercore.properties
+      - C:/myof/config/config.properties
 
   test:
     build:
-      context: ..
-      dockerfile: test/Dockerfile.windows
+      context: .
+      dockerfile: Dockerfile.windows
     volumes:
-      - "${MYOF_CLIENT_CONFIG}:C:/myof/config"
-      - "./logs:C:/myof/logs/"
-      - "./inbound:C:/myof/inbound/"
-      - "./outbound:C:/myof/outbound/"
-      - "./success:C:/myof/success/"
-      - "./error:C:/myof/error/"
-    entrypoint:
-      - C:/app/test.exe
+      - "${CONFIG_DIR}:C:/myof/config"
+      - "logs:C:/myof/logs/"
+      - "inbound:C:/myof/inbound/"
+      - "outbound:C:/myof/outbound/"
+      - "success:C:/myof/success/"
+      - "error:C:/myof/error/"
+    command:
       - --config
-      - C:/myof/config/windowsservercore.properties
+      - C:/myof/config/config.properties
 
-networks:
-  default:
-    external:
-      name: nat
+volumes:
+  logs:
+  inbound:
+  outbound:
+  success:
+  error:
