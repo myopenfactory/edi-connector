@@ -1,4 +1,4 @@
-[![Build Status](https://myof.visualstudio.com/client/_apis/build/status/myopenfactory.client)](https://myof.visualstudio.com/client/_build/latest?definitionId=19)
+[![Build Status](https://github.com/myopenfactory/client/workflows/CI/badge.svg)](https://github.com/myopenfactory/client/actions?query=workflow%3ACI)
 
 # myOpenFactory Client
 
