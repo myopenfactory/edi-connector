@@ -25,9 +25,33 @@ BggqhkjOPQQDAgNIADBFAiAfv00cEbCSz8R9p72pb7Qgad+LdtEWU84f4clYgze/
 SgIhAOeU4LO4eLRsbPeDsc+uI8Em2Gmy2N6bQ/1vYFZdi0n2
 -----END CERTIFICATE-----`
 
-func Release() (*selfupdate.Release, error) {
-	updater := selfupdate.DefaultUpdater()
+var updater *selfupdate.Updater
 
+func init() {
+	block, _ := pem.Decode([]byte(certificatePEM))
+	if block == nil || block.Type != "CERTIFICATE" {
+		panic("failed to decode PEM block containing certificate")
+	}
+
+	cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		panic("failed to parse certificate")
+	}
+
+	publicKey, ok := cert.PublicKey.(*ecdsa.PublicKey)
+	if !ok {
+		panic("failed converting to public key")
+	}
+
+	updater, err = selfupdate.NewUpdater(selfupdate.Config{
+		Validator: &selfupdate.ECDSAValidator{PublicKey: publicKey},
+	})
+	if err != nil {
+		panic("failed to create selfupdater")
+	}
+}
+
+func Release() (*selfupdate.Release, error) {
 	release, _, err := updater.DetectLatest("myopenfactory/client")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to detect latest release")
@@ -37,26 +61,6 @@ func Release() (*selfupdate.Release, error) {
 }
 
 func Update(release *selfupdate.Release) error {
-	block, _ := pem.Decode([]byte(certificatePEM))
-	if block == nil || block.Type != "CERTIFICATE" {
-		return errors.New("failed to decode PEM block containing certificate")
-	}
-
-	cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return errors.Wrap(err, "failed to parse certificate")
-	}
-
-	pubKey, ok := cert.PublicKey.(*ecdsa.PublicKey)
-	if !ok {
-		return errors.New("failed converting pubkey")
-	}
-
-	var updater *selfupdate.Updater
-	updater, err = selfupdate.NewUpdater(selfupdate.Config{
-		Validator: &selfupdate.ECDSAValidator{PublicKey: pubKey},
-	})
-
 	if err := updater.UpdateTo(release, os.Args[0]); err != nil {
 		return errors.Wrapf(err, "failed updating client to version %s", release.Version)
 	}
