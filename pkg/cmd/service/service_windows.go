@@ -143,6 +143,8 @@ var serviceRunCmd = &cobra.Command{
 			run = debug.Run
 		}
 
+		ctx, cancel := context.WithCancel(context.Background())
+
 		go func() {
 			defer func() {
 				if r := recover(); r != nil {
@@ -150,14 +152,27 @@ var serviceRunCmd = &cobra.Command{
 					logger.Errorf("%s", rdbg.Stack())
 				}
 			}()
-			if err := cl.Run(); err != nil {
+			if err := cl.Run(ctx); err != nil {
 				logger.Errorf("error while running client: %v", err)
 				os.Exit(1)
 			}
 		}()
 
+		go func() {
+			defer func() {
+				if r := recover(); r != nil {
+					logger.Errorf("recover client: %v", r)
+					logger.Errorf("%s", rdbg.Stack())
+				}
+			}()
+			if err := cl.Health(ctx); err != nil {
+				logger.Errorf("error while running health: %v", err)
+				os.Exit(1)
+			}
+		}()
+
 		serviceName := viper.GetString("service.name")
-		if err := run(serviceName, &service{client: cl}); err != nil {
+		if err := run(serviceName, &service{client: cl, cancel: cancel}); err != nil {
 			logger.Errorf("service failed: %q: %v", serviceName, err)
 			return
 		}
@@ -199,6 +214,7 @@ var elog debug.Log
 
 type service struct {
 	client *client.Client
+	cancel context.CancelFunc
 }
 
 func (m *service) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (bool, uint32) {
@@ -211,9 +227,7 @@ func (m *service) Execute(args []string, r <-chan svc.ChangeRequest, changes cha
 			switch c.Cmd {
 			case svc.Stop, svc.Shutdown:
 				changes <- svc.Status{State: svc.StopPending}
-				ctx, cancel := context.WithTimeout(context.Background(), deadline)
-				defer cancel()
-				m.client.Shutdown(ctx)
+				m.cancel()
 				return false, 0
 			}
 		}
