@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"time"
 
 	cmdpkg "github.com/myopenfactory/client/pkg/cmd"
 	"github.com/myopenfactory/client/pkg/cmd/bootstrap"
@@ -86,7 +84,7 @@ func main() {
 						log.SystemErr(errors.E(op, err))
 					}
 				}()
-				if err := cl.Run(); err != nil {
+				if err := cl.Health(); err != nil {
 					log.SystemErr(errors.E(op, err))
 					os.Exit(1)
 				}
@@ -96,12 +94,22 @@ func main() {
 			signal.Notify(stop, os.Interrupt)
 			signal.Notify(stop, os.Kill)
 
-			<-stop
+			go func() {
+				<-stop
 
-			log.Infof("closing client")
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-			cl.Shutdown(ctx)
+				log.Infof("closing client, please notice this could take up to one minute")
+				cl.Shutdown()
+			}()
+
+			defer func() {
+				if r := recover(); r != nil {
+					log.SystemErr(errors.E(op, err))
+				}
+			}()
+			if err := cl.Run(); err != nil {
+				log.SystemErr(errors.E(op, err))
+				os.Exit(1)
+			}
 			log.Debug("client gracefully stopped")
 		},
 	}

@@ -30,16 +30,19 @@ type Client struct {
 	Username            string // Username for the plattform
 	Password            string // Password for teh plattform
 	URL                 string // URL of the plattform https://myopenfactory.net/pb/ for example
-	ctx                 context.Context
-	cancel              context.CancelFunc
 	ID                  string
 	RunWaitTime         time.Duration
 	HealthWaitTime      time.Duration
 	CertificateNotAfter time.Time
-	done                chan struct{}
+	done                chan bool
 	mu                  sync.Mutex // guards done
 	client              pb.HTTPClient
-	ticker              *time.Ticker
+	requestContext      context.Context
+	service             pb.ClientService
+
+	// plugins
+	inbounds  map[string]transport.InboundPlugin
+	outbounds map[string]transport.OutboundPlugin
 }
 
 type Option func(*Client)
@@ -49,15 +52,57 @@ func New(logger *log.Logger, identifier string, options ...Option) (*Client, err
 	const op errors.Op = "client.New"
 	c := &Client{
 		logger: logger,
+		done:   make(chan bool),
 	}
 	for _, option := range options {
 		option(c)
 	}
 	c.ID = identifier
-	c.ctx, c.cancel = context.WithCancel(context.Background())
 	if c.client == nil {
 		return nil, errors.E(op, "no http client set", errors.KindUnexpected)
 	}
+
+	if err := checkParams(c); err != nil {
+		return nil, errors.E(op, err)
+	}
+
+	header := make(http.Header)
+	auth := []byte(c.Username + ":" + c.Password)
+	header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
+	var err error
+	c.requestContext, err = twirp.WithHTTPRequestHeaders(context.Background(), header)
+	if err != nil {
+		return nil, errors.E(op, fmt.Errorf("failed to set authorization header: %w", err))
+	}
+
+	c.service = pb.NewClientServiceProtobufClient(c.URL, c.client)
+
+	configs, err := c.service.ListConfigs(c.requestContext, &pb.Empty{})
+	if err != nil {
+		return nil, errors.E(op, fmt.Errorf("failed to retrieve configs: %w", err))
+	}
+
+	c.inbounds = make(map[string]transport.InboundPlugin)
+	c.outbounds = make(map[string]transport.OutboundPlugin)
+	for _, pc := range configs.Inbound {
+		switch pc.Type {
+		case "FILE":
+			c.inbounds[pc.ProcessId], err = file.NewInboundPlugin(c.logger, pc.Parameter)
+			if err != nil {
+				return nil, errors.E(op, fmt.Errorf("failed to load plugin: processid: %v: %w", pc.ProcessId, err))
+			}
+		}
+	}
+	for _, pc := range configs.Outbound {
+		switch pc.Type {
+		case "FILE":
+			c.outbounds[pc.ProcessId], err = file.NewOutboundPlugin(c.logger, pc.ProcessId, c.service.AddMessage, c.service.AddAttachment, pc.Parameter)
+			if err != nil {
+				return nil, errors.E(op, fmt.Errorf("failed to load plugin: processid: %v: %w", pc.ProcessId, err))
+			}
+		}
+	}
+
 	return c, nil
 }
 
@@ -103,124 +148,117 @@ func WithProxy(proxy string) Option {
 	}
 }
 
-// Runs client until context is closed
-func (c *Client) Run() error {
-	const op errors.Op = "client.Run"
-	start := time.Now()
-	if err := checkParams(c); err != nil {
-		return errors.E(op, err)
+func (c *Client) Health() error {
+	const op errors.Op = "healthClient.Run"
+	healthTicker := time.NewTicker(c.HealthWaitTime)
+	defer healthTicker.Stop()
+
+	certs := c.client.(*http.Client).Transport.(*http.Transport).TLSClientConfig.Certificates
+	if len(certs) == 0 {
+		return errors.E(op, fmt.Errorf("failed to load client certs: no certs found"))
 	}
 
-	clientpb := pb.NewClientServiceProtobufClient(c.URL, c.client)
-
-	header := make(http.Header)
-	auth := []byte(c.Username + ":" + c.Password)
-	header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
-	reqCxt, err := twirp.WithHTTPRequestHeaders(context.Background(), header)
-	if err != nil {
-		return errors.E(op, fmt.Errorf("failed to set authorization header: %w", err))
-	}
-
-	configs, err := clientpb.ListConfigs(reqCxt, &pb.Empty{})
-	if err != nil {
-		return errors.E(op, fmt.Errorf("failed to retrieve configs: %w", err))
-	}
-
-	inPP := make(map[string]transport.InboundPlugin)
-	outPP := make(map[string]transport.OutboundPlugin)
-	for _, pc := range configs.Inbound {
-		switch pc.Type {
-		case "FILE":
-			inPP[pc.ProcessId], err = file.NewInboundPlugin(c.logger, pc.Parameter)
-			if err != nil {
-				return errors.E(op, fmt.Errorf("failed to load plugin: processid: %v: %w", pc.ProcessId, err))
-			}
+	var notAfter time.Time
+	for _, certbytes := range certs[0].Certificate {
+		x509Cert, err := x509.ParseCertificate(certbytes)
+		if err != nil {
+			c.logger.Errorf("faild to load certificate: %v", err)
+			os.Exit(1)
 		}
-	}
-	for _, pc := range configs.Outbound {
-		switch pc.Type {
-		case "FILE":
-			outPP[pc.ProcessId], err = file.NewOutboundPlugin(c.logger, pc.ProcessId, clientpb.AddMessage, clientpb.AddAttachment, pc.Parameter)
-			if err != nil {
-				return errors.E(op, fmt.Errorf("failed to load plugin: processid: %v: %w", pc.ProcessId, err))
-			}
+		if x509Cert.IsCA {
+			continue
 		}
+		notAfter = x509Cert.NotAfter
 	}
 
 	c.logger.Infof("using runwaittime=%s and healthwaittime=%s", c.RunWaitTime, c.HealthWaitTime)
 
-	healthTicker := time.NewTicker(c.HealthWaitTime)
-	go func() {
-		certs := c.client.(*http.Client).Transport.(*http.Transport).TLSClientConfig.Certificates
-		if len(certs) == 0 {
-			c.logger.Errorf("loading client cert notAfter din't work: %v", err)
-			os.Exit(1)
+	start := time.Now()
+	for range healthTicker.C {
+		var m runtime.MemStats
+		runtime.ReadMemStats(&m)
+		ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+		_, err := c.service.AddHealth(ctx, &pb.HealthInfo{
+			Cpu:     float64(runtime.NumCPU()),
+			Ram:     float64(m.Alloc) / 1048576.0, //Megabyte
+			Status:  fmt.Sprintf("Version: %s | CertValidUntil: %s", c.ID, notAfter.Format("2006-01-02")),
+			Threads: uint32(runtime.NumGoroutine()),
+			Uptime:  uint64(time.Since(start).Nanoseconds()),
+			Os:      fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
+		})
+		cancel()
+		if err != nil {
+			err = fmt.Errorf("error sending health information: %w", err)
+			c.logger.SystemErr(errors.E(op, err))
+			return err
 		}
+		c.logger.Infof("sent health information to remote endpoint")
+	}
 
-		var notAfter time.Time
-		for _, certbytes := range certs[0].Certificate {
-			x509Cert, err := x509.ParseCertificate(certbytes)
-			if err != nil {
-				c.logger.Errorf("faild to load certificate: %v", err)
-				os.Exit(1)
-			}
-			if x509Cert.IsCA {
-				continue
-			}
-			notAfter = x509Cert.NotAfter
-		}
+	return nil
+}
 
-		for range healthTicker.C {
-			sendHealthInformation(c.logger, reqCxt, clientpb, c.ID, start, notAfter)
-		}
-	}()
-	defer healthTicker.Stop()
+// Runs client until context is closed
+func (c *Client) Run() error {
+	const op errors.Op = "client.Run"
 
-	c.ticker = time.NewTicker(c.RunWaitTime)
+	ticker := time.NewTicker(c.RunWaitTime)
 	for {
 		select {
-		case <-c.ticker.C:
-			for _, plugin := range outPP {
-				attachments, err := plugin.ListAttachments(reqCxt)
+		case <-ticker.C:
+			for _, plugin := range c.outbounds {
+				ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+				attachments, err := plugin.ListAttachments(ctx)
 				if err != nil {
 					c.logger.Errorf("error while reading attachment: %v", err)
 				}
+				cancel()
 
 				for _, atc := range attachments {
-					if _, err := plugin.ProcessAttachment(reqCxt, atc); err != nil {
+					ctx, cancel := context.WithTimeout(c.requestContext, 5*time.Second)
+					if _, err := plugin.ProcessAttachment(ctx, atc); err != nil {
 						c.logger.Errorf("error while processing attachment %v: %v", atc.Filename, err)
 					}
+					cancel()
 				}
 
-				messages, err := plugin.ListMessages(reqCxt)
+				ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
+				messages, err := plugin.ListMessages(ctx)
 				if err != nil {
 					c.logger.Errorf("error while reading messages: %v", err)
 				}
+				cancel()
 
 				for _, msg := range messages {
-					if _, err := plugin.ProcessMessage(reqCxt, msg); err != nil {
+					ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
+					if _, err := plugin.ProcessMessage(ctx, msg); err != nil {
 						c.logger.Errorf("error while processing message %v: %v", msg.Id, err)
 					}
+					cancel()
 				}
 			}
 
-			msgs, err := clientpb.ListMessages(reqCxt, &pb.Empty{})
+			ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+			msgs, err := c.service.ListMessages(ctx, &pb.Empty{})
+			cancel()
 			if err != nil {
 				c.logger.Infof("failed listing remote messages: %v", err)
 				continue
 			}
 			for _, msg := range msgs.Messages {
-				p, ok := inPP[msg.ProcessId]
+				p, ok := c.inbounds[msg.ProcessId]
 				if !ok {
 					confirm, err := transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusInternalError, "no process configured: %v", msg.ProcessId)
 					if err != nil {
 						c.logger.Errorf("error while creating confirm: %v", err)
 						continue
 					}
-					_, err = clientpb.ConfirmMessage(reqCxt, confirm)
+					ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+					_, err = c.service.ConfirmMessage(ctx, confirm)
 					if err != nil {
 						c.logger.Errorf("error while sending confirm: %v", err)
 					}
+					cancel()
 					continue
 				}
 				for _, attachment := range msg.Attachments {
@@ -231,10 +269,12 @@ func (c *Client) Run() error {
 							c.logger.Errorf("error while creating confirm: %v", err)
 							continue
 						}
-						_, err = clientpb.ConfirmMessage(reqCxt, confirm)
+						ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+						_, err = c.service.ConfirmMessage(ctx, confirm)
 						if err != nil {
 							c.logger.Errorf("error while sending confirm: %v", err)
 						}
+						cancel()
 						continue
 					}
 
@@ -242,10 +282,13 @@ func (c *Client) Run() error {
 						Data: data,
 					}
 					attachment.Filename = strings.Replace(attachment.Filename, "%(REALFILENAME)", filename, -1)
-					p.ProcessAttachment(reqCxt, attachment)
+					ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+					p.ProcessAttachment(ctx, attachment)
+					cancel()
 				}
 
-				confirm, err := p.ProcessMessage(reqCxt, msg)
+				ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+				confirm, err := p.ProcessMessage(ctx, msg)
 				if err != nil {
 					confirm, err = transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusInternalError, "error while processing inbound msg: %v", err)
 					if err != nil {
@@ -253,15 +296,16 @@ func (c *Client) Run() error {
 						continue
 					}
 				}
-				_, err = clientpb.ConfirmMessage(reqCxt, confirm)
+				cancel()
+
+				ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
+				_, err = c.service.ConfirmMessage(ctx, confirm)
 				if err != nil {
 					c.logger.Errorf("error while sending confirm for inbound msg %s: %v", msg.Id, err)
 				}
+				cancel()
 			}
-		case <-c.ctx.Done():
-			c.mu.Lock()
-			c.done <- struct{}{}
-			c.mu.Unlock()
+		case <-c.done:
 			return nil
 		}
 	}
@@ -297,38 +341,9 @@ func downloadAttachment(attachment *pb.Attachment) ([]byte, string, error) {
 	return data, params["filename"], nil
 }
 
-func sendHealthInformation(logger *log.Logger, ctx context.Context, srv pb.ClientService, id string, start time.Time, notAfter time.Time) {
-	const op errors.Op = "client.sendHealthInformation"
-	var m runtime.MemStats
-	runtime.ReadMemStats(&m)
-	_, err := srv.AddHealth(ctx, &pb.HealthInfo{
-		Cpu:     float64(runtime.NumCPU()),
-		Ram:     float64(m.Alloc) / 1048576.0, //Megabyte
-		Status:  fmt.Sprintf("Version: %s | CertValidUntil: %s", id, notAfter.Format("2006-01-02")),
-		Threads: uint32(runtime.NumGoroutine()),
-		Uptime:  uint64(time.Since(start).Nanoseconds()),
-		Os:      fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
-	})
-	if err != nil {
-		logger.SystemErr(errors.E(op, fmt.Errorf("error sending health information: %w", err)))
-		return
-	}
-	logger.Infof("sent health information to remote endpoint")
-}
-
-func (c *Client) Shutdown(ctx context.Context) error {
+func (c *Client) Shutdown() error {
 	const op errors.Op = "client.Shutdown"
-	c.cancel()
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	select {
-	case <-c.done:
-		return nil
-	case <-ctx.Done():
-		// return errors.New("server shutdown failed: timeout")
-		return errors.E(op, "server shutdown failed: timeout")
-	}
+	c.done <- true
 	return nil
 }
 
@@ -352,13 +367,8 @@ func checkParams(c *Client) error {
 	if c.URL == "" {
 		return errors.E(op, "missing url", errors.KindBadRequest)
 	}
-	c.mu.Lock()
-	if c.done == nil {
-		c.done = make(chan struct{}, 1)
-	}
-	c.mu.Unlock()
 	if c.client == nil {
-		c.client = &http.Client{}
+		return errors.E(op, "missing client", errors.KindBadRequest)
 	}
 	return nil
 }
