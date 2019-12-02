@@ -9,7 +9,6 @@ require (
 	github.com/lestrrat-go/envload v0.0.0-20180220234015-a3eb8ddeffcc // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible
 	github.com/lestrrat-go/strftime v0.0.0-20180821113735-8b31f9c59b0f // indirect
-	github.com/magefile/mage v1.9.0
 	github.com/magiconair/properties v1.8.0
 	github.com/mattn/go-runewidth v0.0.3 // indirect
 	github.com/olekukonko/tablewriter v0.0.0-20180912035003-be2c049b30cc
@@ -22,6 +21,7 @@ require (
 	github.com/tebeka/strftime v0.0.0-20140926081919-3f9c7761e312 // indirect
 	github.com/twitchtv/twirp v0.0.0-20180622202558-cafc5e80fca7
 	github.com/ulikunitz/xz v0.5.6 // indirect
+	golang.org/x/net v0.0.0-20190522155817-f3200d17e092
 	golang.org/x/oauth2 v0.0.0-20181106182150-f42d05182288 // indirect
 	golang.org/x/sys v0.0.0-20190310054646-10058d7d4faa
 )

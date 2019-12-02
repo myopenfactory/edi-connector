@@ -11,7 +11,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/twitchtv/twirp"
@@ -34,11 +33,10 @@ type Client struct {
 	RunWaitTime         time.Duration
 	HealthWaitTime      time.Duration
 	CertificateNotAfter time.Time
-	done                chan bool
-	mu                  sync.Mutex // guards done
 	client              pb.HTTPClient
-	requestContext      context.Context
 	service             pb.ClientService
+
+	header http.Header
 
 	// plugins
 	inbounds  map[string]transport.InboundPlugin
@@ -52,7 +50,7 @@ func New(logger *log.Logger, identifier string, options ...Option) (*Client, err
 	const op errors.Op = "client.New"
 	c := &Client{
 		logger: logger,
-		done:   make(chan bool),
+		header: make(http.Header),
 	}
 	for _, option := range options {
 		option(c)
@@ -66,18 +64,20 @@ func New(logger *log.Logger, identifier string, options ...Option) (*Client, err
 		return nil, errors.E(op, err)
 	}
 
-	header := make(http.Header)
 	auth := []byte(c.Username + ":" + c.Password)
-	header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
-	var err error
-	c.requestContext, err = twirp.WithHTTPRequestHeaders(context.Background(), header)
-	if err != nil {
-		return nil, errors.E(op, fmt.Errorf("failed to set authorization header: %w", err))
-	}
+	c.header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
 
 	c.service = pb.NewClientServiceProtobufClient(c.URL, c.client)
 
-	configs, err := c.service.ListConfigs(c.requestContext, &pb.Empty{})
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	requestContext, err := twirp.WithHTTPRequestHeaders(ctx, c.header)
+	if err != nil {
+		return nil, errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
+	}
+
+	configs, err := c.service.ListConfigs(requestContext, &pb.Empty{})
 	if err != nil {
 		return nil, errors.E(op, fmt.Errorf("failed to retrieve configs: %w", err))
 	}
@@ -148,10 +148,13 @@ func WithProxy(proxy string) Option {
 	}
 }
 
-func (c *Client) Health() error {
+func (c *Client) Health(ctx context.Context) error {
 	const op errors.Op = "healthClient.Run"
-	healthTicker := time.NewTicker(c.HealthWaitTime)
-	defer healthTicker.Stop()
+
+	requestContext, err := twirp.WithHTTPRequestHeaders(ctx, c.header)
+	if err != nil {
+		return errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
+	}
 
 	certs := c.client.(*http.Client).Transport.(*http.Transport).TLSClientConfig.Certificates
 	if len(certs) == 0 {
@@ -173,41 +176,51 @@ func (c *Client) Health() error {
 
 	c.logger.Infof("using runwaittime=%s and healthwaittime=%s", c.RunWaitTime, c.HealthWaitTime)
 
+	ticker := time.NewTicker(c.HealthWaitTime)
 	start := time.Now()
-	for range healthTicker.C {
-		var m runtime.MemStats
-		runtime.ReadMemStats(&m)
-		ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
-		_, err := c.service.AddHealth(ctx, &pb.HealthInfo{
-			Cpu:     float64(runtime.NumCPU()),
-			Ram:     float64(m.Alloc) / 1048576.0, //Megabyte
-			Status:  fmt.Sprintf("Version: %s | CertValidUntil: %s", c.ID, notAfter.Format("2006-01-02")),
-			Threads: uint32(runtime.NumGoroutine()),
-			Uptime:  uint64(time.Since(start).Nanoseconds()),
-			Os:      fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
-		})
-		cancel()
-		if err != nil {
-			err = fmt.Errorf("error sending health information: %w", err)
-			c.logger.SystemErr(errors.E(op, err))
-			return err
+	for {
+		select {
+		case <-ticker.C:
+			var m runtime.MemStats
+			runtime.ReadMemStats(&m)
+			ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+			_, err := c.service.AddHealth(ctx, &pb.HealthInfo{
+				Cpu:     float64(runtime.NumCPU()),
+				Ram:     float64(m.Alloc) / 1048576.0, //Megabyte
+				Status:  fmt.Sprintf("Version: %s | CertValidUntil: %s", c.ID, notAfter.Format("2006-01-02")),
+				Threads: uint32(runtime.NumGoroutine()),
+				Uptime:  uint64(time.Since(start).Nanoseconds()),
+				Os:      fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
+			})
+			cancel()
+			if err != nil {
+				err = fmt.Errorf("error sending health information: %w", err)
+				c.logger.SystemErr(errors.E(op, err))
+				return err
+			}
+			c.logger.Infof("sent health information to remote endpoint")
+		case <-ctx.Done():
+			return nil
 		}
-		c.logger.Infof("sent health information to remote endpoint")
 	}
-
-	return nil
 }
 
 // Runs client until context is closed
-func (c *Client) Run() error {
+func (c *Client) Run(ctx context.Context) error {
 	const op errors.Op = "client.Run"
+
+	var err error
+	requestContext, err := twirp.WithHTTPRequestHeaders(ctx, c.header)
+	if err != nil {
+		return errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
+	}
 
 	ticker := time.NewTicker(c.RunWaitTime)
 	for {
 		select {
 		case <-ticker.C:
 			for _, plugin := range c.outbounds {
-				ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+				ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
 				attachments, err := plugin.ListAttachments(ctx)
 				if err != nil {
 					c.logger.Errorf("error while reading attachment: %v", err)
@@ -215,14 +228,14 @@ func (c *Client) Run() error {
 				cancel()
 
 				for _, atc := range attachments {
-					ctx, cancel := context.WithTimeout(c.requestContext, 5*time.Second)
+					ctx, cancel := context.WithTimeout(requestContext, 5*time.Second)
 					if _, err := plugin.ProcessAttachment(ctx, atc); err != nil {
 						c.logger.Errorf("error while processing attachment %v: %v", atc.Filename, err)
 					}
 					cancel()
 				}
 
-				ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
+				ctx, cancel = context.WithTimeout(requestContext, 15*time.Second)
 				messages, err := plugin.ListMessages(ctx)
 				if err != nil {
 					c.logger.Errorf("error while reading messages: %v", err)
@@ -230,7 +243,7 @@ func (c *Client) Run() error {
 				cancel()
 
 				for _, msg := range messages {
-					ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
+					ctx, cancel = context.WithTimeout(requestContext, 15*time.Second)
 					if _, err := plugin.ProcessMessage(ctx, msg); err != nil {
 						c.logger.Errorf("error while processing message %v: %v", msg.Id, err)
 					}
@@ -238,7 +251,7 @@ func (c *Client) Run() error {
 				}
 			}
 
-			ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+			ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
 			msgs, err := c.service.ListMessages(ctx, &pb.Empty{})
 			cancel()
 			if err != nil {
@@ -253,7 +266,7 @@ func (c *Client) Run() error {
 						c.logger.Errorf("error while creating confirm: %v", err)
 						continue
 					}
-					ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+					ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
 					_, err = c.service.ConfirmMessage(ctx, confirm)
 					if err != nil {
 						c.logger.Errorf("error while sending confirm: %v", err)
@@ -269,7 +282,7 @@ func (c *Client) Run() error {
 							c.logger.Errorf("error while creating confirm: %v", err)
 							continue
 						}
-						ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+						ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
 						_, err = c.service.ConfirmMessage(ctx, confirm)
 						if err != nil {
 							c.logger.Errorf("error while sending confirm: %v", err)
@@ -282,12 +295,12 @@ func (c *Client) Run() error {
 						Data: data,
 					}
 					attachment.Filename = strings.Replace(attachment.Filename, "%(REALFILENAME)", filename, -1)
-					ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+					ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
 					p.ProcessAttachment(ctx, attachment)
 					cancel()
 				}
 
-				ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
+				ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
 				confirm, err := p.ProcessMessage(ctx, msg)
 				if err != nil {
 					confirm, err = transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusInternalError, "error while processing inbound msg: %v", err)
@@ -298,14 +311,14 @@ func (c *Client) Run() error {
 				}
 				cancel()
 
-				ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
+				ctx, cancel = context.WithTimeout(requestContext, 15*time.Second)
 				_, err = c.service.ConfirmMessage(ctx, confirm)
 				if err != nil {
 					c.logger.Errorf("error while sending confirm for inbound msg %s: %v", msg.Id, err)
 				}
 				cancel()
 			}
-		case <-c.done:
+		case <-ctx.Done():
 			return nil
 		}
 	}
@@ -339,12 +352,6 @@ func downloadAttachment(attachment *pb.Attachment) ([]byte, string, error) {
 		return nil, "", errors.E(op, fmt.Errorf("error while writing response data for attachment %q: %w", attachment.GetUrl(), err))
 	}
 	return data, params["filename"], nil
-}
-
-func (c *Client) Shutdown() error {
-	const op errors.Op = "client.Shutdown"
-	c.done <- true
-	return nil
 }
 
 func processMessage() {

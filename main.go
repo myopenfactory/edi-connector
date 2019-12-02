@@ -19,6 +19,7 @@ import (
 	versionpkg "github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/net/context"
 )
 
 func main() {
@@ -78,27 +79,28 @@ func main() {
 				os.Exit(1)
 			}
 
+			stop := make(chan os.Signal, 1)
+			signal.Notify(stop, os.Interrupt)
+			signal.Notify(stop, os.Kill)
+
+			ctx, cancel := context.WithCancel(context.Background())
+			go func() {
+				<-stop
+
+				log.Infof("closing client, please notice this could take up to one minute")
+				cancel()
+			}()
+
 			go func() {
 				defer func() {
 					if r := recover(); r != nil {
 						log.SystemErr(errors.E(op, err))
 					}
 				}()
-				if err := cl.Health(); err != nil {
+				if err := cl.Health(ctx); err != nil {
 					log.SystemErr(errors.E(op, err))
 					os.Exit(1)
 				}
-			}()
-
-			stop := make(chan os.Signal, 1)
-			signal.Notify(stop, os.Interrupt)
-			signal.Notify(stop, os.Kill)
-
-			go func() {
-				<-stop
-
-				log.Infof("closing client, please notice this could take up to one minute")
-				cl.Shutdown()
 			}()
 
 			defer func() {
@@ -106,7 +108,7 @@ func main() {
 					log.SystemErr(errors.E(op, err))
 				}
 			}()
-			if err := cl.Run(); err != nil {
+			if err := cl.Run(ctx); err != nil {
 				log.SystemErr(errors.E(op, err))
 				os.Exit(1)
 			}
