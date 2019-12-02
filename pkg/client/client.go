@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"crypto/tls"
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
@@ -27,21 +26,20 @@ import (
 
 // Config configures variables for the client
 type Client struct {
-	logger         *log.Logger
-	Username       string // Username for the plattform
-	Password       string // Password for teh plattform
-	URL            string // URL of the plattform https://myopenfactory.net/pb/ for example
-	ClientCert     string // User client certificate in pem format
-	CA             string // ca file for connections to the plattform
-	ctx            context.Context
-	cancel         context.CancelFunc
-	ID             string
-	RunWaitTime    time.Duration
-	HealthWaitTime time.Duration
-	done           chan struct{}
-	mu             sync.Mutex // guards done
-	client         pb.HTTPClient
-	ticker         *time.Ticker
+	logger              *log.Logger
+	Username            string // Username for the plattform
+	Password            string // Password for teh plattform
+	URL                 string // URL of the plattform https://myopenfactory.net/pb/ for example
+	ctx                 context.Context
+	cancel              context.CancelFunc
+	ID                  string
+	RunWaitTime         time.Duration
+	HealthWaitTime      time.Duration
+	CertificateNotAfter time.Time
+	done                chan struct{}
+	mu                  sync.Mutex // guards done
+	client              pb.HTTPClient
+	ticker              *time.Ticker
 }
 
 type Option func(*Client)
@@ -58,11 +56,7 @@ func New(logger *log.Logger, identifier string, options ...Option) (*Client, err
 	c.ID = identifier
 	c.ctx, c.cancel = context.WithCancel(context.Background())
 	if c.client == nil {
-		var err error
-		c.client, err = createHTTPClient(c.ClientCert, c.CA)
-		if err != nil {
-			return nil, errors.E(op, fmt.Errorf("http client creation failed: %w", err))
-		}
+		return nil, errors.E(op, "no http client set", errors.KindUnexpected)
 	}
 	return c, nil
 }
@@ -82,18 +76,6 @@ func WithPassword(password string) Option {
 func WithURL(url string) Option {
 	return func(c *Client) {
 		c.URL = url
-	}
-}
-
-func WithCert(cert string) Option {
-	return func(c *Client) {
-		c.ClientCert = cert
-	}
-}
-
-func WithCA(ca string) Option {
-	return func(c *Client) {
-		c.CA = ca
 	}
 }
 
@@ -169,13 +151,14 @@ func (c *Client) Run() error {
 
 	healthTicker := time.NewTicker(c.HealthWaitTime)
 	go func() {
-		cc, err := loadKeyPair(c.ClientCert)
-		if err != nil {
-			c.logger.Errorf("loading client cert din't work: %v", err)
+		certs := c.client.(*http.Client).Transport.(*http.Transport).TLSClientConfig.Certificates
+		if len(certs) == 0 {
+			c.logger.Errorf("loading client cert notAfter din't work: %v", err)
 			os.Exit(1)
 		}
+
 		var notAfter time.Time
-		for _, certbytes := range cc.Certificate {
+		for _, certbytes := range certs[0].Certificate {
 			x509Cert, err := x509.ParseCertificate(certbytes)
 			if err != nil {
 				c.logger.Errorf("faild to load certificate: %v", err)
@@ -186,6 +169,7 @@ func (c *Client) Run() error {
 			}
 			notAfter = x509Cert.NotAfter
 		}
+
 		for range healthTicker.C {
 			sendHealthInformation(c.logger, reqCxt, clientpb, c.ID, start, notAfter)
 		}
@@ -349,84 +333,6 @@ func (c *Client) Shutdown(ctx context.Context) error {
 }
 
 func processMessage() {
-}
-
-func createHTTPClient(cert, ca string) (*http.Client, error) {
-	const op errors.Op = "client.createHTTPClient"
-	tlsConfig := &tls.Config{
-		MinVersion:               tls.VersionTLS12,
-		CurvePreferences:         []tls.CurveID{tls.CurveP521, tls.CurveP384, tls.CurveP256},
-		PreferServerCipherSuites: true,
-		CipherSuites: []uint16{
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-		},
-	}
-
-	cc, err := loadKeyPair(cert)
-	if err != nil {
-		return nil, errors.E(op, fmt.Errorf("error while loading client certificate: %v", err))
-	}
-	if len(cc.Certificate) > 0 {
-		tlsConfig.Certificates = append(tlsConfig.Certificates, cc)
-	}
-
-	if ca != "" {
-		tlsConfig.RootCAs, err = loadCertPool(ca)
-		if err != nil {
-			return nil, err
-		}
-		tlsConfig.BuildNameToCertificate()
-	}
-
-	tr := &http.Transport{
-		TLSClientConfig: tlsConfig,
-		Proxy:           http.ProxyFromEnvironment,
-	}
-	return &http.Client{
-		Transport: tr,
-	}, nil
-}
-
-func loadCertPool(capem string) (*x509.CertPool, error) {
-	const op errors.Op = "client.loadCertPool"
-	certs := x509.NewCertPool()
-	if capem == "" {
-		return certs, nil
-	}
-
-	var pemData []byte
-	var err error
-	if strings.Contains(capem, "-----BEGIN CERTIFICATE-----") {
-		pemData = []byte(capem)
-	} else {
-		pemData, err = ioutil.ReadFile(capem)
-	}
-	if err != nil {
-		return nil, errors.E(op, fmt.Errorf("error while loading ca certificates: %w", err))
-	}
-	certs.AppendCertsFromPEM(pemData)
-	return certs, nil
-}
-
-func loadKeyPair(cert string) (tls.Certificate, error) {
-	const op errors.Op = "client.loadKeyPair"
-	if cert == "" {
-		return tls.Certificate{}, nil
-	}
-	var crt tls.Certificate
-	var err error
-	if strings.Contains(cert, "-----BEGIN RSA PRIVATE KEY-----") {
-		crt, err = tls.X509KeyPair([]byte(cert), []byte(cert))
-	} else {
-		crt, err = tls.LoadX509KeyPair(cert, cert)
-	}
-	if err != nil {
-		return crt, errors.E(op, err)
-	}
-	return crt, nil
 }
 
 func checkParams(c *Client) error {

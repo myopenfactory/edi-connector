@@ -3,7 +3,11 @@
 package cmd
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -121,15 +125,19 @@ func provideOptions() ([]client.Option, error) {
 		proxy = os.Getenv("HTTP_PROXY")
 	}
 
+	cl, err := createHTTPClient(clientcert, cafile)
+	if err != nil {
+		return nil, errors.E(op, "could not create http client", errors.KindUnexpected)
+	}
+
 	return []client.Option{
 		client.WithUsername(viper.GetString("username")),
 		client.WithPassword(viper.GetString("password")),
 		client.WithURL(url),
-		client.WithCA(cafile),
-		client.WithCert(clientcert),
 		client.WithProxy(proxy),
 		client.WithHealthWaitTime(healthWaitTimeDuration),
 		client.WithRunWaitTime(runWaitTimeDuration),
+		client.WithClient(cl),
 	}, nil
 }
 
@@ -172,4 +180,36 @@ func provideLogOptions() []log.Option {
 
 func provideClientID() string {
 	return fmt.Sprintf("Core_%s", version.Version)
+}
+
+func createHTTPClient(cert, ca string) (*http.Client, error) {
+	const op errors.Op = "cmd.createHTTPClient"
+
+	if cert == "" {
+		return nil, errors.E(op, fmt.Errorf("error while loading client certificate: no client certificate specified"))
+	}
+
+	var config tls.Config
+	crt, err := tls.LoadX509KeyPair(cert, cert)
+	if err != nil {
+		return nil, errors.E(op, fmt.Errorf("error loading client certificate: %v", err))
+	}
+	config.Certificates = []tls.Certificate{crt}
+
+	if ca != "" {
+		pemData, err := ioutil.ReadFile(ca)
+		if err != nil {
+			return nil, errors.E(op, fmt.Errorf("error while loading ca certificates: %w", err))
+		}
+		certs := x509.NewCertPool()
+		certs.AppendCertsFromPEM(pemData)
+		config.RootCAs = certs
+		config.BuildNameToCertificate()
+	}
+
+	return &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &config,
+		},
+	}, nil
 }
