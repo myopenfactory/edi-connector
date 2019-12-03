@@ -69,6 +69,12 @@ jobs:
         run: echo -n ${SIGN_CERTIFICATE} | base64 --decode > $HOME/key.asc
         env:
           SIGN_CERTIFICATE: ${{ secrets.SIGN_CERTIFICATE }}
+
+      -
+        name: Prepare Dockerhub
+        run: docker login --username myofci --password ${DOCKERHUB_TOKEN}
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v1
