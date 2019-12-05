@@ -156,6 +156,7 @@ func createHTTPClient(cert, ca string) (*http.Client, error) {
 	return &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &config,
+			Proxy:           http.ProxyFromEnvironment,
 		},
 	}, nil
 }
