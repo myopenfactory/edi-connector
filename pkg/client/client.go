@@ -196,7 +196,7 @@ func (c *Client) Health(ctx context.Context) error {
 			if err != nil {
 				err = fmt.Errorf("error sending health information: %w", err)
 				c.logger.SystemErr(errors.E(op, err))
-				return err
+				continue
 			}
 			c.logger.Infof("sent health information to remote endpoint")
 		case <-ctx.Done():
