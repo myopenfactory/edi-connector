@@ -26,13 +26,15 @@ jobs:
       -
         name: Unit Tests
         run: go test -v ./...
+        env:
+          GO111MODULE: on
 
       -
         name: E2E Tests Linux
         if: runner.os == 'Linux'
         run: |
           export CONFIG_DIR=$(mktemp -d)
-          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/client.crt
+          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/certificate.pem
           echo -n ${CONFIG} | base64 --decode > $CONFIG_DIR/config.properties
           make test
         env:
@@ -45,7 +47,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           export CONFIG_DIR=$(mktemp -d)
-          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/client.crt
+          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/certificate.pem
           echo -n ${CONFIG} | base64 --decode > $CONFIG_DIR/config.properties
           make test
         env:

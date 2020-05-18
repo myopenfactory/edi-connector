@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/wire"
@@ -61,6 +62,9 @@ func provideOptions() ([]client.Option, error) {
 	clientcert := viper.GetString("clientcert")
 	if clientcert == "" {
 		clientcert = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), "client.crt")
+	}
+	if strings.HasPrefix(clientcert, "./") {
+		clientcert = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), clientcert)
 	}
 	if _, err := os.Stat(clientcert); os.IsNotExist(err) {
 		return nil, errors.E(op, "client certificate does not exist", errors.KindUnexpected)

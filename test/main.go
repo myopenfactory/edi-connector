@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/magiconair/properties"
@@ -100,6 +101,9 @@ func main() {
 	}
 
 	cert := p.GetString("clientcert", "")
+	if strings.HasPrefix(cert, "./") {
+		cert = filepath.Join(filepath.Dir(cfgFile), cert)
+	}
 	cc, err := tls.LoadX509KeyPair(cert, cert)
 	if err != nil {
 		fmt.Printf("error while loading client certificate: %v", err)
