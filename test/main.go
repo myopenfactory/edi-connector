@@ -150,6 +150,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	attachmentPath := res.Outbound[0].Parameter["attachmentfolder.first"]
+	err = ioutil.WriteFile(filepath.Join(attachmentPath, "attachment.sample"), []byte(fmt.Sprintf("%s", time.Now().Format(time.RFC3339))), 0666)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	inboundPath := res.Inbound[0].Parameter["basefolder"]
 
 	timeout := time.After(5 * time.Minute)
@@ -168,6 +175,16 @@ func main() {
 				os.Exit(1)
 			}
 			if len(files) > 0 {
+				attachments, err := ioutil.ReadDir(attachmentPath)
+				if err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+				if len(attachments) > 0 {
+					fmt.Println("attachment not uploaded")
+					os.Exit(1)
+				}
+
 				for _, file := range files {
 					log.Println(file.Name())
 				}

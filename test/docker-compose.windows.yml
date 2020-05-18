@@ -11,6 +11,7 @@ services:
       - "outbound:C:/myof/outbound/"
       - "success:C:/myof/success/"
       - "error:C:/myof/error/"
+      - "attachment:C:/myof/attachment/"
     command:
       - --config
       - C:/myof/config/config.properties
@@ -26,6 +27,7 @@ services:
       - "outbound:C:/myof/outbound/"
       - "success:C:/myof/success/"
       - "error:C:/myof/error/"
+      - "attachment:C:/myof/attachment/"
     command:
       - --config
       - C:/myof/config/config.properties
@@ -36,3 +38,4 @@ volumes:
   outbound:
   success:
   error:
+  attachment:
