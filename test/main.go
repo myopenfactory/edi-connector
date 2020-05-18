@@ -25,12 +25,12 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <Body>
         <Companies>
             <Company>
-                <CompanyID>myopenfactory.test</CompanyID>
-                <Name>myOpenFactory DevOp Test</Name>
+                <CompanyID>client.myopenfactory.test</CompanyID>
+                <Name>myOpenFactory Client Test</Name>
             </Company>
             <Company>
-                <CompanyID>test.myopenfactory.com</CompanyID>
-                <Name>TESTKONTO myOpenFactory Software GmbH</Name>
+                <CompanyID>myopenfactory.test</CompanyID>
+                <Name>myOpenFactory DevOp Test</Name>
             </Company>
         </Companies>
         <Items>
@@ -47,8 +47,8 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	</Body>
 	<Subject>MIRROR</Subject>
     <MessageID>%s</MessageID>
-    <ReceiverID>test.myopenfactory.com</ReceiverID>
-    <SenderID>myopenfactory.test</SenderID>
+    <ReceiverID>myopenfactory.test</ReceiverID>
+    <SenderID>client.myopenfactory.test</SenderID>
     <TypeID>ORDER</TypeID>
 </Message>`
 
