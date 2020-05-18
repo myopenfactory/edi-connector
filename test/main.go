@@ -136,7 +136,7 @@ func main() {
 		username: p.GetString("username", "username"),
 		password: p.GetString("password", "password"),
 	}
-	client := api.NewClientServiceProtobufClient(p.GetString("url", "https://myopenfactory.test"), cl)
+	client := api.NewClientServiceProtobufClient(p.GetString("url", "https://myopenfactory.net"), cl)
 	res, err := client.ListConfigs(context.Background(), &api.Empty{})
 	if err != nil {
 		fmt.Println(err)
