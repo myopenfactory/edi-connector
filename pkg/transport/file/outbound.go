@@ -22,27 +22,29 @@ type folder struct {
 }
 
 type outboundFilePlugin struct {
-	logger        *log.Logger
-	msgFolders    []folder
-	atcFolders    []folder
-	successFolder string
-	errorFolder   string
-	processID     string
-	parameter     map[string]string
-	waitTime      time.Duration
-	msgProcessor  transport.MessageProcessor
-	atcProcessor  transport.AttachmentProcessor
+	logger             *log.Logger
+	msgFolders         []folder
+	atcFolders         []folder
+	successFolder      string
+	errorFolder        string
+	processID          string
+	parameter          map[string]string
+	messageWaitTime    time.Duration
+	attachmentWaitTime time.Duration
+	msgProcessor       transport.MessageProcessor
+	atcProcessor       transport.AttachmentProcessor
 }
 
-// NewOutboundFilePlugin returns new OutPlugin and checks for success, error and waittime parameter.
+// NewOutboundFilePlugin returns new OutPlugin and checks for success, error, messagewaittime and attachmentwaittime parameter.
 func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.MessageProcessor, atcProcessor transport.AttachmentProcessor, parameter map[string]string) (transport.OutboundPlugin, error) {
 	p := &outboundFilePlugin{
-		logger:       logger,
-		waitTime:     15 * time.Second,
-		parameter:    parameter,
-		processID:    pid,
-		msgProcessor: msgProcessor,
-		atcProcessor: atcProcessor,
+		logger:             logger,
+		messageWaitTime:    15 * time.Second,
+		attachmentWaitTime: 15 * time.Second,
+		parameter:          parameter,
+		processID:          pid,
+		msgProcessor:       msgProcessor,
+		atcProcessor:       atcProcessor,
 	}
 
 	if pid == "" {
@@ -90,15 +92,23 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 		p.errorFolder = v
 	}
 
-	if v := parameter["waittime"]; v != "" {
+	if v := parameter["messagewaittime"]; v != "" {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return nil, errors.Wrapf(err, "error while parsing waittime %q: %v", v, err)
+			return nil, errors.Wrapf(err, "error while parsing message waittime %q: %v", v, err)
 		}
-		p.waitTime = d
+		p.messageWaitTime = d
 	}
 
-	p.logger.Infof("using waittime=%s, successFolder=%v, errorFolder=%v", p.waitTime, p.successFolder, p.errorFolder)
+	if v := parameter["attachmentwaittime"]; v != "" {
+		d, err := time.ParseDuration(v)
+		if err != nil {
+			return nil, errors.Wrapf(err, "error while parsing attachment waittime %q: %v", v, err)
+		}
+		p.attachmentWaitTime = d
+	}
+
+	p.logger.Infof("using messageWaitTime=%s, attachmentWaitTime=%s, successFolder=%v, errorFolder=%v", p.messageWaitTime, p.attachmentWaitTime, p.successFolder, p.errorFolder)
 
 	return p, nil
 }
@@ -108,7 +118,7 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 func (p *outboundFilePlugin) ListMessages(ctx context.Context) ([]*pb.Message, error) {
 	var files []string
 	for _, f := range p.msgFolders {
-		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-time.Duration(p.waitTime)*time.Second))
+		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-p.messageWaitTime))
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list files within %s", f.path)
 		}
@@ -127,7 +137,7 @@ func (p *outboundFilePlugin) ListMessages(ctx context.Context) ([]*pb.Message, e
 func (p *outboundFilePlugin) ListAttachments(ctx context.Context) ([]*pb.Attachment, error) {
 	var files []string
 	for _, f := range p.atcFolders {
-		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-time.Duration(p.waitTime)*time.Second))
+		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-p.attachmentWaitTime))
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list files within %s", f.path)
 		}
