@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/magiconair/properties"
@@ -24,12 +25,12 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <Body>
         <Companies>
             <Company>
-                <CompanyID>myopenfactory.test</CompanyID>
-                <Name>myOpenFactory DevOp Test</Name>
+                <CompanyID>client.myopenfactory.test</CompanyID>
+                <Name>myOpenFactory Client Test</Name>
             </Company>
             <Company>
-                <CompanyID>test.myopenfactory.com</CompanyID>
-                <Name>TESTKONTO myOpenFactory Software GmbH</Name>
+                <CompanyID>myopenfactory.test</CompanyID>
+                <Name>myOpenFactory DevOp Test</Name>
             </Company>
         </Companies>
         <Items>
@@ -46,8 +47,8 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	</Body>
 	<Subject>MIRROR</Subject>
     <MessageID>%s</MessageID>
-    <ReceiverID>test.myopenfactory.com</ReceiverID>
-    <SenderID>myopenfactory.test</SenderID>
+    <ReceiverID>myopenfactory.test</ReceiverID>
+    <SenderID>client.myopenfactory.test</SenderID>
     <TypeID>ORDER</TypeID>
 </Message>`
 
@@ -100,6 +101,9 @@ func main() {
 	}
 
 	cert := p.GetString("clientcert", "")
+	if strings.HasPrefix(cert, "./") {
+		cert = filepath.Join(filepath.Dir(cfgFile), cert)
+	}
 	cc, err := tls.LoadX509KeyPair(cert, cert)
 	if err != nil {
 		fmt.Printf("error while loading client certificate: %v", err)
@@ -132,7 +136,7 @@ func main() {
 		username: p.GetString("username", "username"),
 		password: p.GetString("password", "password"),
 	}
-	client := api.NewClientServiceProtobufClient(p.GetString("url", "https://myopenfactory.test"), cl)
+	client := api.NewClientServiceProtobufClient(p.GetString("url", "https://myopenfactory.net"), cl)
 	res, err := client.ListConfigs(context.Background(), &api.Empty{})
 	if err != nil {
 		fmt.Println(err)
