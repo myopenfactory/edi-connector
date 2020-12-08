@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - master 
+      - master
     tags:
       - v*
 
@@ -22,7 +22,7 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.14
+          go-version: 1.15
       -
         name: Unit Tests
         run: go test -v ./...
@@ -65,7 +65,7 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.14
+          go-version: 1.15
       -
         name: Prepare sign certificate
         run: echo -n ${SIGN_CERTIFICATE} | base64 --decode > $HOME/key.asc
