@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,7 +14,6 @@ import (
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/transport"
-	"github.com/pkg/errors"
 )
 
 type folder struct {
@@ -95,7 +95,7 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 	if v := parameter["messagewaittime"]; v != "" {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return nil, errors.Wrapf(err, "error while parsing message waittime %q: %v", v, err)
+			return nil, fmt.Errorf("error while parsing message waittime %q: %w", v, err)
 		}
 		p.messageWaitTime = d
 	}
@@ -103,7 +103,7 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 	if v := parameter["attachmentwaittime"]; v != "" {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return nil, errors.Wrapf(err, "error while parsing attachment waittime %q: %v", v, err)
+			return nil, fmt.Errorf("error while parsing attachment waittime %q: %w", v, err)
 		}
 		p.attachmentWaitTime = d
 	}
@@ -120,14 +120,14 @@ func (p *outboundFilePlugin) ListMessages(ctx context.Context) ([]*pb.Message, e
 	for _, f := range p.msgFolders {
 		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-p.messageWaitTime))
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to list files within %s", f.path)
+			return nil, fmt.Errorf("failed to list files within %s: %w", f.path, err)
 		}
 		files = append(files, fs...)
 	}
 
 	messages, err := p.convertToMessages(files)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to convert message list")
+		return nil, fmt.Errorf("failed to convert message list: %w", err)
 	}
 	return messages, nil
 }
@@ -139,14 +139,14 @@ func (p *outboundFilePlugin) ListAttachments(ctx context.Context) ([]*pb.Attachm
 	for _, f := range p.atcFolders {
 		fs, err := listFilesLastModifiedBefore(p.logger, f.path, f.extension, time.Now().Add(-p.attachmentWaitTime))
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to list files within %s", f.path)
+			return nil, fmt.Errorf("failed to list files within %s: %w", f.path, err)
 		}
 		files = append(files, fs...)
 	}
 
 	attachments, err := p.convertToAttachments(files)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to convert attachment list")
+		return nil, fmt.Errorf("failed to convert attachment list: %w", err)
 	}
 	return attachments, nil
 }
@@ -169,7 +169,7 @@ func (p *outboundFilePlugin) convertToMessages(files []string) ([]*pb.Message, e
 			if err := backupFileToFolder(p.logger, f, p.errorFolder); err != nil {
 				p.logger.Errorf("%v", err)
 			}
-			return nil, errors.Wrapf(err, "error while reading message %s", f)
+			return nil, fmt.Errorf("error while reading message %s: %w", f, err)
 		}
 		messages = append(messages, &pb.Message{
 			Id:        f,
@@ -188,7 +188,7 @@ func (p *outboundFilePlugin) convertToAttachments(files []string) ([]*pb.Attachm
 			if err := backupFileToFolder(p.logger, f, p.errorFolder); err != nil {
 				p.logger.Errorf("%v", err)
 			}
-			return nil, errors.Wrapf(err, "error while reading attachment %s", f)
+			return nil, fmt.Errorf("error while reading attachment %s: %w", f, err)
 		}
 		attachments = append(attachments, &pb.Attachment{
 			Filename: f,
@@ -219,7 +219,7 @@ func (p *outboundFilePlugin) process(ctx context.Context, obj interface{}) (*pb.
 		confirm, err = p.atcProcessor(ctx, v)
 	}
 	if err != nil {
-		return nil, errors.Wrapf(err, "error while sending file %s", file)
+		return nil, fmt.Errorf("error while sending file %s: %w", file, err)
 	}
 	if confirm == nil {
 		return nil, fmt.Errorf("error no confirm received for file %s", file)
@@ -240,14 +240,14 @@ func (p *outboundFilePlugin) process(ctx context.Context, obj interface{}) (*pb.
 		newfile := filepath.Join(p.successFolder, fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(file)))
 
 		if _, err := move(file, newfile); err != nil {
-			return nil, errors.Wrapf(err, "error while moving file %s", file)
+			return nil, fmt.Errorf("error while moving file %s: %w", file, err)
 		}
 		p.logger.Infof("file %q moved to %q", file, newfile)
 		return nil, nil
 	}
 
 	if err := os.Remove(file); err != nil {
-		return nil, errors.Wrapf(err, "error while deleting file %s", file)
+		return nil, fmt.Errorf("error while deleting file %s: %w", file, err)
 	}
 	p.logger.Infof("file '%s' deleted", file)
 
@@ -262,7 +262,7 @@ func listFilesLastModifiedBefore(logger *log.Logger, path, extension string, t t
 
 	fs, err := ioutil.ReadDir(path)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to read directory %s", path)
+		return nil, fmt.Errorf("failed to read directory %s: %w", path, err)
 	}
 
 	for _, f := range fs {
@@ -289,7 +289,7 @@ func backupFileToFolder(logger *log.Logger, filename, folder string) error {
 
 	logger.Debugf("trying to backup file %v to %v", filename, f)
 	if _, err := move(filename, f); err != nil {
-		return errors.Wrapf(err, "failed to backup file %s to %s", filename, f)
+		return fmt.Errorf("failed to backup file %s to %s: %w", filename, f, err)
 	}
 	logger.Infof("backuped %s to %s", filename, f)
 

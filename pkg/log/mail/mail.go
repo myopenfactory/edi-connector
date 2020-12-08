@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -54,7 +53,10 @@ func (h *MailHook) Fire(entry *logrus.Entry) error {
 
 	receivers := strings.Split(h.To, ";")
 	err := h.sendMail(receivers, []byte(message))
-	return errors.Wrapf(err, "failed sending log mail")
+	if err != nil {
+		return fmt.Errorf("failed sending log mail: %w", err)
+	}
+	return nil
 }
 
 func (h *MailHook) sendMail(to []string, body []byte) error {
@@ -62,7 +64,7 @@ func (h *MailHook) sendMail(to []string, body []byte) error {
 	if h.Username != "" {
 		host, _, err := net.SplitHostPort(h.Address)
 		if err != nil {
-			return errors.Wrap(err, "failed to split host port for smtp auth")
+			return fmt.Errorf("failed to split host port for smtp auth: %w", err)
 		}
 		auth = smtp.PlainAuth("", h.Username, h.Password, host)
 	}

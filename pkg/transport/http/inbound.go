@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -12,7 +13,6 @@ import (
 
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/transport"
-	"github.com/pkg/errors"
 )
 
 type HttpClient interface {
@@ -65,7 +65,7 @@ func parseParameter(parameter map[string]string) (*inboundPlugin, error) {
 	}
 	re, err := regexp.Compile(rep)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to compile response regesx")
+		return nil, fmt.Errorf("failed to compile response regex: %w", err)
 	}
 	cl.responseRegex = re
 
@@ -73,7 +73,7 @@ func parseParameter(parameter map[string]string) (*inboundPlugin, error) {
 	if ok && tmpl != "" {
 		t, err := template.ParseFiles(tmpl)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to parse message template")
+			return nil, fmt.Errorf("failed to parse message template: %w", err)
 		}
 		cl.msgTemplate = t
 	}
@@ -82,7 +82,7 @@ func parseParameter(parameter map[string]string) (*inboundPlugin, error) {
 	if ok && tmpl != "" {
 		t, err := template.ParseFiles(tmpl)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to parse attachment template")
+			return nil, fmt.Errorf("failed to parse attachment template: %w", err)
 		}
 		cl.atcTemplate = t
 	}
@@ -104,17 +104,17 @@ func (p *inboundPlugin) ProcessMessage(ctx context.Context, msg *pb.Message) (*p
 	data := new(bytes.Buffer)
 	if p.msgTemplate != nil {
 		if err := p.msgTemplate.Execute(data, msg); err != nil {
-			return nil, errors.Wrap(err, "failed to execute message template")
+			return nil, fmt.Errorf("failed to execute message template: %w", err)
 		}
 	} else {
 		if _, err := data.Write(msg.GetContent()); err != nil {
-			return nil, errors.Wrap(err, "failed to write message")
+			return nil, fmt.Errorf("failed to write message: %w", err)
 		}
 	}
 
 	req, err := http.NewRequest(p.method, filename, data)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to create message process request: %v", filename)
+		return nil, fmt.Errorf("failed to create message process request: %v: %w", filename, err)
 	}
 	for k, v := range p.header {
 		req.Header.Set(k, v)
@@ -122,13 +122,13 @@ func (p *inboundPlugin) ProcessMessage(ctx context.Context, msg *pb.Message) (*p
 
 	resp, err := p.client.Do(req)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to invoke message process request")
+		return nil, fmt.Errorf("failed to invoke message process request: %w", err)
 	}
 	if p.responseRegex == nil {
 		return nil, errors.New("process message: no response regex")
 	}
 	if !p.responseRegex.MatchString(strconv.Itoa(resp.StatusCode)) {
-		return nil, errors.Errorf("process message: bad response: %v", resp.Status)
+		return nil, fmt.Errorf("process message: bad response: %v", resp.Status)
 	}
 
 	return transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusOK, "message pushed %q", filename)
@@ -143,17 +143,17 @@ func (p *inboundPlugin) ProcessAttachment(ctx context.Context, atc *pb.Attachmen
 	data := new(bytes.Buffer)
 	if p.atcTemplate != nil {
 		if err := p.atcTemplate.Execute(data, atc); err != nil {
-			return nil, errors.Wrap(err, "failed to execute attachment template")
+			return nil, fmt.Errorf("failed to execute attachment template: %w", err)
 		}
 	} else {
 		if _, err := data.Write(atc.GetData()); err != nil {
-			return nil, errors.Wrap(err, "failed to write attachment")
+			return nil, fmt.Errorf("failed to write attachment: %w", err)
 		}
 	}
 
 	req, err := http.NewRequest(p.method, atc.Filename, data)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to create attachment process request: %v", atc.Filename)
+		return nil, fmt.Errorf("failed to create attachment process request: %v: %w", atc.Filename, err)
 	}
 	for k, v := range p.header {
 		req.Header.Set(k, v)
@@ -162,13 +162,13 @@ func (p *inboundPlugin) ProcessAttachment(ctx context.Context, atc *pb.Attachmen
 
 	resp, err := p.client.Do(req)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to invoke attachment process request")
+		return nil, fmt.Errorf("failed to invoke attachment process request: %w", err)
 	}
 	if p.responseRegex == nil {
 		return nil, errors.New("process message: no response regex")
 	}
 	if !p.responseRegex.MatchString(strconv.Itoa(resp.StatusCode)) {
-		return nil, errors.Errorf("process message: bad response: %v", resp.Status)
+		return nil, fmt.Errorf("process message: bad response: %v", resp.Status)
 	}
 
 	return transport.CreateConfirm(atc.Filename, "unknown", transport.StatusOK, "attachment pushed %q", atc.Filename)

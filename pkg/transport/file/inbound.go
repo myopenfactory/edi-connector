@@ -2,6 +2,7 @@ package file
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -11,7 +12,6 @@ import (
 	pb "github.com/myopenfactory/client/api"
 	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/transport"
-	"github.com/pkg/errors"
 )
 
 // InboundFilePlugin type
@@ -28,7 +28,7 @@ func NewInboundPlugin(logger *log.Logger, parameter map[string]string) (transpor
 		return nil, fmt.Errorf("no basefolder found")
 	}
 	if _, err := os.Stat(base); os.IsNotExist(err) {
-		return nil, errors.Wrapf(err, "folder %s does not exist", base)
+		return nil, fmt.Errorf("folder %s does not exist: %w", base, err)
 	}
 	exist := parameter["exist"]
 	if exist != "append" {
@@ -57,22 +57,22 @@ func (p *inboundFilePlugin) ProcessMessage(ctx context.Context, msg *pb.Message)
 	if !os.IsNotExist(err) && p.exist == "append" {
 		f, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY, 0600)
 		if err != nil {
-			return nil, errors.Wrapf(err, "error while open file %s", filename)
+			return nil, fmt.Errorf("error while open file %s: %w", filename, err)
 		}
 		defer f.Close()
 		_, err = f.Write(msg.Content)
 		if err != nil {
-			return nil, errors.Wrapf(err, "error while writing file %s", filename)
+			return nil, fmt.Errorf("error while writing file %s: %w", filename, err)
 		}
 		return transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusOK, "message append to %v", filename)
 	}
 	filename = createUniqueFilename(filename)
 	if err := createFolderFromFile(filename); err != nil {
-		return nil, errors.Wrapf(err, "error while creating message folder %s", filename)
+		return nil, fmt.Errorf("error while creating message folder %s: %w", filename, err)
 	}
 	p.logger.Infof("Creating file '%v'", filename)
 	if err := ioutil.WriteFile(filename, msg.Content, 0644); err != nil {
-		return nil, errors.Wrapf(err, "error while writing file %s", filename)
+		return nil, fmt.Errorf("error while writing file %s: %w", filename, err)
 	}
 	return transport.CreateConfirm(msg.Id, msg.ProcessId, 200, "file created with name %q", filename)
 }
@@ -83,17 +83,17 @@ func (p *inboundFilePlugin) ProcessAttachment(ctx context.Context, atc *pb.Attac
 	filename := filepath.Join(p.base, atc.Filename)
 	filename = createUniqueFilename(filename)
 	if err := createFolderFromFile(filename); err != nil {
-		return nil, errors.Wrapf(err, "error while creating attachment folder %s", filename)
+		return nil, fmt.Errorf("error while creating attachment folder %s: %w", filename, err)
 	}
 	f, err := os.Create(filename)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not open target file: %s", filename)
+		return nil, fmt.Errorf("could not open target file: %s: %w", filename, err)
 	}
 	defer f.Close()
 
 	_, err = f.Write(atc.GetData())
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to write attachment to file %q", filename)
+		return nil, fmt.Errorf("failed to write attachment to file %q: %w", filename, err)
 	}
 
 	return transport.CreateConfirm(atc.Filename, "unkown", transport.StatusOK, "attachment created with name %q", filename)
@@ -105,7 +105,7 @@ func createFolderFromFile(filename string) error {
 	}
 	folder := filepath.Dir(filename)
 	if err := os.MkdirAll(folder, 755); err != nil {
-		return errors.Wrapf(err, "error cannot create folder %s", folder)
+		return fmt.Errorf("error cannot create folder %s: %w", folder, err)
 	}
 	return nil
 }
