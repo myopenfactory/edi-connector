@@ -1,4 +1,4 @@
-package service
+package cmd
 
 import (
 	"context"
@@ -22,19 +22,19 @@ import (
 )
 
 func init() {
-	Command.PersistentFlags().String("name", "myOpenFactory Client", "name of the service")
+	Service.PersistentFlags().String("name", "myOpenFactory Client", "name of the service")
 	serviceRunCmd.Flags().Bool("debug", false, "debug windows service")
 	serviceInstallCmd.Flags().String("logon", "", "windows logon name for the service")
 	serviceInstallCmd.Flags().String("password", "", "windows logon password for the service")
 
-	viper.BindPFlag("service.name", Command.PersistentFlags().Lookup("name"))
+	viper.BindPFlag("service.name", Service.PersistentFlags().Lookup("name"))
 	viper.BindPFlag("service.logon", serviceInstallCmd.Flags().Lookup("logon"))
 	viper.BindPFlag("service.password", serviceInstallCmd.Flags().Lookup("password"))
 	viper.BindPFlag("service.debug", serviceRunCmd.Flags().Lookup("debug"))
 
-	Command.AddCommand(serviceInstallCmd)
-	Command.AddCommand(serviceUninstallCmd)
-	Command.AddCommand(serviceRunCmd)
+	Service.AddCommand(serviceInstallCmd)
+	Service.AddCommand(serviceUninstallCmd)
+	Service.AddCommand(serviceRunCmd)
 }
 
 // serviceInstallCmd represents the install service command

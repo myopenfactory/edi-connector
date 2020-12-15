@@ -1,6 +1,6 @@
 // +build !windows
 
-package bootstrap
+package cmd
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Command represents the bootstrap command
-var Command = &cobra.Command{
+// Bootstrap represents the bootstrap command
+var Bootstrap = &cobra.Command{
 	Use:   "bootstrap",
 	Short: "bootstrap the client",
 	Long:  "bootstrap the client.",

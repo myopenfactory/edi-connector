@@ -1,4 +1,4 @@
-package update
+package cmd
 
 import (
 	"bufio"
@@ -7,15 +7,15 @@ import (
 	"strings"
 
 	"github.com/blang/semver"
-	clientpkg "github.com/myopenfactory/client/pkg/client"
+	"github.com/myopenfactory/client/pkg/client"
 	"github.com/myopenfactory/client/pkg/config"
-	log "github.com/myopenfactory/client/pkg/log"
-	versionpkg "github.com/myopenfactory/client/pkg/version"
+	"github.com/myopenfactory/client/pkg/log"
+	"github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/cobra"
 )
 
-// Command represents the update command
-var Command = &cobra.Command{
+// Update represents the update command
+var Update = &cobra.Command{
 	Use:      "update",
 	Short:    "update the executable from github",
 	PreRunE:  preUpdate,
@@ -23,13 +23,13 @@ var Command = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger := log.New(config.ParseLogOptions())
 
-		release, err := clientpkg.Release()
+		release, err := client.Release()
 		if err != nil {
 			logger.Error(err)
 			os.Exit(1)
 		}
 
-		version, err := semver.ParseTolerant(versionpkg.Version)
+		version, err := semver.ParseTolerant(version.Version)
 		if release.Version.Equals(version) {
 			logger.Errorf("current version is the latest")
 			os.Exit(0)
@@ -57,7 +57,7 @@ var Command = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if err := clientpkg.Update(release); err != nil {
+		if err := client.Update(release); err != nil {
 			logger.Errorf("failed to update client: %v", err)
 			os.Exit(1)
 		}

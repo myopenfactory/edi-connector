@@ -1,4 +1,4 @@
-package bootstrap
+package cmd
 
 import (
 	"bufio"
@@ -14,8 +14,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Command represents the bootstrap command
-var Command = &cobra.Command{
+// Bootstrap represents the bootstrap command
+var Bootstrap = &cobra.Command{
 	Use:   "bootstrap",
 	Short: "bootstrap the client [EXPERIMENTAL]",
 	Long:  "bootstrap the client.\n\nUSE WITH CARE",

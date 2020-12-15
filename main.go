@@ -9,15 +9,11 @@ import (
 	"strings"
 
 	"github.com/myopenfactory/client/pkg/client"
-	"github.com/myopenfactory/client/pkg/cmd/bootstrap"
-	"github.com/myopenfactory/client/pkg/cmd/config"
-	"github.com/myopenfactory/client/pkg/cmd/service"
-	"github.com/myopenfactory/client/pkg/cmd/update"
-	"github.com/myopenfactory/client/pkg/cmd/version"
-	configpkg "github.com/myopenfactory/client/pkg/config"
+	"github.com/myopenfactory/client/pkg/cmd"
+	"github.com/myopenfactory/client/pkg/config"
 	"github.com/myopenfactory/client/pkg/errors"
 	"github.com/myopenfactory/client/pkg/log"
-	versionpkg "github.com/myopenfactory/client/pkg/version"
+	"github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -57,14 +53,14 @@ func main() {
 		if proxy := viper.GetString("proxy"); proxy != "" {
 			os.Setenv("HTTP_PROXY", proxy)
 		}
-		logger = log.New(configpkg.ParseLogOptions())
+		logger = log.New(config.ParseLogOptions())
 	})
 
 	cmds := &cobra.Command{
 		Use:   "myof-client",
 		Short: "myof-client controls the client",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			logger.Infof("myOpenFactory Client: %v", versionpkg.Version)
+			logger.Infof("myOpenFactory Client: %v", version.Version)
 			if viper.ConfigFileUsed() == "" {
 				logger.Debugf("Using config: no config found")
 			} else {
@@ -74,13 +70,13 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			const op errors.Op = "main.Run"
 
-			clientOpts, err := configpkg.ParseClientOptions()
+			clientOpts, err := config.ParseClientOptions()
 			if err != nil {
 				logger.SystemErr(errors.E(op, err))
 				os.Exit(1)
 			}
 
-			cl, err := client.New(logger, fmt.Sprintf("Core_%s", versionpkg.Version), clientOpts...)
+			cl, err := client.New(logger, fmt.Sprintf("Core_%s", version.Version), clientOpts...)
 			if err != nil {
 				logger.SystemErr(errors.E(op, err))
 				os.Exit(1)
@@ -126,11 +122,11 @@ func main() {
 	cmds.PersistentFlags().StringVar(&configFile, "config", "", "config file")
 	cmds.PersistentFlags().StringVar(&logLevel, "log_level", "INFO", "log level")
 
-	cmds.AddCommand(version.Command)
-	cmds.AddCommand(config.Command)
-	cmds.AddCommand(bootstrap.Command)
-	cmds.AddCommand(update.Command)
-	cmds.AddCommand(service.Command)
+	cmds.AddCommand(cmd.Version)
+	cmds.AddCommand(cmd.Config)
+	cmds.AddCommand(cmd.Bootstrap)
+	cmds.AddCommand(cmd.Update)
+	cmds.AddCommand(cmd.Service)
 
 	if err := cmds.Execute(); err != nil {
 		logger.Error(err)
