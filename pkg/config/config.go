@@ -1,6 +1,4 @@
-//+build wireinject
-
-package cmd
+package config
 
 import (
 	"crypto/tls"
@@ -13,25 +11,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/wire"
 	"github.com/myopenfactory/client/pkg/client"
 	"github.com/myopenfactory/client/pkg/errors"
 	"github.com/myopenfactory/client/pkg/log"
-	"github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/viper"
 )
 
-func InitializeClient() (*client.Client, error) {
-	wire.Build(InitializeLogger, provideClientID, provideOptions, client.New)
-	return &client.Client{}, nil
-}
-
-func InitializeLogger() *log.Logger {
-	wire.Build(provideLogOptions, log.New)
-	return &log.Logger{}
-}
-
-func provideOptions() ([]client.Option, error) {
+func ParseClientOptions() ([]client.Option, error) {
 	const op errors.Op = "cmd.provideOptions"
 	var err error
 
@@ -80,18 +66,10 @@ func provideOptions() ([]client.Option, error) {
 		return nil, errors.E(op, fmt.Errorf("could not create http client: %w", err), errors.KindUnexpected)
 	}
 
-	return []client.Option{
-		client.WithUsername(viper.GetString("username")),
-		client.WithPassword(viper.GetString("password")),
-		client.WithURL(url),
-		client.WithProxy(proxy),
-		client.WithHealthWaitTime(healthWaitTimeDuration),
-		client.WithRunWaitTime(runWaitTimeDuration),
-		client.WithClient(cl),
-	}, nil
+	return []client.Option{client.WithUsername(viper.GetString("username")), client.WithPassword(viper.GetString("password")), client.WithURL(url), client.WithProxy(proxy), client.WithHealthWaitTime(healthWaitTimeDuration), client.WithRunWaitTime(runWaitTimeDuration), client.WithClient(cl)}, nil
 }
 
-func provideLogOptions() []log.Option {
+func ParseLogOptions() []log.Option {
 	opts := []log.Option{}
 
 	logLevel := viper.GetString("log.level")
@@ -126,10 +104,6 @@ func provideLogOptions() []log.Option {
 	}
 
 	return opts
-}
-
-func provideClientID() string {
-	return fmt.Sprintf("Core_%s", version.Version)
 }
 
 func createHTTPClient(cert, ca string) (*http.Client, error) {

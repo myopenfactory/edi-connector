@@ -9,7 +9,9 @@ import (
 	"time"
 
 	"github.com/myopenfactory/client/pkg/client"
-	cmdpkg "github.com/myopenfactory/client/pkg/cmd"
+	"github.com/myopenfactory/client/pkg/config"
+	"github.com/myopenfactory/client/pkg/log"
+	"github.com/myopenfactory/client/pkg/version"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -129,10 +131,16 @@ var serviceRunCmd = &cobra.Command{
 	Use:   "run",
 	Short: "run the windows service",
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := cmdpkg.InitializeLogger()
+		logger := log.New(config.ParseLogOptions())
 		logger.Infof("Using config: %s", viper.ConfigFileUsed())
 
-		cl, err := cmdpkg.InitializeClient()
+		clientOpts, err := config.ParseClientOptions()
+		if err != nil {
+			logger.Error("error while creating client: %v", err)
+			os.Exit(1)
+		}
+
+		cl, err := client.New(logger, fmt.Sprintf("Core_%s", version.Version), clientOpts...)
 		if err != nil {
 			logger.Errorf("error while creating client: %v", err)
 			os.Exit(1)
