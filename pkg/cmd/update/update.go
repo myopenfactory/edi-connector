@@ -8,7 +8,8 @@ import (
 
 	"github.com/blang/semver"
 	clientpkg "github.com/myopenfactory/client/pkg/client"
-	cmdpkg "github.com/myopenfactory/client/pkg/cmd"
+	"github.com/myopenfactory/client/pkg/config"
+	log "github.com/myopenfactory/client/pkg/log"
 	versionpkg "github.com/myopenfactory/client/pkg/version"
 	"github.com/spf13/cobra"
 )
@@ -20,7 +21,7 @@ var Command = &cobra.Command{
 	PreRunE:  preUpdate,
 	PostRunE: postUpdate,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := cmdpkg.InitializeLogger()
+		logger := log.New(config.ParseLogOptions())
 
 		release, err := clientpkg.Release()
 		if err != nil {

@@ -8,12 +8,13 @@ import (
 	"runtime"
 	"strings"
 
-	cmdpkg "github.com/myopenfactory/client/pkg/cmd"
+	"github.com/myopenfactory/client/pkg/client"
 	"github.com/myopenfactory/client/pkg/cmd/bootstrap"
 	"github.com/myopenfactory/client/pkg/cmd/config"
 	"github.com/myopenfactory/client/pkg/cmd/service"
 	"github.com/myopenfactory/client/pkg/cmd/update"
 	"github.com/myopenfactory/client/pkg/cmd/version"
+	configpkg "github.com/myopenfactory/client/pkg/config"
 	"github.com/myopenfactory/client/pkg/errors"
 	"github.com/myopenfactory/client/pkg/log"
 	versionpkg "github.com/myopenfactory/client/pkg/version"
@@ -25,7 +26,7 @@ import (
 func main() {
 	var configFile string
 	var logLevel string
-	var log *log.Logger
+	var logger *log.Logger
 
 	cobra.OnInitialize(func() {
 		viper.SetEnvPrefix("client")
@@ -56,26 +57,32 @@ func main() {
 		if proxy := viper.GetString("proxy"); proxy != "" {
 			os.Setenv("HTTP_PROXY", proxy)
 		}
-		log = cmdpkg.InitializeLogger()
+		logger = log.New(configpkg.ParseLogOptions())
 	})
 
 	cmds := &cobra.Command{
 		Use:   "myof-client",
 		Short: "myof-client controls the client",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			log.Infof("myOpenFactory Client: %v", versionpkg.Version)
+			logger.Infof("myOpenFactory Client: %v", versionpkg.Version)
 			if viper.ConfigFileUsed() == "" {
-				log.Debugf("Using config: no config found")
+				logger.Debugf("Using config: no config found")
 			} else {
-				log.Debugf("Using config: %v", viper.ConfigFileUsed())
+				logger.Debugf("Using config: %v", viper.ConfigFileUsed())
 			}
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			const op errors.Op = "main.Run"
 
-			cl, err := cmdpkg.InitializeClient()
+			clientOpts, err := configpkg.ParseClientOptions()
 			if err != nil {
-				log.SystemErr(errors.E(op, err))
+				logger.SystemErr(errors.E(op, err))
+				os.Exit(1)
+			}
+
+			cl, err := client.New(logger, fmt.Sprintf("Core_%s", versionpkg.Version), clientOpts...)
+			if err != nil {
+				logger.SystemErr(errors.E(op, err))
 				os.Exit(1)
 			}
 
@@ -87,32 +94,32 @@ func main() {
 			go func() {
 				<-stop
 
-				log.Infof("closing client, please notice this could take up to one minute")
+				logger.Infof("closing client, please notice this could take up to one minute")
 				cancel()
 			}()
 
 			go func() {
 				defer func() {
 					if r := recover(); r != nil {
-						log.SystemErr(errors.E(op, err))
+						logger.SystemErr(errors.E(op, err))
 					}
 				}()
 				if err := cl.Health(ctx); err != nil {
-					log.SystemErr(errors.E(op, err))
+					logger.SystemErr(errors.E(op, err))
 					os.Exit(1)
 				}
 			}()
 
 			defer func() {
 				if r := recover(); r != nil {
-					log.SystemErr(errors.E(op, err))
+					logger.SystemErr(errors.E(op, err))
 				}
 			}()
 			if err := cl.Run(ctx); err != nil {
-				log.SystemErr(errors.E(op, err))
+				logger.SystemErr(errors.E(op, err))
 				os.Exit(1)
 			}
-			log.Debug("client gracefully stopped")
+			logger.Debug("client gracefully stopped")
 		},
 	}
 
@@ -126,7 +133,7 @@ func main() {
 	cmds.AddCommand(service.Command)
 
 	if err := cmds.Execute(); err != nil {
-		log.Error(err)
+		logger.Error(err)
 		os.Exit(1)
 	}
 }
