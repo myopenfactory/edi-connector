@@ -18,6 +18,7 @@ import (
 
 	"github.com/magiconair/properties"
 	"github.com/myopenfactory/client/api"
+	"github.com/twitchtv/twirp"
 )
 
 var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -136,7 +137,7 @@ func main() {
 		username: p.GetString("username", "username"),
 		password: p.GetString("password", "password"),
 	}
-	client := api.NewClientServiceProtobufClient(p.GetString("url", "https://myopenfactory.net"), cl)
+	client := api.NewClientServiceProtobufClient(p.GetString("url", "https://myopenfactory.net"), cl, twirp.WithClientPathPrefix("/v1"))
 	res, err := client.ListConfigs(context.Background(), &api.Empty{})
 	if err != nil {
 		fmt.Println(err)

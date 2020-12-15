@@ -67,7 +67,7 @@ func New(logger *log.Logger, identifier string, options ...Option) (*Client, err
 	auth := []byte(c.Username + ":" + c.Password)
 	c.header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
 
-	c.service = pb.NewClientServiceProtobufClient(c.URL, c.client)
+	c.service = pb.NewClientServiceProtobufClient(c.URL, c.client, twirp.WithClientPathPrefix("/v1"))
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
