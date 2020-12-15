@@ -1,11 +1,11 @@
 package update
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/sys/windows"
@@ -39,13 +39,13 @@ func preUpdate(cmd *cobra.Command, args []string) error {
 
 	serviceManager, err := mgr.Connect()
 	if err != nil {
-		return errors.Wrap(err, "service manager: connection failed")
+		return fmt.Errorf("service manager: connection failed: %w", err)
 	}
 	defer serviceManager.Disconnect()
 
 	services, err := serviceManager.ListServices()
 	if err != nil {
-		return errors.Wrap(err, "service manager: failed to list services")
+		return fmt.Errorf("service manager: failed to list services: %w", err)
 	}
 
 	for _, service := range services {
@@ -63,13 +63,13 @@ func preUpdate(cmd *cobra.Command, args []string) error {
 func postUpdate(cmd *cobra.Command, args []string) error {
 	serviceManager, err := mgr.Connect()
 	if err != nil {
-		return errors.Wrap(err, "service manager: connection failed")
+		return fmt.Errorf("service manager: connection failed: %w", err)
 	}
 	defer serviceManager.Disconnect()
 
 	services, err := serviceManager.ListServices()
 	if err != nil {
-		return errors.Wrap(err, "service manager: failed to list services")
+		return fmt.Errorf("service manager: failed to list services: %w", err)
 	}
 
 	for _, service := range services {
@@ -85,13 +85,13 @@ func postUpdate(cmd *cobra.Command, args []string) error {
 func startService(m *mgr.Mgr, name string) error {
 	s, err := m.OpenService(name)
 	if err != nil {
-		return errors.Wrap(err, "could not access service")
+		return fmt.Errorf("could not access service: %w", err)
 	}
 
 	defer s.Close()
 	err = s.Start("is", "manual-started")
 	if err != nil {
-		return errors.Wrap(err, "could not start service")
+		return fmt.Errorf("could not start service: %w", err)
 	}
 
 	return nil
@@ -100,13 +100,13 @@ func startService(m *mgr.Mgr, name string) error {
 func controlService(m *mgr.Mgr, name string, c svc.Cmd, to svc.State) error {
 	s, err := m.OpenService(name)
 	if err != nil {
-		return errors.Wrap(err, "could not access service")
+		return fmt.Errorf("could not access service: %w", err)
 	}
 	defer s.Close()
 
 	status, err := s.Control(c)
 	if err != nil {
-		return errors.Wrapf(err, "could not send control=%d", c)
+		return fmt.Errorf("could not send control=%d: %w", c, err)
 	}
 
 	timeout := time.Now().Add(10 * time.Second)
@@ -117,7 +117,7 @@ func controlService(m *mgr.Mgr, name string, c svc.Cmd, to svc.State) error {
 		time.Sleep(300 * time.Millisecond)
 		status, err = s.Query()
 		if err != nil {
-			return errors.Wrap(err, "could not retrieve service status")
+			return fmt.Errorf("could not retrieve service status: %w", err)
 		}
 	}
 

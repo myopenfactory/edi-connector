@@ -4,9 +4,9 @@ import (
 	"crypto/ecdsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"os"
 
-	"github.com/pkg/errors"
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
 )
 
@@ -54,7 +54,7 @@ func init() {
 func Release() (*selfupdate.Release, error) {
 	release, _, err := updater.DetectLatest("myopenfactory/client")
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to detect latest release")
+		return nil, fmt.Errorf("failed to detect latest release: %w", err)
 	}
 
 	return release, nil
@@ -62,7 +62,7 @@ func Release() (*selfupdate.Release, error) {
 
 func Update(release *selfupdate.Release) error {
 	if err := updater.UpdateTo(release, os.Args[0]); err != nil {
-		return errors.Wrapf(err, "failed updating client to version %s", release.Version)
+		return fmt.Errorf("failed updating client to version %s: %w", release.Version, err)
 	}
 
 	return nil
