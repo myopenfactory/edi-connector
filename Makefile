@@ -14,6 +14,9 @@ build:
 generate:
 	go generate ./...
 
+protogen:
+	@./protogen.sh
+
 .PHONY: test
 test: build
 	cd test && docker-compose -f ${COMPOSE_FILE} down -v

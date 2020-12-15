@@ -1,4 +1,4 @@
-/* 
+/*
  * ProtoBuf file for communication between customer and myOpenFactory cloud
  */
 syntax = "proto3";
@@ -6,6 +6,7 @@ syntax = "proto3";
 package api;
 option java_package = "com.myopenfactory.application.transports.client.api";
 option java_multiple_files = true;
+option go_package = "github.com/myopenfactory/client/api";
 
 // List of Messages
 message Messages {
