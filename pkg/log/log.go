@@ -1,10 +1,12 @@
 package log
 
 import (
+	stderrors "errors"
 	"os"
 
 	"github.com/sirupsen/logrus"
 
+	"github.com/myopenfactory/client/pkg/errors"
 	"github.com/myopenfactory/client/pkg/log/eventlog"
 	"github.com/myopenfactory/client/pkg/log/filesystem"
 	"github.com/myopenfactory/client/pkg/log/mail"
@@ -31,9 +33,20 @@ func New(opts []Option) *Logger {
 	return logger
 }
 
-func (l *Logger) SystemErr(err error) {
-	e := &entry{Entry: logrus.NewEntry(l.Logger)}
-	e.SystemErr(err)
+func (l *Logger) WithError(err error) *logrus.Entry {
+	entry := l.Logger.WithError(err)
+
+	var e errors.Error
+	if stderrors.As(err, &e) {
+		f := logrus.Fields{}
+		f["operation"] = e.Op
+		f["kind"] = errors.KindText(e)
+		f["opts"] = errors.Ops(e)
+
+		entry = entry.WithFields(f)
+	}
+
+	return entry
 }
 
 func (l *Logger) WithFields(fields map[string]interface{}) Entry {

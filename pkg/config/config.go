@@ -18,7 +18,7 @@ import (
 )
 
 func ParseClientOptions() ([]client.Option, error) {
-	const op errors.Op = "cmd.provideOptions"
+	const op errors.Op = "config.ParseClientOptions"
 	var err error
 
 	runWaitTimeDuration := time.Minute
@@ -107,7 +107,7 @@ func ParseLogOptions() []log.Option {
 }
 
 func createHTTPClient(cert, ca string) (*http.Client, error) {
-	const op errors.Op = "cmd.createHTTPClient"
+	const op errors.Op = "config.createHTTPClient"
 
 	if cert == "" {
 		return nil, errors.E(op, fmt.Errorf("error while loading client certificate: no client certificate specified"))

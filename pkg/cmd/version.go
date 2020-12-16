@@ -1,4 +1,4 @@
-package version
+package cmd
 
 import (
 	"fmt"
@@ -8,8 +8,8 @@ import (
 	"github.com/myopenfactory/client/pkg/version"
 )
 
-// Command represents the version command
-var Command = &cobra.Command{
+// Version represents the version command
+var Version = &cobra.Command{
 	Use:   "version",
 	Short: "show version information",
 	Run: func(cmd *cobra.Command, args []string) {

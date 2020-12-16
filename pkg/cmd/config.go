@@ -1,4 +1,4 @@
-package config
+package cmd
 
 import (
 	"fmt"
@@ -11,13 +11,13 @@ import (
 )
 
 func init() {
-	Command.AddCommand(listCmd)
-	Command.AddCommand(getCmd)
-	Command.AddCommand(setCmd)
+	Config.AddCommand(listCmd)
+	Config.AddCommand(getCmd)
+	Config.AddCommand(setCmd)
 }
 
-// configCmd represents the config command
-var Command = &cobra.Command{
+// Config represents the config command
+var Config = &cobra.Command{
 	Use:   "config",
 	Short: "manage the configuration",
 }

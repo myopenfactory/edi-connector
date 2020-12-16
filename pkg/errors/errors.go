@@ -3,24 +3,21 @@ package errors
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"runtime"
-
-	"github.com/sirupsen/logrus"
 )
 
 // Kind enums
 const (
-	KindBadRequest    = http.StatusBadRequest
-	KindUnexpected    = http.StatusInternalServerError
-	KindAlreadyExists = http.StatusConflict
+	KindUnknown = iota
+	KindBadRequest
+	KindUnexpected
+	KindAlreadyExists
 )
 
 type Error struct {
-	Kind     int
-	Op       Op
-	Err      error
-	Severity logrus.Level
+	Kind int
+	Op   Op
+	Err  error
 }
 
 func (e Error) Error() string {
@@ -56,8 +53,6 @@ func E(op Op, args ...interface{}) error {
 			e.Err = arg
 		case string:
 			e.Err = errors.New(arg)
-		case logrus.Level:
-			e.Severity = arg
 		case int:
 			e.Kind = arg
 		}
@@ -68,38 +63,13 @@ func E(op Op, args ...interface{}) error {
 	return e
 }
 
-func Severity(err error) logrus.Level {
-	e, ok := err.(Error)
-	if !ok {
-		return logrus.ErrorLevel
-	}
-	if e.Severity < logrus.ErrorLevel {
-		return Severity(e.Err)
-	}
-
-	return e.Severity
-}
-
-func Expect(err error, kinds ...int) logrus.Level {
-	for _, kind := range kinds {
-		if Kind(err) == kind {
-			return logrus.InfoLevel
-		}
-	}
-	return logrus.ErrorLevel
-}
-
 func Kind(err error) int {
-	e, ok := err.(Error)
-	if !ok {
+	var e Error
+	if !errors.As(err, &e) {
 		return KindUnexpected
 	}
 
-	if e.Kind != 0 {
-		return e.Kind
-	}
-
-	return Kind(e.Err)
+	return e.Kind
 }
 
 func KindText(err Error) string {
@@ -107,15 +77,15 @@ func KindText(err Error) string {
 	case KindUnexpected:
 		return "Internal Client Error"
 	default:
-		return http.StatusText(Kind(err))
+		return "Unknown Error"
 	}
 }
 
 func Ops(err Error) []Op {
 	ops := []Op{err.Op}
 	for {
-		embeddedErr, ok := err.Err.(Error)
-		if !ok {
+		var embeddedErr Error
+		if !errors.As(err.Err, &embeddedErr) {
 			break
 		}
 
