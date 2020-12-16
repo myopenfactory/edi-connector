@@ -21,22 +21,21 @@ import (
 	"github.com/myopenfactory/client/pkg/log"
 	"github.com/myopenfactory/client/pkg/transport"
 	"github.com/myopenfactory/client/pkg/transport/file"
+	"github.com/myopenfactory/client/pkg/version"
 )
 
 // Config configures variables for the client
 type Client struct {
-	logger              *log.Logger
-	Username            string // Username for the plattform
-	Password            string // Password for teh plattform
-	URL                 string // URL of the plattform https://myopenfactory.net/pb/ for example
-	ID                  string
-	RunWaitTime         time.Duration
-	HealthWaitTime      time.Duration
-	CertificateNotAfter time.Time
-	client              pb.HTTPClient
-	service             pb.ClientService
-
-	header http.Header
+	logger         *log.Logger
+	username       string
+	password       string
+	url            string
+	id             string
+	runWaitTime    time.Duration
+	healthWaitTime time.Duration
+	client         pb.HTTPClient
+	service        pb.ClientService
+	requestContext context.Context
 
 	// plugins
 	inbounds  map[string]transport.InboundPlugin
@@ -46,38 +45,39 @@ type Client struct {
 type Option func(*Client)
 
 // New creates client with given options
-func New(logger *log.Logger, identifier string, options ...Option) (*Client, error) {
+func New(options ...Option) (*Client, error) {
 	const op errors.Op = "client.New"
 	c := &Client{
-		logger: logger,
-		header: make(http.Header),
+		logger:         log.New(),
+		id:             fmt.Sprintf("Core_%s", version.Version),
+		requestContext: context.Background(),
+		runWaitTime:    time.Minute,
+		healthWaitTime: 15 * time.Minute,
+		url:            "https://myopenfactory.net",
+		client:         http.DefaultClient,
 	}
 	for _, option := range options {
 		option(c)
 	}
-	c.ID = identifier
-	if c.client == nil {
-		return nil, errors.E(op, "no http client set", errors.KindUnexpected)
+
+	if c.username != "" || c.password != "" {
+		auth := []byte(c.username + ":" + c.password)
+		header := make(http.Header)
+		header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
+
+		var err error
+		c.requestContext, err = twirp.WithHTTPRequestHeaders(context.Background(), header)
+		if err != nil {
+			return nil, errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
+		}
 	}
 
-	if err := checkParams(c); err != nil {
-		return nil, errors.E(op, err)
-	}
+	c.service = pb.NewClientServiceProtobufClient(c.url, c.client, twirp.WithClientPathPrefix("/v1"))
 
-	auth := []byte(c.Username + ":" + c.Password)
-	c.header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(auth))
-
-	c.service = pb.NewClientServiceProtobufClient(c.URL, c.client, twirp.WithClientPathPrefix("/v1"))
-
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 	defer cancel()
 
-	requestContext, err := twirp.WithHTTPRequestHeaders(ctx, c.header)
-	if err != nil {
-		return nil, errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
-	}
-
-	configs, err := c.service.ListConfigs(requestContext, &pb.Empty{})
+	configs, err := c.service.ListConfigs(ctx, &pb.Empty{})
 	if err != nil {
 		return nil, errors.E(op, fmt.Errorf("failed to retrieve configs: %w", err))
 	}
@@ -106,33 +106,39 @@ func New(logger *log.Logger, identifier string, options ...Option) (*Client, err
 	return c, nil
 }
 
+func WithLogger(logger *log.Logger) Option {
+	return func(c *Client) {
+		c.logger = logger
+	}
+}
+
 func WithUsername(username string) Option {
 	return func(c *Client) {
-		c.Username = username
+		c.username = username
 	}
 }
 
 func WithPassword(password string) Option {
 	return func(c *Client) {
-		c.Password = password
+		c.password = password
 	}
 }
 
 func WithURL(url string) Option {
 	return func(c *Client) {
-		c.URL = url
+		c.url = url
 	}
 }
 
 func WithRunWaitTime(duration time.Duration) Option {
 	return func(c *Client) {
-		c.RunWaitTime = duration
+		c.runWaitTime = duration
 	}
 }
 
 func WithHealthWaitTime(duration time.Duration) Option {
 	return func(c *Client) {
-		c.HealthWaitTime = duration
+		c.healthWaitTime = duration
 	}
 }
 
@@ -150,11 +156,6 @@ func WithProxy(proxy string) Option {
 
 func (c *Client) Health(ctx context.Context) error {
 	const op errors.Op = "healthClient.Run"
-
-	requestContext, err := twirp.WithHTTPRequestHeaders(ctx, c.header)
-	if err != nil {
-		return errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
-	}
 
 	certs := c.client.(*http.Client).Transport.(*http.Transport).TLSClientConfig.Certificates
 	if len(certs) == 0 {
@@ -174,20 +175,20 @@ func (c *Client) Health(ctx context.Context) error {
 		notAfter = x509Cert.NotAfter
 	}
 
-	c.logger.Infof("using runwaittime=%s and healthwaittime=%s", c.RunWaitTime, c.HealthWaitTime)
+	c.logger.Infof("using runwaittime=%s and healthwaittime=%s", c.runWaitTime, c.healthWaitTime)
 
-	ticker := time.NewTicker(c.HealthWaitTime)
+	ticker := time.NewTicker(c.healthWaitTime)
 	start := time.Now()
 	for {
 		select {
 		case <-ticker.C:
 			var m runtime.MemStats
 			runtime.ReadMemStats(&m)
-			ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+			ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 			_, err := c.service.AddHealth(ctx, &pb.HealthInfo{
 				Cpu:     float64(runtime.NumCPU()),
 				Ram:     float64(m.Alloc) / 1048576.0, //Megabyte
-				Status:  fmt.Sprintf("Version: %s | CertValidUntil: %s", c.ID, notAfter.Format("2006-01-02")),
+				Status:  fmt.Sprintf("Version: %s | CertValidUntil: %s", c.id, notAfter.Format("2006-01-02")),
 				Threads: uint32(runtime.NumGoroutine()),
 				Uptime:  uint64(time.Since(start).Nanoseconds()),
 				Os:      fmt.Sprintf("%s_%s", runtime.GOOS, runtime.GOARCH),
@@ -209,18 +210,12 @@ func (c *Client) Health(ctx context.Context) error {
 func (c *Client) Run(ctx context.Context) error {
 	const op errors.Op = "client.Run"
 
-	var err error
-	requestContext, err := twirp.WithHTTPRequestHeaders(ctx, c.header)
-	if err != nil {
-		return errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
-	}
-
-	ticker := time.NewTicker(c.RunWaitTime)
+	ticker := time.NewTicker(c.runWaitTime)
 	for {
 		select {
 		case <-ticker.C:
 			for _, plugin := range c.outbounds {
-				ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+				ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 				attachments, err := plugin.ListAttachments(ctx)
 				if err != nil {
 					c.logger.Errorf("error while reading attachment: %v", err)
@@ -228,14 +223,14 @@ func (c *Client) Run(ctx context.Context) error {
 				cancel()
 
 				for _, atc := range attachments {
-					ctx, cancel := context.WithTimeout(requestContext, 5*time.Second)
+					ctx, cancel := context.WithTimeout(c.requestContext, 5*time.Second)
 					if _, err := plugin.ProcessAttachment(ctx, atc); err != nil {
 						c.logger.Errorf("error while processing attachment %v: %v", atc.Filename, err)
 					}
 					cancel()
 				}
 
-				ctx, cancel = context.WithTimeout(requestContext, 15*time.Second)
+				ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
 				messages, err := plugin.ListMessages(ctx)
 				if err != nil {
 					c.logger.Errorf("error while reading messages: %v", err)
@@ -243,7 +238,7 @@ func (c *Client) Run(ctx context.Context) error {
 				cancel()
 
 				for _, msg := range messages {
-					ctx, cancel = context.WithTimeout(requestContext, 15*time.Second)
+					ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
 					if _, err := plugin.ProcessMessage(ctx, msg); err != nil {
 						c.logger.Errorf("error while processing message %v: %v", msg.Id, err)
 					}
@@ -251,7 +246,7 @@ func (c *Client) Run(ctx context.Context) error {
 				}
 			}
 
-			ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+			ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 			msgs, err := c.service.ListMessages(ctx, &pb.Empty{})
 			cancel()
 			if err != nil {
@@ -266,7 +261,7 @@ func (c *Client) Run(ctx context.Context) error {
 						c.logger.Errorf("error while creating confirm: %v", err)
 						continue
 					}
-					ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+					ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 					_, err = c.service.ConfirmMessage(ctx, confirm)
 					if err != nil {
 						c.logger.Errorf("error while sending confirm: %v", err)
@@ -282,7 +277,7 @@ func (c *Client) Run(ctx context.Context) error {
 							c.logger.Errorf("error while creating confirm: %v", err)
 							continue
 						}
-						ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+						ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 						_, err = c.service.ConfirmMessage(ctx, confirm)
 						if err != nil {
 							c.logger.Errorf("error while sending confirm: %v", err)
@@ -295,12 +290,12 @@ func (c *Client) Run(ctx context.Context) error {
 						Data: data,
 					}
 					attachment.Filename = strings.Replace(attachment.Filename, "%(REALFILENAME)", filename, -1)
-					ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+					ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 					p.ProcessAttachment(ctx, attachment)
 					cancel()
 				}
 
-				ctx, cancel := context.WithTimeout(requestContext, 15*time.Second)
+				ctx, cancel := context.WithTimeout(c.requestContext, 15*time.Second)
 				confirm, err := p.ProcessMessage(ctx, msg)
 				if err != nil {
 					confirm, err = transport.CreateConfirm(msg.Id, msg.ProcessId, transport.StatusInternalError, "error while processing inbound msg: %v", err)
@@ -311,7 +306,7 @@ func (c *Client) Run(ctx context.Context) error {
 				}
 				cancel()
 
-				ctx, cancel = context.WithTimeout(requestContext, 15*time.Second)
+				ctx, cancel = context.WithTimeout(c.requestContext, 15*time.Second)
 				_, err = c.service.ConfirmMessage(ctx, confirm)
 				if err != nil {
 					c.logger.Errorf("error while sending confirm for inbound msg %s: %v", msg.Id, err)
@@ -355,27 +350,4 @@ func downloadAttachment(attachment *pb.Attachment) ([]byte, string, error) {
 }
 
 func processMessage() {
-}
-
-func checkParams(c *Client) error {
-	const op errors.Op = "client.checkParams"
-	if c == nil {
-		return errors.E(op, "client not valid", errors.KindBadRequest)
-	}
-	if c.ID == "" {
-		return errors.E(op, "missing id", errors.KindBadRequest)
-	}
-	if c.Username == "" {
-		return errors.E(op, "missing username", errors.KindBadRequest)
-	}
-	if c.Password == "" {
-		return errors.E(op, "missing password", errors.KindBadRequest)
-	}
-	if c.URL == "" {
-		return errors.E(op, "missing url", errors.KindBadRequest)
-	}
-	if c.client == nil {
-		return errors.E(op, "missing client", errors.KindBadRequest)
-	}
-	return nil
 }

@@ -19,29 +19,26 @@ import (
 
 func ParseClientOptions() ([]client.Option, error) {
 	const op errors.Op = "config.ParseClientOptions"
-	var err error
+	opts := []client.Option{}
 
-	runWaitTimeDuration := time.Minute
-	runWaitTime := viper.GetString("runwaittime")
-	if runWaitTime != "" {
-		runWaitTimeDuration, err = time.ParseDuration(runWaitTime)
+	if runWaitTime := viper.GetString("runwaittime"); runWaitTime != "" {
+		d, err := time.ParseDuration(runWaitTime)
 		if err != nil {
 			return nil, err
 		}
+		opts = append(opts, client.WithRunWaitTime(d))
 	}
 
-	healthWaitTimeDuration := 15 * time.Minute
-	healthWaitTime := viper.GetString("healthwaitttime")
-	if healthWaitTime != "" {
-		healthWaitTimeDuration, err = time.ParseDuration(healthWaitTime)
+	if healthWaitTime := viper.GetString("healthwaitttime"); healthWaitTime != "" {
+		d, err := time.ParseDuration(healthWaitTime)
 		if err != nil {
 			return nil, err
 		}
+		opts = append(opts, client.WithRunWaitTime(d))
 	}
 
-	url := viper.GetString("url")
-	if url == "" {
-		url = "https://myopenfactory.net"
+	if url := viper.GetString("url"); url != "" {
+		opts = append(opts, client.WithURL(url))
 	}
 
 	cafile := viper.GetString("cafile")
@@ -56,17 +53,51 @@ func ParseClientOptions() ([]client.Option, error) {
 		return nil, errors.E(op, "client certificate does not exist", errors.KindUnexpected)
 	}
 
-	proxy := viper.GetString("proxy")
-	if proxy == "" {
-		proxy = os.Getenv("HTTP_PROXY")
+	if proxy := viper.GetString("proxy"); proxy != "" {
+		opts = append(opts, client.WithProxy(proxy))
+	}
+	if proxy := os.Getenv("HTTP_PROXY"); proxy != "" {
+		opts = append(opts, client.WithProxy(proxy))
 	}
 
-	cl, err := createHTTPClient(clientcert, cafile)
+	var config tls.Config
+	crt, err := tls.LoadX509KeyPair(clientcert, clientcert)
 	if err != nil {
-		return nil, errors.E(op, fmt.Errorf("could not create http client: %w", err), errors.KindUnexpected)
+		return nil, errors.E(op, fmt.Errorf("error loading client certificate: %v", err))
+	}
+	config.Certificates = []tls.Certificate{crt}
+
+	if cafile != "" {
+		pemData, err := ioutil.ReadFile(cafile)
+		if err != nil {
+			return nil, errors.E(op, fmt.Errorf("error while loading ca certificates: %w", err))
+		}
+		certs := x509.NewCertPool()
+		certs.AppendCertsFromPEM(pemData)
+		config.RootCAs = certs
+		config.BuildNameToCertificate()
 	}
 
-	return []client.Option{client.WithUsername(viper.GetString("username")), client.WithPassword(viper.GetString("password")), client.WithURL(url), client.WithProxy(proxy), client.WithHealthWaitTime(healthWaitTimeDuration), client.WithRunWaitTime(runWaitTimeDuration), client.WithClient(cl)}, nil
+	opts = append(opts, client.WithClient(&http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &config,
+			Proxy:           http.ProxyFromEnvironment,
+		},
+	}))
+
+	opts = append(opts, client.WithLogger(log.New(
+		ParseLogOptions()...,
+	)))
+
+	if username := viper.GetString("username"); username != "" {
+		opts = append(opts, client.WithUsername(username))
+	}
+
+	if password := viper.GetString("password"); password != "" {
+		opts = append(opts, client.WithPassword(password))
+	}
+
+	return opts, nil
 }
 
 func ParseLogOptions() []log.Option {
@@ -104,37 +135,4 @@ func ParseLogOptions() []log.Option {
 	}
 
 	return opts
-}
-
-func createHTTPClient(cert, ca string) (*http.Client, error) {
-	const op errors.Op = "config.createHTTPClient"
-
-	if cert == "" {
-		return nil, errors.E(op, fmt.Errorf("error while loading client certificate: no client certificate specified"))
-	}
-
-	var config tls.Config
-	crt, err := tls.LoadX509KeyPair(cert, cert)
-	if err != nil {
-		return nil, errors.E(op, fmt.Errorf("error loading client certificate: %v", err))
-	}
-	config.Certificates = []tls.Certificate{crt}
-
-	if ca != "" {
-		pemData, err := ioutil.ReadFile(ca)
-		if err != nil {
-			return nil, errors.E(op, fmt.Errorf("error while loading ca certificates: %w", err))
-		}
-		certs := x509.NewCertPool()
-		certs.AppendCertsFromPEM(pemData)
-		config.RootCAs = certs
-		config.BuildNameToCertificate()
-	}
-
-	return &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &config,
-			Proxy:           http.ProxyFromEnvironment,
-		},
-	}, nil
 }
