@@ -72,13 +72,13 @@ func main() {
 
 			clientOpts, err := config.ParseClientOptions()
 			if err != nil {
-				logger.SystemErr(errors.E(op, err))
+				logger.WithError(errors.E(op, err, errors.KindUnexpected)).Error()
 				os.Exit(1)
 			}
 
 			cl, err := client.New(logger, fmt.Sprintf("Core_%s", version.Version), clientOpts...)
 			if err != nil {
-				logger.SystemErr(errors.E(op, err))
+				logger.WithError(errors.E(op, err, errors.KindUnexpected)).Error()
 				os.Exit(1)
 			}
 
@@ -97,22 +97,22 @@ func main() {
 			go func() {
 				defer func() {
 					if r := recover(); r != nil {
-						logger.SystemErr(errors.E(op, err))
+						logger.WithError(errors.E(op, err, errors.KindUnexpected)).Error()
 					}
 				}()
 				if err := cl.Health(ctx); err != nil {
-					logger.SystemErr(errors.E(op, err))
+					logger.WithError(errors.E(op, err, errors.KindUnexpected)).Error()
 					os.Exit(1)
 				}
 			}()
 
 			defer func() {
 				if r := recover(); r != nil {
-					logger.SystemErr(errors.E(op, err))
+					logger.WithError(errors.E(op, err, errors.KindUnexpected)).Error()
 				}
 			}()
 			if err := cl.Run(ctx); err != nil {
-				logger.SystemErr(errors.E(op, err))
+				logger.WithError(errors.E(op, err, errors.KindUnexpected)).Error()
 				os.Exit(1)
 			}
 			logger.Debug("client gracefully stopped")
@@ -129,7 +129,7 @@ func main() {
 	cmds.AddCommand(cmd.Service)
 
 	if err := cmds.Execute(); err != nil {
-		logger.Error(err)
+		logger.WithError(err).Error()
 		os.Exit(1)
 	}
 }

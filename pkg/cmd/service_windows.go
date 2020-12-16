@@ -136,7 +136,7 @@ var serviceRunCmd = &cobra.Command{
 
 		clientOpts, err := config.ParseClientOptions()
 		if err != nil {
-			logger.Error("error while creating client: %v", err)
+			logger.Errorf("error while creating client: %v", err)
 			os.Exit(1)
 		}
 
