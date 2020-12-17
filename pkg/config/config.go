@@ -90,10 +90,12 @@ func ParseClientOptions() ([]client.Option, error) {
 	)))
 
 	if username := viper.GetString("username"); username != "" {
+		username = strings.TrimSpace(username)
 		opts = append(opts, client.WithUsername(username))
 	}
 
 	if password := viper.GetString("password"); password != "" {
+		password = strings.TrimSpace(password)
 		opts = append(opts, client.WithPassword(password))
 	}
 
