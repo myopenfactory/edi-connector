@@ -53,7 +53,7 @@ func main() {
 		if proxy := viper.GetString("proxy"); proxy != "" {
 			os.Setenv("HTTP_PROXY", proxy)
 		}
-		logger = log.New(config.ParseLogOptions())
+		logger = log.New(config.ParseLogOptions()...)
 	})
 
 	cmds := &cobra.Command{
@@ -76,7 +76,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			cl, err := client.New(logger, fmt.Sprintf("Core_%s", version.Version), clientOpts...)
+			cl, err := client.New(clientOpts...)
 			if err != nil {
 				logger.WithError(errors.E(op, err, errors.KindUnexpected)).Error()
 				os.Exit(1)

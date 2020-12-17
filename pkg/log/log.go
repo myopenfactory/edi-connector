@@ -19,7 +19,7 @@ type Logger struct {
 
 type Option func(*Logger)
 
-func New(opts []Option) *Logger {
+func New(opts ...Option) *Logger {
 	l := logrus.New()
 	l.SetFormatter(&logrus.TextFormatter{
 		DisableColors: true,

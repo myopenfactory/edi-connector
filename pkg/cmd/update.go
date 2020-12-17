@@ -21,7 +21,7 @@ var Update = &cobra.Command{
 	PreRunE:  preUpdate,
 	PostRunE: postUpdate,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := log.New(config.ParseLogOptions())
+		logger := log.New(config.ParseLogOptions()...)
 
 		release, err := client.Release()
 		if err != nil {
