@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	stdlog "log"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -129,7 +130,7 @@ func main() {
 	cmds.AddCommand(cmd.Service)
 
 	if err := cmds.Execute(); err != nil {
-		logger.WithError(err).Error()
+		stdlog.Fatal(err)
 		os.Exit(1)
 	}
 }
