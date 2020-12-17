@@ -33,7 +33,7 @@ func ParseClientOptions() ([]client.Option, error) {
 		if err != nil {
 			return nil, err
 		}
-		opts = append(opts, client.WithRunWaitTime(d))
+		opts = append(opts, client.WithHealthWaitTime(d))
 	}
 
 	if url := viper.GetString("url"); url != "" {
