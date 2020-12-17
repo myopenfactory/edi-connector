@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
@@ -33,9 +34,12 @@ type Client struct {
 	id             string
 	runWaitTime    time.Duration
 	healthWaitTime time.Duration
-	client         pb.HTTPClient
+	client         *http.Client
 	service        pb.ClientService
 	requestContext context.Context
+
+	certificate *tls.Certificate
+	certPool    *x509.CertPool
 
 	// plugins
 	inbounds  map[string]transport.InboundPlugin
@@ -70,6 +74,17 @@ func New(options ...Option) (*Client, error) {
 		if err != nil {
 			return nil, errors.E(op, fmt.Errorf("failed to set authorization context: %w", err))
 		}
+	}
+
+	if c.certificate != nil {
+		config := c.getTLSConfig()
+		config.Certificates = []tls.Certificate{*c.certificate}
+	}
+
+	if c.certPool != nil {
+		config := c.getTLSConfig()
+		config.RootCAs = c.certPool
+		config.BuildNameToCertificate()
 	}
 
 	c.service = pb.NewClientServiceProtobufClient(c.url, c.client, twirp.WithClientPathPrefix("/v1"))
@@ -142,9 +157,15 @@ func WithHealthWaitTime(duration time.Duration) Option {
 	}
 }
 
-func WithClient(client pb.HTTPClient) Option {
+func WithMTLS(cert tls.Certificate) Option {
 	return func(c *Client) {
-		c.client = client
+		c.certificate = &cert
+	}
+}
+
+func WithCertPool(pool *x509.CertPool) Option {
+	return func(c *Client) {
+		c.certPool = pool
 	}
 }
 
@@ -157,17 +178,11 @@ func WithProxy(proxy string) Option {
 func (c *Client) Health(ctx context.Context) error {
 	const op errors.Op = "healthClient.Run"
 
-	certs := c.client.(*http.Client).Transport.(*http.Transport).TLSClientConfig.Certificates
-	if len(certs) == 0 {
-		return errors.E(op, fmt.Errorf("failed to load client certs: no certs found"))
-	}
-
 	var notAfter time.Time
-	for _, certbytes := range certs[0].Certificate {
+	for _, certbytes := range c.certificate.Certificate {
 		x509Cert, err := x509.ParseCertificate(certbytes)
 		if err != nil {
-			c.logger.Errorf("faild to load certificate: %v", err)
-			os.Exit(1)
+			return fmt.Errorf("failed to extract notAfter: %w", err)
 		}
 		if x509Cert.IsCA {
 			continue
@@ -350,4 +365,16 @@ func downloadAttachment(attachment *pb.Attachment) ([]byte, string, error) {
 }
 
 func processMessage() {
+}
+
+func (c *Client) getTLSConfig() *tls.Config {
+	if c.client.Transport == nil {
+		c.client.Transport = &http.Transport{}
+	}
+	config := c.client.Transport.(*http.Transport).TLSClientConfig
+	if config == nil {
+		config = &tls.Config{}
+		c.client.Transport.(*http.Transport).TLSClientConfig = config
+	}
+	return config
 }
