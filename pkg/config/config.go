@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -60,30 +59,21 @@ func ParseClientOptions() ([]client.Option, error) {
 		opts = append(opts, client.WithProxy(proxy))
 	}
 
-	var config tls.Config
 	crt, err := tls.LoadX509KeyPair(clientcert, clientcert)
 	if err != nil {
 		return nil, errors.E(op, fmt.Errorf("error loading client certificate: %v", err))
 	}
-	config.Certificates = []tls.Certificate{crt}
+	opts = append(opts, client.WithMTLS(crt))
 
 	if cafile != "" {
-		pemData, err := ioutil.ReadFile(cafile)
+		pem, err := ioutil.ReadFile(cafile)
 		if err != nil {
 			return nil, errors.E(op, fmt.Errorf("error while loading ca certificates: %w", err))
 		}
-		certs := x509.NewCertPool()
-		certs.AppendCertsFromPEM(pemData)
-		config.RootCAs = certs
-		config.BuildNameToCertificate()
+		pool := x509.NewCertPool()
+		pool.AppendCertsFromPEM(pem)
+		opts = append(opts, client.WithCertPool(pool))
 	}
-
-	opts = append(opts, client.WithClient(&http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &config,
-			Proxy:           http.ProxyFromEnvironment,
-		},
-	}))
 
 	opts = append(opts, client.WithLogger(log.New(
 		ParseLogOptions()...,
