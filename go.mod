@@ -11,7 +11,7 @@ require (
 	github.com/lestrrat-go/strftime v1.0.3 // indirect
 	github.com/magiconair/properties v1.8.4
 	github.com/olekukonko/tablewriter v0.0.4
-	github.com/rhysd/go-github-selfupdate v1.2.2
+	github.com/rhysd/go-github-selfupdate v1.2.3
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.1
