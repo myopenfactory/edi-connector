@@ -66,6 +66,13 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: 1.15
+
+      -
+        name: Prepare THIRD_PARTY licenses
+        run: |
+          go install github.com/google/go-licenses@latest
+          go-licenses save . --save_path THIRD_PARTY --force
+
       -
         name: Prepare sign certificate
         run: echo -n ${SIGN_CERTIFICATE} | base64 --decode > $HOME/key.asc

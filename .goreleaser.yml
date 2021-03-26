@@ -20,6 +20,10 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - LICENSE
+      - README.md
+      - THIRD_PARTY/*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -27,7 +31,7 @@ snapshot:
 dockers:
   - goos: linux
     goarch: amd64
-    binaries:
+    ids:
       - myof-client
     dockerfile: Dockerfile
     image_templates:
