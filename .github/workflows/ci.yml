@@ -22,7 +22,7 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.15
+          go-version: 1.16
       -
         name: Unit Tests
         run: go test -v ./...
@@ -65,7 +65,7 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.15
+          go-version: 1.16
 
       -
         name: Prepare THIRD_PARTY licenses
