@@ -40,6 +40,9 @@ dockers:
       - "myopenfactory/client:latest"
     extra_files:
       - myOpenFactoryCA.crt
+      - LICENSE
+      - README.md
+      - THIRD_PARTY
 signs:
   - signature: "${artifact}.sig"
     cmd: openssl
