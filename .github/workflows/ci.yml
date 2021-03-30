@@ -71,8 +71,11 @@ jobs:
       -
         name: Prepare THIRD_PARTY licenses
         run: |
-          go install github.com/google/go-licenses@latest
-          go-licenses save . --save_path THIRD_PARTY --force
+          echo "machine github.com login myofbot password ${{ secrets.MYOFBOT_PAT }}" > $HOME/.netrc
+          go install github.com/myopenfactory/huth/golicenses@latest
+          golicenses .
+        env:
+          GOPRIVATE: github.com/myopenfactory/huth/*
 
       -
         name: Prepare sign certificate
