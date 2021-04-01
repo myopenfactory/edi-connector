@@ -3,6 +3,7 @@ before:
     - go mod download
 builds:
   -
+    id: "myof-client"
     binary: myof-client
     env:
       - CGO_ENABLED=0
@@ -39,6 +40,9 @@ dockers:
       - "myopenfactory/client:latest"
     extra_files:
       - myOpenFactoryCA.crt
+      - LICENSE
+      - README.md
+      - THIRD_PARTY
 signs:
   - signature: "${artifact}.sig"
     cmd: openssl
