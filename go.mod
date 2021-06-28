@@ -20,5 +20,5 @@ require (
 	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11
 	golang.org/x/sys v0.0.0-20201214210602-f9fddec55a1e
 	golang.org/x/text v0.3.6
-	google.golang.org/protobuf v1.26.0
+	google.golang.org/protobuf v1.27.0
 )
