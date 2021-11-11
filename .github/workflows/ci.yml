@@ -15,23 +15,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Set up Go
+      - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.16.2'
+          go-version: "^1.17.3"
 
-      -
-        name: Unit Tests
+      - name: Unit Tests
         run: go test -v ./...
         env:
           GO111MODULE: on
 
-      -
-        name: E2E Tests Linux
+      - name: E2E Tests Linux
         if: runner.os == 'Linux'
         run: |
           export CONFIG_DIR=$(mktemp -d)
@@ -42,8 +38,7 @@ jobs:
           CONFIG: ${{ secrets.LINUX_CONFIG }}
           CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
 
-      -
-        name: E2E Tests Windows
+      - name: E2E Tests Windows
         shell: bash
         if: runner.os == 'Windows'
         run: |
@@ -59,17 +54,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: tests
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Set up Go
+      - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.16.2'
+          go-version: "^1.17.3"
 
-      -
-        name: Prepare THIRD_PARTY licenses
+      - name: Prepare THIRD_PARTY licenses
         run: |
           echo "machine github.com login myofbot password ${{ secrets.MYOFBOT_PAT }}" > $HOME/.netrc
           go install github.com/myopenfactory/huth/golicenses@latest
@@ -77,19 +69,16 @@ jobs:
         env:
           GOPRIVATE: github.com/myopenfactory/huth/*
 
-      -
-        name: Prepare sign certificate
+      - name: Prepare sign certificate
         run: echo -n ${SIGN_CERTIFICATE} | base64 --decode > $HOME/key.asc
         env:
           SIGN_CERTIFICATE: ${{ secrets.SIGN_CERTIFICATE }}
 
-      -
-        name: Prepare Dockerhub
+      - name: Prepare Dockerhub
         run: docker login --username myofci --password ${DOCKERHUB_TOKEN}
         env:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Run GoReleaser
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v1
         with:
           version: latest
