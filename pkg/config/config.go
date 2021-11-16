@@ -58,6 +58,9 @@ func ParseClientOptions() ([]client.Option, error) {
 	if proxy := os.Getenv("HTTP_PROXY"); proxy != "" {
 		opts = append(opts, client.WithProxy(proxy))
 	}
+	if proxy := os.Getenv("HTTPS_PROXY"); proxy != "" {
+		opts = append(opts, client.WithProxy(proxy))
+	}
 
 	crt, err := tls.LoadX509KeyPair(clientcert, clientcert)
 	if err != nil {
