@@ -172,6 +172,7 @@ func WithCertPool(pool *x509.CertPool) Option {
 func WithProxy(proxy string) Option {
 	return func(c *Client) {
 		os.Setenv("HTTP_PROXY", proxy)
+		os.Setenv("HTTPS_PROXY", proxy)
 	}
 }
 
