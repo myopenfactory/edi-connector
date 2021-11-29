@@ -17,7 +17,7 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 	github.com/tebeka/strftime v0.1.5 // indirect
-	github.com/twitchtv/twirp v7.2.0+incompatible
+	github.com/twitchtv/twirp v8.1.0+incompatible
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf
 	golang.org/x/text v0.3.7
