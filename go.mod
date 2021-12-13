@@ -15,11 +15,11 @@ require (
 	github.com/rhysd/go-github-selfupdate v1.2.3
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
-	github.com/spf13/viper v1.9.0
+	github.com/spf13/viper v1.10.0
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/twitchtv/twirp v7.2.0+incompatible
-	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf
+	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d
+	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d
 	golang.org/x/text v0.3.7
 	google.golang.org/protobuf v1.27.1
 )
