@@ -20,7 +20,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: "^1.17.3"
+          go-version: "^1.17.5"
 
       - name: Unit Tests
         run: go test -v ./...
@@ -59,7 +59,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: "^1.17.3"
+          go-version: "^1.17.5"
 
       - name: Prepare THIRD_PARTY licenses
         run: |
