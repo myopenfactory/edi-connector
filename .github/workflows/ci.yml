@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2019]
+        os: [ubuntu-20.04, windows-2019]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -51,7 +51,7 @@ jobs:
           CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
 
   goreleaser:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: tests
     steps:
       - name: Checkout
