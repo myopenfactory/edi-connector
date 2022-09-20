@@ -239,7 +239,7 @@ func (c *Client) Run(ctx context.Context) error {
 				cancel()
 
 				for _, atc := range attachments {
-					ctx, cancel := context.WithTimeout(c.requestContext, 5*time.Second)
+					ctx, cancel := context.WithTimeout(c.requestContext, 5*time.Minute)
 					if _, err := plugin.ProcessAttachment(ctx, atc); err != nil {
 						c.logger.Errorf("error while processing attachment %v: %v", atc.Filename, err)
 					}
