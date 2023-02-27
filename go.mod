@@ -14,8 +14,8 @@ require (
 	github.com/spf13/viper v1.10.1
 	github.com/twitchtv/twirp v7.2.0+incompatible
 	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
-	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e
-	golang.org/x/text v0.3.7
+	golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f
+	golang.org/x/text v0.7.0
 	google.golang.org/protobuf v1.27.1
 )
 
