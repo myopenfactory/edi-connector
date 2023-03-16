@@ -1,5 +1,0 @@
-# escape=`
-
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
-COPY e2e-test.exe C:\e2e-test.exe
-ENTRYPOINT ["C:\\e2e-test.exe"]

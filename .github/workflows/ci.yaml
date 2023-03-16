@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: 'go.mod'
+      - name: Unit Tests
+        run: go test -v ./...
+
+      - name: Build release
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          version: latest
+          args: build --snapshot --single-target
+
+      - name: E2E Tests Linux
+        if: runner.os == 'Linux'
+        working-directory: ./test
+        run: |
+          export CONFIG_DIR="/tmp/myof/config"
+          mkdir -p $CONFIG_DIR
+          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/certificate.pem
+          echo -n ${CONFIG} | base64 --decode > $CONFIG_DIR/config.properties
+          mkdir -p /tmp/myof/logs
+          mkdir -p /tmp/myof/inbound
+          mkdir -p /tmp/myof/outbound
+          mkdir -p /tmp/myof/success
+          mkdir -p /tmp/myof/error
+          mkdir -p /tmp/myof/attachment
+          ../dist/myof-client_linux_amd64_v1/myof-client --config $CONFIG_DIR/config.properties &
+          go run main.go
+        env:
+          CONFIG: ${{ secrets.LINUX_CONFIG }}
+          CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+
+      - name: E2E Tests Windows
+        shell: bash
+        if: runner.os == 'Windows'
+        working-directory: ./test
+        run: |
+          export CONFIG_DIR="C:/myof/config"
+          mkdir -p $CONFIG_DIR
+          echo -n ${CERTIFICATE} | base64 --decode > $CONFIG_DIR/certificate.pem
+          echo -n ${CONFIG} | base64 --decode > $CONFIG_DIR/config.properties
+          mkdir -p "C:/myof/logs"
+          mkdir -p "C:/myof/inbound/"
+          mkdir -p "C:/myof/outbound/"
+          mkdir -p "C:/myof/success/"
+          mkdir -p "C:/myof/error/"
+          mkdir -p "C:/myof/attachment/"
+          ../dist/myof-client_windows_amd64_v1/myof-client.exe --config $CONFIG_DIR/config.properties &
+          go run main.go
+        env:
+          CONFIG: ${{ secrets.WINDOWS_CONFIG }}
+          CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}

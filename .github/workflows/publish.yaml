@@ -1,0 +1,42 @@
+name: publish
+
+permissions:
+  packages: write
+  contents: write
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  push:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: "go.mod"
+      - name: Prepare THIRD_PARTY folder
+        run: |
+          go install github.com/google/go-licenses@latest
+          go-licenses save . --save_path="THIRD_PARTY/"
+      - name: Prepare sign certificate
+        run: echo -n ${SIGN_CERTIFICATE} | base64 --decode > $HOME/key.asc
+        env:
+          SIGN_CERTIFICATE: ${{ secrets.SIGN_CERTIFICATE }}
+      - name: Release
+        uses: goreleaser/goreleaser-action@v1
+        with:
+          version: latest
+          args: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
