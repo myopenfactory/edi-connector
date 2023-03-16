@@ -1,8 +1,0 @@
-# escape=`
-
-FROM mcr.microsoft.com/windows/servercore:ltsc2019
-COPY myof-client.exe C:\myof-client.exe
-COPY myOpenFactoryCA.crt C:\myOpenFactoryCA.crt
-SHELL ["powershell", "-command"]
-RUN Import-Certificate -FilePath C:\myOpenFactoryCA.crt -CertStoreLocation cert:\LocalMachine\Root
-ENTRYPOINT ["C:\\myof-client.exe"]
