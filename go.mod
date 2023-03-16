@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/golang/protobuf v1.5.2
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/magiconair/properties v1.8.7
 	github.com/olekukonko/tablewriter v0.0.5
@@ -15,12 +14,13 @@ require (
 	github.com/twitchtv/twirp v8.1.3+incompatible
 	golang.org/x/net v0.7.0
 	golang.org/x/sys v0.5.0
-	golang.org/x/text v0.7.0
+	golang.org/x/text v0.8.0
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github/v30 v30.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -30,7 +30,6 @@ require (
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
