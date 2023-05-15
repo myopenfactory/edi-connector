@@ -12,9 +12,9 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 	github.com/twitchtv/twirp v8.1.3+incompatible
-	golang.org/x/net v0.7.0
-	golang.org/x/sys v0.6.0
-	golang.org/x/text v0.8.0
+	golang.org/x/net v0.10.0
+	golang.org/x/sys v0.8.0
+	golang.org/x/text v0.9.0
 	google.golang.org/protobuf v1.30.0
 )
 
