@@ -58,7 +58,10 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 		}
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			return nil, fmt.Errorf("error outbound folder does not exist: %v", path)
+		} else if err != nil {
+			return nil, fmt.Errorf("could not verify existence of outbound folder: %w", err)
 		}
+
 		p.msgFolders = append(p.msgFolders, folder{
 			path:      path,
 			extension: ext,
