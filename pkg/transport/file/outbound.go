@@ -58,7 +58,10 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 		}
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			return nil, fmt.Errorf("error outbound folder does not exist: %v", path)
+		} else if err != nil {
+			return nil, fmt.Errorf("could not verify existence of outbound folder: %w", err)
 		}
+
 		p.msgFolders = append(p.msgFolders, folder{
 			path:      path,
 			extension: ext,
@@ -108,7 +111,11 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 		p.attachmentWaitTime = d
 	}
 
-	p.logger.Infof("using messageWaitTime=%s, attachmentWaitTime=%s, successFolder=%v, errorFolder=%v", p.messageWaitTime, p.attachmentWaitTime, p.successFolder, p.errorFolder)
+	for _, folder := range p.msgFolders {
+		p.logger.Infof("watching outbound folder: %q", folder.path)
+	}
+
+	p.logger.Infof("using messageWaitTime=%s, attachmentWaitTime=%s, successFolder=%q, errorFolder=%q", p.messageWaitTime, p.attachmentWaitTime, p.successFolder, p.errorFolder)
 
 	return p, nil
 }
@@ -305,6 +312,8 @@ func splitPathExtension(pathextension string) (string, string) {
 		path = seps[0]
 		extension = seps[1]
 	}
+
+	path = filepath.Clean(strings.TrimSpace(path))
 
 	return path, extension
 }
