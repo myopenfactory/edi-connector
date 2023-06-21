@@ -313,6 +313,8 @@ func splitPathExtension(pathextension string) (string, string) {
 		extension = seps[1]
 	}
 
+	path = filepath.Clean(strings.TrimSpace(path))
+
 	return path, extension
 }
 
