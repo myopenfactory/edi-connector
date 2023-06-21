@@ -128,6 +128,7 @@ func main() {
 	cmds.AddCommand(cmd.Bootstrap)
 	cmds.AddCommand(cmd.Update)
 	cmds.AddCommand(cmd.Service)
+	cmds.AddCommand(cmd.Check)
 
 	if err := cmds.Execute(); err != nil {
 		stdlog.Fatal(err)
