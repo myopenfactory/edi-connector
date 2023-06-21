@@ -111,7 +111,11 @@ func NewOutboundPlugin(logger *log.Logger, pid string, msgProcessor transport.Me
 		p.attachmentWaitTime = d
 	}
 
-	p.logger.Infof("using messageWaitTime=%s, attachmentWaitTime=%s, successFolder=%v, errorFolder=%v", p.messageWaitTime, p.attachmentWaitTime, p.successFolder, p.errorFolder)
+	for _, folder := range p.msgFolders {
+		p.logger.Infof("watching outbound folder: %q", folder.path)
+	}
+
+	p.logger.Infof("using messageWaitTime=%s, attachmentWaitTime=%s, successFolder=%q, errorFolder=%q", p.messageWaitTime, p.attachmentWaitTime, p.successFolder, p.errorFolder)
 
 	return p, nil
 }
