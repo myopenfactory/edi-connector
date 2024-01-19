@@ -61,7 +61,7 @@ func main() {
 		Use:   "myof-client",
 		Short: "myof-client controls the client",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			logger.Infof("myOpenFactory Client: %v", version.Version)
+			logger.Infof("client: %v", version.Version)
 			if viper.ConfigFileUsed() == "" {
 				logger.Debugf("Using config: no config found")
 			} else {
@@ -125,8 +125,6 @@ func main() {
 
 	cmds.AddCommand(cmd.Version)
 	cmds.AddCommand(cmd.Config)
-	cmds.AddCommand(cmd.Bootstrap)
-	cmds.AddCommand(cmd.Update)
 	cmds.AddCommand(cmd.Service)
 
 	if err := cmds.Execute(); err != nil {

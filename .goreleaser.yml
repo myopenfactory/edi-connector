@@ -19,7 +19,6 @@ builds:
       - -X github.com/myopenfactory/client/pkg/version.Version={{.Version}} -X github.com/myopenfactory/client/pkg/version.Date={{.Date}} -X github.com/myopenfactory/client/pkg/version.Commit={{.Commit}}
 archives:
   - name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
-    rlcp: true
     format: tar.gz
     format_overrides:
       - goos: windows
@@ -30,8 +29,6 @@ archives:
       - THIRD_PARTY/*
 checksum:
   name_template: 'checksums.txt'
-snapshot:
-  name_template: "snapshot"
 dockers:
   - goos: linux
     goarch: amd64
@@ -44,15 +41,8 @@ dockers:
       - "ghcr.io/myopenfactory/client:{{ .Major}}"
       - "ghcr.io/myopenfactory/client:latest"
     extra_files:
-      - myOpenFactoryCA.crt
       - LICENSE
-      - README.md
       - THIRD_PARTY
-signs:
-  - signature: "${artifact}.sig"
-    cmd: openssl
-    args: ["dgst", "-sha256", "-sign", "$HOME/key.asc", "-out", "${signature}", "${artifact}"]
-    artifacts: all
 changelog:
   sort: asc
   filters:
@@ -60,3 +50,5 @@ changelog:
     - '^docs:'
     - '^test:'
     - '^ci:'
+release:
+  prerelease: auto
