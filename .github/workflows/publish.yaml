@@ -10,33 +10,92 @@ on:
       - "v*"
 
 jobs:
-  push:
+  release:
     runs-on: ubuntu-20.04
     steps:
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
       - name: Prepare THIRD_PARTY folder
         run: |
           go install github.com/google/go-licenses@latest
           go-licenses save . --save_path="THIRD_PARTY/"
-      - name: Prepare sign certificate
-        run: echo -n ${SIGN_CERTIFICATE} | base64 --decode > $HOME/key.asc
-        env:
-          SIGN_CERTIFICATE: ${{ secrets.SIGN_CERTIFICATE }}
       - name: Release
-        uses: goreleaser/goreleaser-action@v1
+        uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
           args: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: third_party
+          path: THIRD_PARTY
+
+  windows_installer:
+    runs-on: windows-2022
+    needs: release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: third_party
+          path: THIRD_PARTY
+      - name: Setup NSIS
+        run: |
+          Invoke-WebRequest https://myopenfactory.blob.core.windows.net/static/NsProcess.zip -OutFile c:\NsProcess.zip
+          Expand-Archive -LiteralPath "C:\NsProcess.zip" -DestinationPath C:\
+          Copy-Item "C:\NsProcess\Plugin\nsProcessW.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsProcess.dll"
+          Copy-Item "C:\NsProcess\Include\nsProcess.nsh" -Destination "C:\Program Files (x86)\NSIS\Include\nsProcess.nsh"
+      - name: Build installer
+        run: |
+          $env:VERSION = $(jq -r '.version' .\dist\metadata.json)
+          makensis hacks\installer.nsi
+          Remove-Item Env:\VERSION
+      - uses: actions/upload-artifact@v4
+        with:
+          name: myof-client_installer.exe
+          path: hacks/myof-client_installer.exe
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = 'myopenfactory';
+            const repo = 'edi-connector';
+            const fs = require('fs');
+            const data = fs.readFileSync('hacks/myof-client_installer.exe');
+            
+            const { data: tag }= await github.request('GET /repos/{owner}/{repo}/releases/tags/{tag}', {
+              owner,
+              repo,
+              tag: '${{ github.ref_name }}',
+              headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+              }
+            });
+            
+            github.rest.repos.uploadReleaseAsset({
+              owner,
+              repo,
+              release_id: tag.id,
+              name: 'myof-client_installer.exe',
+              data,
+            });

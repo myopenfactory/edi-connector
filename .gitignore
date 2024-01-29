@@ -11,3 +11,5 @@ myof-client
 test/e2e-test
 ./test/e2e-test
 THIRD_PARTY/
+.direnv/
+.envrc

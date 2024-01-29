@@ -34,6 +34,9 @@ func init() {
 	Service.AddCommand(serviceInstallCmd)
 	Service.AddCommand(serviceUninstallCmd)
 	Service.AddCommand(serviceRunCmd)
+	Service.AddCommand(serviceStartCmd)
+	Service.AddCommand(serviceStopCmd)
+	Service.AddCommand(serviceRestartCmd)
 }
 
 // serviceInstallCmd represents the install service command
@@ -78,11 +81,6 @@ var serviceInstallCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		defer s.Close()
-
-		if err := s.Start(); err != nil {
-			fmt.Println("failed to start service:", err)
-			os.Exit(1)
-		}
 
 		err = eventlog.InstallAsEventCreate(serviceName, eventlog.Error|eventlog.Warning|eventlog.Info)
 		if err != nil {
@@ -187,6 +185,128 @@ var serviceRunCmd = &cobra.Command{
 		}
 		logger.Infof("service stopped: %q", serviceName)
 	},
+}
+
+var serviceStartCmd = &cobra.Command{
+	Use:   "start",
+	Short: "start the windows service",
+	Run: func(cmd *cobra.Command, args []string) {
+		logger := log.New(config.ParseLogOptions()...)
+
+		if err := start(logger); err != nil {
+			logger.Error(err)
+			return
+		}
+		logger.Info("service started")
+	},
+}
+
+var serviceStopCmd = &cobra.Command{
+	Use:   "stop",
+	Short: "stop the windows service",
+	Run: func(cmd *cobra.Command, args []string) {
+		logger := log.New(config.ParseLogOptions()...)
+
+		if err := stop(logger); err != nil {
+			logger.Error(err)
+			return
+		}
+		logger.Info("service stopped")
+	},
+}
+
+var serviceRestartCmd = &cobra.Command{
+	Use:   "restart",
+	Short: "restart the windows service",
+	Run: func(cmd *cobra.Command, args []string) {
+		logger := log.New(config.ParseLogOptions()...)
+
+		if err := stop(logger); err != nil {
+			logger.Error(err)
+			return
+		}
+		logger.Info("service stopped")
+
+		if err := start(logger); err != nil {
+			logger.Error(err)
+			return
+		}
+		logger.Info("service started")
+	},
+}
+
+func start(logger *log.Logger) error {
+	manager, err := mgr.Connect()
+	if err != nil {
+		return fmt.Errorf("could not connect to mgr: %v", err)
+	}
+	defer manager.Disconnect()
+
+	serviceName := viper.GetString("service.name")
+	service, err := manager.OpenService(serviceName)
+	if err != nil {
+		return fmt.Errorf("could not access service: %v", err)
+	}
+	defer service.Close()
+
+	status, err := service.Query()
+	if err != nil {
+		return fmt.Errorf("could not retrieve service status: %v", err)
+	}
+
+	if status.State == svc.Running {
+		return nil
+	}
+
+	err = service.Start()
+	if err != nil {
+		logger.Infof("Please check the logs in for more information")
+		return fmt.Errorf("could not start service: %v", err)
+	}
+
+	return nil
+}
+
+func stop(logger *log.Logger) error {
+	manager, err := mgr.Connect()
+	if err != nil {
+		return fmt.Errorf("could not connect to mgr: %v", err)
+	}
+	defer manager.Disconnect()
+
+	serviceName := viper.GetString("service.name")
+	service, err := manager.OpenService(serviceName)
+	if err != nil {
+		return fmt.Errorf("could not access service: %v", err)
+	}
+	defer service.Close()
+
+	status, err := service.Query()
+	if err != nil {
+		return fmt.Errorf("could not retrieve service status: %v", err)
+	}
+
+	if status.State == svc.Stopped {
+		return nil // already stopped
+	}
+
+	status, err = service.Control(svc.Stop)
+	if err != nil {
+		return fmt.Errorf("could not send stop: %v", err)
+	}
+
+	timeout := time.Now().Add(10 * time.Second)
+	for status.State != svc.Stopped {
+		if timeout.Before(time.Now()) {
+			return fmt.Errorf("timeout waiting for service to stop")
+		}
+		time.Sleep(300 * time.Millisecond)
+		status, err = service.Query()
+		if err != nil {
+			return fmt.Errorf("could not retrieve service status: %v", err)
+		}
+	}
+	return nil
 }
 
 func exePath() (string, error) {
