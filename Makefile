@@ -1,9 +1,3 @@
-generate:
-	go generate ./...
-
-protogen:
-	@./protogen.sh
-
 third_party:
 	rm -rf THIRD_PARTY || true
 	go install github.com/google/go-licenses@latest
