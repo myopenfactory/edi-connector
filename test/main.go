@@ -90,6 +90,7 @@ func main() {
 		select {
 		case <-timeout:
 			fmt.Println("Timed out!")
+			os.Exit(1)
 			return
 		case <-ticker.C:
 			files, err := ioutil.ReadDir(inboundPath)
