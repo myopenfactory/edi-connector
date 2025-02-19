@@ -8,14 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/viper"
-)
-
-type ContextKey string
-
-const (
-	ConfigContextKey = ContextKey("config")
-	LoggerContextKey = ContextKey("logger")
+	"gopkg.in/yaml.v3"
 )
 
 type ProcessConfig struct {
@@ -40,55 +33,62 @@ type Config struct {
 	Password          string
 	CAFile            string `mapstructure:"cafile"`
 	ClientCertificate string `mapstructure:"clientcert"`
+	ServiceName       string
 }
 
-func ReadConfig(configfile string) (Config, error) {
-	if configfile != "" {
-		viper.SetConfigFile(configfile)
+func ReadConfig(configFile string) (Config, string, error) {
+	if configFile == "" {
+		workdir, err := os.Getwd()
+		if err != nil {
+			return Config{}, "", fmt.Errorf("failed to get working directory: %w", err)
+		}
+		searchLocations := []string{workdir}
+		switch {
+		case runtime.GOOS == "windows":
+			searchLocations = append(searchLocations, filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "EDI-Connector"))
+		case runtime.GOOS == "linux":
+			searchLocations = append(searchLocations, filepath.Join("etc", "myopenfactory", "edi-connector"))
+		}
+
+		for _, searchLocation := range searchLocations {
+			path := filepath.Join(searchLocation, "config.yaml")
+			if _, err := os.Stat(path); os.IsNotExist(err) {
+				continue
+			}
+			configFile = path
+		}
 	}
-
-	viper.SetEnvPrefix("client")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	viper.AutomaticEnv()
-	viper.SetConfigName("config")
-
-	switch {
-	case runtime.GOOS == "windows":
-		viper.AddConfigPath(filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "EDI-Connector"))
-	case runtime.GOOS == "linux":
-		viper.AddConfigPath(filepath.Join("etc", "myopenfactory", "edi-connector"))
+	file, err := os.Open(configFile)
+	if err != nil {
+		return Config{}, "", fmt.Errorf("failed to read config file: %w", err)
 	}
-	viper.AddConfigPath(".")
+	defer file.Close()
 
-	viper.SetDefault("runwaittime", time.Minute)
-	viper.SetDefault("url", "https://edi.myopenfactory.net")
-
+	var cfg Config
+	cfg.RunWaitTime = time.Minute
+	cfg.Url = "https://edi.myopenfactory.net"
+	cfg.ServiceName = "EDI-Connector"
 	if proxy := os.Getenv("HTTP_PROXY"); proxy != "" {
-		viper.SetDefault("proxy", proxy)
+		cfg.Proxy = proxy
 	}
 	if proxy := os.Getenv("HTTPS_PROXY"); proxy != "" {
-		viper.SetDefault("proxy", proxy)
+		cfg.Proxy = proxy
 	}
 
-	if err := viper.ReadInConfig(); err != nil {
-		return Config{}, fmt.Errorf("failed to read config: %w", err)
+	if err := yaml.NewDecoder(file).Decode(&cfg); err != nil {
+		return Config{}, "", fmt.Errorf("failed to decode configuration file: %w", err)
 	}
 
-	if clientcert := viper.GetString("clientcert"); strings.HasPrefix(clientcert, "./") {
-		viper.Set("clientcert", filepath.Join(filepath.Dir(viper.ConfigFileUsed()), clientcert))
+	if strings.HasPrefix(cfg.ClientCertificate, "./") {
+		cfg.ClientCertificate = filepath.Join(filepath.Dir(configFile), cfg.ClientCertificate)
 	}
 
-	if clientcert := viper.GetString("clientcert"); clientcert == "" {
-		clientcert = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), "client.crt")
+	if cfg.ClientCertificate == "" {
+		clientcert := filepath.Join(filepath.Dir(configFile), "client.crt")
 		if _, err := os.Stat(clientcert); err == nil {
-			viper.Set("clientcert", clientcert)
+			cfg.ClientCertificate = clientcert
 		}
 	}
 
-	var cfg Config
-	if err := viper.Unmarshal(&cfg); err != nil {
-		return Config{}, fmt.Errorf("failed to unmarshal config: %w", err)
-	}
-
-	return cfg, nil
+	return cfg, configFile, nil
 }

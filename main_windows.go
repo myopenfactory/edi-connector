@@ -10,7 +10,6 @@ import (
 
 	"github.com/myopenfactory/edi-connector/config"
 	"github.com/myopenfactory/edi-connector/ediconnector"
-	"github.com/spf13/viper"
 	"golang.org/x/sys/windows/svc"
 )
 
@@ -19,13 +18,12 @@ func init() {
 	serviceRun = &run
 }
 
-func windowsRun(ctx context.Context, logger *slog.Logger, cfg config.Config) error {
+func windowsRun(ctx context.Context, logger *slog.Logger, cfg config.Config, serviceName string) error {
 	cl, err := ediconnector.New(logger, cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create edi-connector: %w", err)
 	}
 
-	serviceName := viper.GetString("service.name")
 	if err := svc.Run(serviceName, &service{connector: cl}); err != nil {
 		return fmt.Errorf("service %q failed to run: %w", serviceName, err)
 	}

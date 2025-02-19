@@ -111,7 +111,7 @@ Section "EDI-Connector"
         ${EndIf}
     ${EndIf}
 
-    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service install'
+    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service install --name EDI-Connector'
 
     Pop $0
     ${If} $0 != 0
@@ -137,7 +137,7 @@ Section "EDI-Connector"
 SectionEnd
 
 Section "Uninstall"
-    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall'
+    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall --name EDI-Connector'
     RMDir /R "$SMPROGRAMS\myOpenFactory\$(^Name)"
 
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory"
@@ -176,6 +176,12 @@ FunctionEnd
 Function pgAuthoriziationSettingsPageLeave
     ${NSD_GetText} $UserHWND $0
     ${NSD_GetText} $PasswordHWND $1
+
+    nsYaml::write $SettingsDir/config.yaml serviceName "EDI-Connector"
+    ${If} $0 != error
+        DetailPrint "Failed to write password"
+        SetErrors
+    ${EndIf}
 
     nsYaml::write $SettingsDir/config.yaml username $0
     ${If} $0 != error
