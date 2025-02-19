@@ -3,11 +3,29 @@
 package eventlog
 
 import (
+	"context"
 	"fmt"
-
-	log "github.com/sirupsen/logrus"
+	"log/slog"
 )
 
-func New(name string) (log.Hook, error) {
-	return nil, fmt.Errorf("linux does not support eventlog")
+type Handler struct{}
+
+func NewHandler(name string, opts *slog.HandlerOptions) (*Handler, error) {
+	return nil, fmt.Errorf("not supported on unix")
+}
+
+func (h *Handler) Enabled(ctx context.Context, lvl slog.Level) bool {
+	return false
+}
+
+func (h *Handler) Handle(ctx context.Context, rec slog.Record) error {
+	return fmt.Errorf("not implemented")
+}
+
+func (h *Handler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return nil
+}
+
+func (h *Handler) WithGroup(name string) slog.Handler {
+	return nil
 }

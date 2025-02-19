@@ -5,10 +5,12 @@
 !include shelllink.nsh
 !include nsProcess.nsh
 
-Name "myOpenFactory Client"
-BrandingText "myOpenFactory Client $%VERSION%"
-OutFile "myof-client_installer.exe"
-InstallDir "$PROGRAMFILES64\myOpenFactory\Client"
+!addplugindir plugins
+
+Name "EDI-Connector"
+BrandingText "myOpenFactory EDI-Connector $%VERSION%"
+OutFile "edi-connector_installer.exe"
+InstallDir "$PROGRAMFILES64\myOpenFactory\EDI-Connector"
 ShowInstDetails show
 Icon "logo.ico"
 
@@ -17,8 +19,8 @@ Icon "logo.ico"
 !define MUI_FINISHPAGE_RUN ""
 !define MUI_FINISHPAGE_RUN_FUNCTION launchApplication
 !define MUI_FINISHPAGE_NOAUTOCLOSE
-!define MUI_FINISHPAGE_TEXT "Installed myOpenFactory Client in Version $%VERSION%."
-!define MUI_FINISHPAGE_LINK "Client Documentation"
+!define MUI_FINISHPAGE_TEXT "Installed myOpenFactory EDI-Connector in Version $%VERSION%."
+!define MUI_FINISHPAGE_LINK "EDI-Connector Documentation"
 !define MUI_FINISHPAGE_LINK_LOCATION "https://docs.myopenfactory.com/edi/protocols/edi-connector/"
 
 !define MUI_PAGE_CUSTOMFUNCTION_PRE welcomePre
@@ -26,8 +28,9 @@ Icon "logo.ico"
 !insertmacro MUI_PAGE_LICENSE "..\LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_COMPONENTS
-Page custom pgSettingsPageCreate pgSettingsPageLeave
-Page custom pgServiceSettingsPageCreate pgServiceSettingsPageLeave
+Page custom pgAuthorizationSettingsPageCreate pgAuthoriziationSettingsPageLeave
+Page custom pgOutboundSettingsPageCreate pgOutboundSettingsPageLeave
+Page custom pgInboundSettingsPageCreate pgInboundSettingsPageLeave
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 
@@ -37,21 +40,20 @@ Page custom pgServiceSettingsPageCreate pgServiceSettingsPageLeave
 ${StrRep}
 
 var SettingsDir
-var SettingsDirEscaped
 Var Dialog
-Var Username
-Var Password
-Var CertificateFile
 Var linkPath
 
 Var ComponentName
 
-Var ServiceUsername
-Var ServicePassword
-
+var InitializeConfig
 Var UserHWND
 Var PasswordHWND
-Var CertificateHWND
+Var OutboundProcessIdHWND
+Var OutboundFolderHWND
+Var OutboundExtensionHWND
+Var OutboundErrorFolderHWND
+Var InboundProcessIdHWND
+Var InboundFolderHWND
 
 Function .onInit
     SetRegView 64
@@ -66,7 +68,7 @@ Function un.onInit
 FunctionEnd
 
 Function welcomePre
-    nsProcess::_FindProcess "myof-client.exe"
+    nsProcess::_FindProcess "edi-connector.exe"
     Pop $R0
     ${If} $R0 = 0
         MessageBox MB_OK|MB_ICONEXCLAMATION "$(^Name) currently running! Please stop it and try again." /SD IDOK
@@ -74,69 +76,42 @@ Function welcomePre
     ${EndIf}
 FunctionEnd
 
-Section "Client"
+Section "EDI-Connector"
     SectionIn RO
 
     IfFileExists $INSTDIR +2 0
         CreateDirectory $INSTDIR
 
-    IfFileExists $INSTDIR\myof-client.exe 0 +2
+    IfFileExists $INSTDIR\edi-connector.exe 0 +2
         Delete $INSTDIR\myof-client.exe
 
     SetOutPath $INSTDIR
-    File ..\dist\myof-client_windows_amd64_v1\myof-client.exe
+    File ..\dist\edi-connector_windows_amd64_v1\edi-connector.exe
     File /r ..\THIRD_PARTY
     File logo.ico
 
     IfFileExists $SettingsDir +2 0
         CreateDirectory $SettingsDir
 
-    IfFileExists $SettingsDir\config.properties skipConfigCreation 0
-    ${StrRep} '$SettingsDirEscaped' '$SettingsDir' '\' '\\'
-    FileOpen $9 $SettingsDir\config.properties "w"
-    FileWrite $9 "username = $Username$\r$\n"
-    FileWrite $9 "password = $password$\r$\n"
-    FileWrite $9 'clientcert = $SettingsDirEscaped\\certificate.pem$\r$\n'
-    FileWrite $9 'log.folder = $SettingsDirEscaped\\logs$\r$\n'
-    FileClose $9
-    CopyFiles $CertificateFile "$SettingsDir\certificate.pem"
-    CreateDirectory $SettingsDir\logs
-    skipConfigCreation:
-
-
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "DisplayName" "Client"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "DisplayIcon" "$\"$INSTDIR\logo.ico$\""
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "Publisher" "myOpenFactory Software GmbH"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "DisplayVersion" "$%VERSION%"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "UninstallString" "$\"$INSTDIR\uninstaller.exe$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "DisplayName" "EDI-Connector"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "DisplayIcon" "$\"$INSTDIR\logo.ico$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "Publisher" "myOpenFactory Software GmbH"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "DisplayVersion" "$%VERSION%"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "UninstallString" "$\"$INSTDIR\uninstaller.exe$\""
 
     WriteUninstaller $INSTDIR\uninstaller.exe
-SectionEnd
-
-Section "Service" ServiceSection
-    ; remove legacy service
-    nsExec::ExecToLog '"$INSTDIR\myof-client.exe" service uninstall --name myof-client'
-    Pop $0
-    ${If} $0 != 0
-        Abort
-    ${EndIf}
 
     ; remove existing
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "Service"
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "Service"
     ${If} $0 != ""
-        nsExec::ExecToLog '"$INSTDIR\myof-client.exe" service uninstall --name $0'
+        nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall'
         Pop $0
         ${If} $0 != 0
             Abort
         ${EndIf}
     ${EndIf}
 
-    ${If} $ServiceUsername == ""
-    ${AndIf} $ServicePassword == ""
-        nsExec::ExecToLog '"$INSTDIR\myof-client.exe" service install --config "$SettingsDir\config.properties" --name $ComponentName'
-    ${Else}
-        nsExec::ExecToLog '"$INSTDIR\myof-client.exe" service install --config "$SettingsDir\config.properties" --name $ComponentName --logon $ServiceUsername --password $ServicePassword'
-    ${EndIf}
+    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service install'
 
     Pop $0
     ${If} $0 != 0
@@ -146,51 +121,35 @@ Section "Service" ServiceSection
     createDirectory "$SMPROGRAMS\myOpenFactory\$(^Name)"
 
     StrCpy $linkPath "$SMPROGRAMS\myOpenFactory\$ComponentName\Restart $ComponentName.lnk"
-	createShortCut "$linkPath" "C:\Windows\System32\cmd.exe" "/k $\"$INSTDIR\myof-client.exe$\" service restart --name $ComponentName" "$INSTDIR\logo.ico"
+	createShortCut "$linkPath" "C:\Windows\System32\cmd.exe" "/k $\"$INSTDIR\edi-connector.exe$\" service restart" "$INSTDIR\logo.ico"
     push $linkPath
     call ShellLinkSetRunAs
 
     StrCpy $linkPath "$SMPROGRAMS\myOpenFactory\$ComponentName\Start $ComponentName.lnk"
-	createShortCut "$linkPath" "C:\Windows\System32\cmd.exe" "/k $\"$INSTDIR\myof-client.exe$\" service start --name $ComponentName" "$INSTDIR\logo.ico"
+	createShortCut "$linkPath" "C:\Windows\System32\cmd.exe" "/k $\"$INSTDIR\edi-connector.exe$\" service start" "$INSTDIR\logo.ico"
     push $linkPath
     call ShellLinkSetRunAs
 
     StrCpy $linkPath "$SMPROGRAMS\myOpenFactory\$ComponentName\Stop $ComponentName.lnk"
-	createShortCut "$linkPath" "C:\Windows\System32\cmd.exe" "/k $\"$INSTDIR\myof-client.exe$\" service stop --name $ComponentName" "$INSTDIR\logo.ico"
+	createShortCut "$linkPath" "C:\Windows\System32\cmd.exe" "/k $\"$INSTDIR\edi-connector.exe$\" service stop" "$INSTDIR\logo.ico"
     push $linkPath
     call ShellLinkSetRunAs
-
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "Service" $ComponentName
 SectionEnd
 
 Section "Uninstall"
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory" "Service"
-    ${If} $0 != ""
-        nsExec::ExecToLog '"$INSTDIR\myof-client.exe" service uninstall --name $0'
-        RMDir /R "$SMPROGRAMS\myOpenFactory\$(^Name)"
-    ${EndIf}
+    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall'
+    RMDir /R "$SMPROGRAMS\myOpenFactory\$(^Name)"
 
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory"
     RMDir /R $INSTDIR
 SectionEnd
 
-Function pgSettingsPageCreate
-    ; migrate old settings
-    IfFileExists $COMMONPROGRAMDATA\myOpenFactory\Client\config.properties 0 skipMigrateConfig
-        DetailPrint "Migrating old configuration."
-        CopyFiles $COMMONPROGRAMDATA\myOpenFactory\Client\* $SettingsDir
-        ${If} ${Errors}
-            DetailPrint "Failed to copy old config!"
-        ${Else}
-          RMDir /R $COMMONPROGRAMDATA\myOpenFactory\Client
-        ${EndIf}
-        nsExec::ExecToLog '"$INSTDIR\myof-client.exe" config migrate $COMMONPROGRAMDATA\myOpenFactory\Client\config.properties $SettingsDir\config.properties'
-    skipMigrateConfig:
-
-    IfFileExists "$SettingsDir\config.properties" 0 +2
+Function pgAuthorizationSettingsPageCreate
+    IfFileExists "$SettingsDir\config.yaml" 0 +2
         Abort
+    StrCpy $InitializeConfig "true"
 
-    !insertmacro MUI_HEADER_TEXT "myOpenFactory Client Settings" "Provide Client configuration."
+    !insertmacro MUI_HEADER_TEXT "myOpenFactory EDI-Connector Settings" "Provide authorization configuration."
 
     nsDialogs::Create 1018
     Pop $Dialog
@@ -198,9 +157,6 @@ Function pgSettingsPageCreate
     ${If} $Dialog == error
         Abort
     ${EndIf}
-
-    ${NSD_CreateGroupBox} 5% 5% 90% 60% "Credentials"
-    Pop $0
 
     ${NSD_CreateLabel} 15% 16% 20% 10u "Username:"
     Pop $0
@@ -214,46 +170,32 @@ Function pgSettingsPageCreate
     ${NSD_CreatePassword} 40% 30% 30% 12u ""
     Pop $PasswordHWND
 
-    ${NSD_CreateLabel} 15% 46% 20% 10u "Certificate:"
-    Pop $0
-
-    ${NSD_CreateFileRequest} 40% 45% 30% 12u \
-        ""
-    Pop $CertificateHWND
-
-    ${NSD_CreateBrowseButton} 75% 45% 10% 12u "Browse"
-    Pop $0
-    ${NSD_OnClick} $0 onCertificateBrowse
-
     nsDialogs::Show
 FunctionEnd
 
-Function pgSettingsPageLeave
+Function pgAuthoriziationSettingsPageLeave
     ${NSD_GetText} $UserHWND $0
-    StrCpy $Username "$0"
+    ${NSD_GetText} $PasswordHWND $1
 
-    ${NSD_GetText} $PasswordHWND $0
-    StrCpy $Password "$0"
-
-    ${NSD_GetText} $CertificateHWND $0
-    StrCpy $CertificateFile "$0"
-FunctionEnd
-
-Function onCertificateBrowse
-    ${NSD_GetText} $CertificateHWND $0
-    nsDialogs::SelectFileDialog open "" ".pem|*.pem"
-    Pop $0
+    nsYaml::write $SettingsDir/config.yaml username $0
     ${If} $0 != error
-        ${NSD_SetText} $CertificateHWND "$0"
+        DetailPrint "Failed to write username"
+        SetErrors
+    ${EndIf}
+
+    nsYaml::write $SettingsDir/config.yaml password $1
+    ${If} $0 != error
+        DetailPrint "Failed to write password"
+        SetErrors
     ${EndIf}
 FunctionEnd
 
-Function pgServiceSettingsPageCreate
-    ${Unless} ${SectionIsSelected} ${ServiceSection}
+Function pgOutboundSettingsPageCreate
+    ${If} $InitializeConfig != "true"
         Abort
-    ${EndUnless}
+    ${EndIf}
 
-    !insertmacro MUI_HEADER_TEXT "Service Settings" "Provide service configuration."
+    !insertmacro MUI_HEADER_TEXT "myOpenFactory EDI-Connector Settings" "Provide outbound configuration."
 
     nsDialogs::Create 1018
     Pop $Dialog
@@ -262,47 +204,148 @@ Function pgServiceSettingsPageCreate
         Abort
     ${EndIf}
 
-    ${NSD_CreateGroupBox} 5% 5% 90% 90% "Service Credentials (Optional)"
-    Pop $0
-
-    ${NSD_CreateLabel} 15% 16% 20% 10u "Username:"
+    ${NSD_CreateLabel} 15% 16% 20% 10u "Process Id:"
     Pop $0
 
     ${NSD_CreateText} 40% 15% 30% 12u ""
-    Pop $UserHWND
+    Pop $OutboundProcessIdHWND
 
-    ${NSD_CreateLabel} 15% 26% 20% 10u "Password:"
+    ${NSD_CreateLabel} 15% 31% 20% 10u "Folder:"
     Pop $0
 
-    ${NSD_CreatePassword} 40% 25% 30% 12u ""
-    Pop $PasswordHWND
-
-    ${NSD_CreateLink} 15% 85% 90% 12u "Information about Usernames"
+    ${NSD_CreateDirRequest} 40% 30% 30% 12u ""
+    Pop $OutboundFolderHWND
+    ${NSD_CreateBrowseButton} 75% 30% 10% 12u "Browse"
     Pop $0
-    ${NSD_OnClick} $0 onUsernameInfoClick
+    nsDialogs::SetUserData $0 $OutboundFolderHWND
+    ${NSD_OnClick} $0 onFolderBrowse
+
+    ${NSD_CreateLabel} 15% 46% 20% 10u "Extension:"
+    Pop $0
+
+    ${NSD_CreateText} 40% 45% 30% 12u "xml"
+    Pop $OutboundExtensionHWND
+
+    
+    ${NSD_CreateLabel} 15% 61% 20% 10u "Error Folder:"
+    Pop $0
+
+    ${NSD_CreateDirRequest} 40% 60% 30% 12u ""
+    Pop $OutboundErrorFolderHWND
+    ${NSD_CreateBrowseButton} 75% 60% 10% 12u "Browse"
+    Pop $0
+    nsDialogs::SetUserData $0 $OutboundErrorFolderHWND
+    ${NSD_OnClick} $0 onFolderBrowse
 
     nsDialogs::Show
 FunctionEnd
 
-Function onUsernameInfoClick
+Function pgOutboundSettingsPageLeave
+    ${NSD_GetText} $OutboundProcessIdHWND $0
+    ${NSD_GetText} $OutboundFolderHWND $1
+    ${NSD_GetText} $OutboundExtensionHWND $2
+    ${NSD_GetText} $OutboundErrorFolderHWND $3
 
-ExecShell "open" "https://docs.myopenfactory.com/edi/protocols/edi-connector/"
+    nsYaml::write $SettingsDir/config.yaml outbounds.0.id $0
+    ${If} $0 != error
+        DetailPrint "Failed to write outbound process id"
+        SetErrors
+    ${EndIf}
 
+    nsYaml::write $SettingsDir/config.yaml outbounds.0.type FILE
+    ${If} $0 != error
+        DetailPrint "Failed to write outbound type"
+        SetErrors
+    ${EndIf}
+
+    nsYaml::write $SettingsDir/config.yaml outbounds.0.settings.messages.0.path $1
+    ${If} $0 != error
+        DetailPrint "Failed to write outbound message path"
+        SetErrors
+    ${EndIf}
+
+    nsYaml::write $SettingsDir/config.yaml outbounds.0.settings.messages.0.extensions.0 $2
+    ${If} $0 != error
+        DetailPrint "Failed to write outbound message path"
+        SetErrors
+    ${EndIf}
+
+    nsYaml::write $SettingsDir/config.yaml outbounds.0.settings.errorPath $3
+    ${If} $0 != error
+        DetailPrint "Failed to write error path"
+        SetErrors
+    ${EndIf}
 FunctionEnd
 
-Function pgServiceSettingsPageLeave
-    ${NSD_GetText} $UserHWND $0
-    StrCpy $ServiceUsername "$0"
+Function pgInboundSettingsPageCreate
+    ${If} $InitializeConfig != "true"
+        Abort
+    ${EndIf}
 
-    ${NSD_GetText} $PasswordHWND $0
-    StrCpy $ServicePassword "$0"
+    !insertmacro MUI_HEADER_TEXT "myOpenFactory EDI-Connector Settings" "Provide inbound configuration."
+
+    nsDialogs::Create 1018
+    Pop $Dialog
+
+    ${If} $Dialog == error
+        Abort
+    ${EndIf}
+
+    ${NSD_CreateLabel} 15% 16% 20% 10u "Process Id:"
+    Pop $0
+
+    ${NSD_CreateText} 40% 15% 30% 12u ""
+    Pop $InboundProcessIdHWND
+
+    ${NSD_CreateLabel} 15% 31% 20% 10u "Folder:"
+    Pop $0
+
+    ${NSD_CreateDirRequest} 40% 30% 30% 12u ""
+    Pop $InboundFolderHWND
+    ${NSD_CreateBrowseButton} 75% 30% 10% 12u "Browse"
+    Pop $0
+    nsDialogs::SetUserData $0 $InboundFolderHWND
+    ${NSD_OnClick} $0 onFolderBrowse
+
+    nsDialogs::Show
+FunctionEnd
+
+
+Function pgInboundSettingsPageLeave
+    ${NSD_GetText} $InboundProcessIdHWND $0
+    ${NSD_GetText} $InboundFolderHWND $1
+
+    nsYaml::write $SettingsDir/config.yaml inbounds.0.id $0
+    ${If} $0 != error
+        DetailPrint "Failed to write inbound process id"
+        SetErrors
+    ${EndIf}
+
+    nsYaml::write $SettingsDir/config.yaml inbounds.0.type FILE
+    ${If} $0 != error
+        DetailPrint "Failed to write inbound type"
+        SetErrors
+    ${EndIf}
+
+    nsYaml::write $SettingsDir/config.yaml inbounds.0.settings.path $1
+    ${If} $0 != error
+        DetailPrint "Failed to write inbound path"
+        SetErrors
+    ${EndIf}
+FunctionEnd
+
+Function onFolderBrowse
+    Pop $0
+    nsDialogs::GetUserData $0
+    Pop $1
+    nsDialogs::SelectFolderDialog open ""
+    Pop $0
+    ${If} $0 != error
+        ${NSD_SetText} $1 "$0"
+    ${EndIf}
 FunctionEnd
 
 Function launchApplication
-    ${If} ${SectionIsSelected} ${ServiceSection}
-        Exec "C:\Windows\System32\cmd.exe /k $\"$\"$INSTDIR\myof-client.exe$\" service start --name $ComponentName$\""
-    ${Else}
-        Exec "C:\Windows\System32\cmd.exe /k $\"$INSTDIR\myof-client.exe$\""
-    ${EndIf}
+    Exec "C:\Windows\System32\cmd.exe /k $\"$\"$INSTDIR\edi-connector.exe$\" service start$\""
 FunctionEnd
 

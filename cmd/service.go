@@ -7,5 +7,5 @@ import (
 // Service represents the service command
 var Service = &cobra.Command{
 	Use:   "service",
-	Short: "administrate windows service",
+	Short: "administrate service",
 }

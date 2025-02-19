@@ -5,7 +5,7 @@ dist/
 .vscode
 vendor
 **/*.pem
-client
+edi-connector
 config.properties
 myof-client
 test/e2e-test
