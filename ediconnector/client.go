@@ -46,6 +46,8 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 		ediClient:   ediClient,
 	}
 
+	logger.Info("Configured connector", "runWaitTime", c.runWaitTime, "id", c.id)
+
 	c.inbounds = make(map[string]transport.InboundPlugin)
 	c.outbounds = make(map[string]transport.OutboundPlugin)
 	for _, pc := range cfg.Outbounds {
@@ -171,7 +173,7 @@ func (c *Connector) inboundMessages(ctx context.Context, plugin transport.Inboun
 	defer cancel()
 	transmissions, err := c.ediClient.ListTransmissions(ctx, configId)
 	if err != nil {
-		return fmt.Errorf("failed to list transmissions for %s", configId)
+		return fmt.Errorf("failed to list transmissions: %w", err)
 	}
 	cancel()
 
@@ -184,7 +186,7 @@ func (c *Connector) inboundMessages(ctx context.Context, plugin transport.Inboun
 
 		data, err := c.ediClient.DownloadTransmission(transmission)
 		if err != nil {
-			c.logger.Error("failed to download transmission: %v", err)
+			c.logger.Error("failed to download transmission", "error", err)
 			continue
 		}
 

@@ -2,7 +2,7 @@ url: http://localhost:8081
 username: endpoint@a.com
 password: test
 log:
-  folder: "/home/tobiaskohlbau/tmp/edi-connector/logs"
+  # folder: "/home/tobiaskohlbau/tmp/edi-connector/logs"
 # log:
 #   mail:
 #     host: localhost

@@ -112,56 +112,6 @@ var serviceUninstallCmd = &cobra.Command{
 	},
 }
 
-// var serviceRunCmd = &cobra.Command{
-// 	Use:   "run",
-// 	Short: "run the windows service",
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		logger := log.New(config.ParseLogOptions()...)
-// 		logger.Infof("Using config: %s", viper.ConfigFileUsed())
-
-// 		clientOpts, err := config.ParseClientOptions()
-// 		if err != nil {
-// 			logger.Errorf("error while creating client: %v", err)
-// 			os.Exit(1)
-// 		}
-
-// 		clientOpts = append(clientOpts, ediconnector.WithLogger(logger))
-
-// 		cl, err := ediconnector.New(clientOpts...)
-// 		if err != nil {
-// 			logger.Errorf("error while creating client: %v", err)
-// 			os.Exit(1)
-// 		}
-
-// 		run := svc.Run
-// 		if viper.GetBool("service.debug") {
-// 			run = debug.Run
-// 		}
-
-// 		ctx, cancel := context.WithCancel(context.Background())
-
-// 		go func() {
-// 			defer func() {
-// 				if r := recover(); r != nil {
-// 					logger.Errorf("recover client: %v", r)
-// 					logger.Errorf("%s", rdbg.Stack())
-// 				}
-// 			}()
-// 			if err := cl.Run(ctx); err != nil {
-// 				logger.Errorf("error while running client: %v", err)
-// 				os.Exit(1)
-// 			}
-// 		}()
-
-// 		serviceName := viper.GetString("service.name")
-// 		if err := run(serviceName, &service{client: cl, cancel: cancel}); err != nil {
-// 			logger.Errorf("service failed: %q: %v", serviceName, err)
-// 			return
-// 		}
-// 		logger.Infof("service stopped: %q", serviceName)
-// 	},
-// }
-
 var serviceStartCmd = &cobra.Command{
 	Use:   "start",
 	Short: "start the windows service",
