@@ -1,4 +1,4 @@
-package ediconnector
+package connector
 
 import (
 	"context"

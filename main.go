@@ -9,7 +9,7 @@ import (
 	"os/signal"
 
 	"github.com/myopenfactory/edi-connector/config"
-	"github.com/myopenfactory/edi-connector/ediconnector"
+	"github.com/myopenfactory/edi-connector/connector"
 	serviceCmd "github.com/myopenfactory/edi-connector/internal/cmd/service"
 	versionCmd "github.com/myopenfactory/edi-connector/internal/cmd/version"
 	"github.com/myopenfactory/edi-connector/log"
@@ -64,7 +64,7 @@ func execute(configFile string, logLevel string) error {
 		return nil
 	}
 
-	cl, err := ediconnector.New(logger, cfg)
+	cl, err := connector.New(logger, cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create edi-connector: %w", err)
 	}
