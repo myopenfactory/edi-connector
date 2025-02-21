@@ -11,7 +11,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -20,17 +20,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
       - name: Prepare THIRD_PARTY folder
         run: |
           go install github.com/google/go-licenses@latest
-          go-licenses save . --save_path="THIRD_PARTY/"
+          make third_party
       - name: Release
-        uses: goreleaser/goreleaser-action@v5
+        uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
           args: release
@@ -46,12 +44,10 @@ jobs:
           path: THIRD_PARTY
 
   windows_installer:
-    runs-on: windows-2022
+    runs-on: windows-latest
     needs: release
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -66,6 +62,9 @@ jobs:
           Expand-Archive -LiteralPath "C:\NsProcess.zip" -DestinationPath C:\
           Copy-Item "C:\NsProcess\Plugin\nsProcessW.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsProcess.dll"
           Copy-Item "C:\NsProcess\Include\nsProcess.nsh" -Destination "C:\Program Files (x86)\NSIS\Include\nsProcess.nsh"
+          Invoke-WebRequest https://myopenfactory.blob.core.windows.net/static/NsYaml.zip -OutFile c:\NsYaml.zip
+          Expand-Archive -LiteralPath "C:\NsYaml.zip" -DestinationPath C:\
+          Copy-Item "C:\nsYaml.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsYaml.dll"
       - name: Build installer
         run: |
           $env:VERSION = $(jq -r '.version' .\dist\metadata.json)

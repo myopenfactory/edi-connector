@@ -5,8 +5,6 @@
 !include shelllink.nsh
 !include nsProcess.nsh
 
-!addplugindir plugins
-
 Name "EDI-Connector"
 BrandingText "myOpenFactory EDI-Connector $%VERSION%"
 OutFile "edi-connector_installer.exe"

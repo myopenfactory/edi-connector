@@ -15,7 +15,7 @@ builds:
       - windows
     goarch:
       - amd64
-      - 386
+      - arm64
     ldflags:
       - -X github.com/myopenfactory/edi-connector/version.Version={{.Version}} -X github.com/myopenfactory/edi-connector/version.Date={{.Date}} -X github.com/myopenfactory/edi-connector/version.Commit={{.Commit}}
 archives:
