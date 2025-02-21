@@ -81,7 +81,7 @@ Section "EDI-Connector"
         CreateDirectory $INSTDIR
 
     IfFileExists $INSTDIR\edi-connector.exe 0 +2
-        Delete $INSTDIR\myof-client.exe
+        Delete $INSTDIR\edi-connector.exe
 
     SetOutPath $INSTDIR
     File ..\dist\edi-connector_windows_amd64_v1\edi-connector.exe

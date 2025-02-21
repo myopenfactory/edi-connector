@@ -72,15 +72,15 @@ jobs:
           Remove-Item Env:\VERSION
       - uses: actions/upload-artifact@v4
         with:
-          name: myof-client_installer.exe
-          path: hacks/myof-client_installer.exe
+          name: edi-connector_installer.exe
+          path: hacks/edi-connector_installer.exe
       - uses: actions/github-script@v7
         with:
           script: |
             const owner = 'myopenfactory';
             const repo = 'edi-connector';
             const fs = require('fs');
-            const data = fs.readFileSync('hacks/myof-client_installer.exe');
+            const data = fs.readFileSync('hacks/edi-connector_installer.exe');
             
             const { data: tag }= await github.request('GET /repos/{owner}/{repo}/releases/tags/{tag}', {
               owner,
@@ -95,6 +95,6 @@ jobs:
               owner,
               repo,
               release_id: tag.id,
-              name: 'myof-client_installer.exe',
+              name: 'edi-connector_installer.exe',
               data,
             });
