@@ -82,14 +82,14 @@ func (c *Connector) Run(ctx context.Context) error {
 				ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 				defer cancel()
 				if err := c.outboundAttachments(ctx, transport); err != nil {
-					c.logger.Error("error processing outbound attachment: %s", err)
+					c.logger.Error("error processing outbound attachment: %s", "error", err)
 				}
 				cancel()
 
 				ctx, cancel = context.WithTimeout(context.Background(), 15*time.Second)
 				defer cancel()
 				if err := c.outboundMessages(ctx, transport, configId); err != nil {
-					c.logger.Error("error processing outbound message: %s", err)
+					c.logger.Error("error processing outbound message: %s", "error", err)
 				}
 				cancel()
 			}
@@ -144,7 +144,7 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 	}
 	attachments, err := attachmentLister.ListAttachments(ctx)
 	if err != nil {
-		c.logger.Error("error while reading attachment: %v", err)
+		c.logger.Error("error while reading attachment: %v", "error", err)
 	}
 
 	finalizer, isFinalizer := outbound.(transport.Finalizer)
