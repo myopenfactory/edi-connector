@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/myopenfactory/edi-connector/client"
+	"github.com/myopenfactory/edi-connector/platform"
 	"github.com/myopenfactory/edi-connector/transport"
 )
 
@@ -28,22 +28,22 @@ type outboundFileSettings struct {
 	SuccessPath string
 }
 
-type outboundFilePlugin struct {
+type outboundFileTransport struct {
 	logger    *slog.Logger
 	processID string
 	settings  outboundFileSettings
-	client    *client.Client
+	client    *platform.Client
 }
 
-// NewOutboundFilePlugin returns new OutPlugin and checks for success, error, messagewaittime and attachmentwaittime parameter.
-func NewOutboundPlugin(logger *slog.Logger, pid string, cfg map[string]any, client *client.Client) (transport.OutboundPlugin, error) {
+// NewOutboundFileTransport returns new OutTransport and checks for success, error, messagewaittime and attachmentwaittime parameter.
+func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any, client *platform.Client) (transport.OutboundTransport, error) {
 	var settings outboundFileSettings
 	err := mapstructure.Decode(cfg, &settings)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode outbounf file settings: %w", err)
 	}
 
-	p := &outboundFilePlugin{
+	p := &outboundFileTransport{
 		logger:    logger,
 		settings:  settings,
 		processID: pid,
@@ -95,7 +95,7 @@ func NewOutboundPlugin(logger *slog.Logger, pid string, cfg map[string]any, clie
 
 // ListMessages lists all messages found within message folder. Each file gets
 // serialized into an transport.Message.
-func (p *outboundFilePlugin) ListMessages(ctx context.Context) ([]transport.Message, error) {
+func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.Message, error) {
 	var files []string
 	for _, message := range p.settings.Messages {
 		for _, extension := range message.Extensions {
@@ -116,7 +116,7 @@ func (p *outboundFilePlugin) ListMessages(ctx context.Context) ([]transport.Mess
 
 // ListAttachments lists all attachments found within attachment folder. Each file gets
 // serialized into an transport.Attachment.
-func (p *outboundFilePlugin) ListAttachments(ctx context.Context) ([]transport.Attachment, error) {
+func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transport.Attachment, error) {
 	var files []string
 	for _, attachment := range p.settings.Attachments {
 		for _, extension := range attachment.Extensions {
@@ -135,7 +135,7 @@ func (p *outboundFilePlugin) ListAttachments(ctx context.Context) ([]transport.A
 	return attachments, nil
 }
 
-func (p *outboundFilePlugin) convertToMessages(files []string) ([]transport.Message, error) {
+func (p *outboundFileTransport) convertToMessages(files []string) ([]transport.Message, error) {
 	messages := make([]transport.Message, 0)
 	for _, f := range files {
 		buffer, err := os.ReadFile(f)
@@ -153,7 +153,7 @@ func (p *outboundFilePlugin) convertToMessages(files []string) ([]transport.Mess
 	return messages, nil
 }
 
-func (p *outboundFilePlugin) convertToAttachments(files []string) ([]transport.Attachment, error) {
+func (p *outboundFileTransport) convertToAttachments(files []string) ([]transport.Attachment, error) {
 	attachments := make([]transport.Attachment, 0)
 	for _, f := range files {
 		buffer, err := os.ReadFile(f)
@@ -171,7 +171,7 @@ func (p *outboundFilePlugin) convertToAttachments(files []string) ([]transport.A
 	return attachments, nil
 }
 
-func (p *outboundFilePlugin) Finalize(ctx context.Context, obj any, err error) error {
+func (p *outboundFileTransport) Finalize(ctx context.Context, obj any, err error) error {
 	var file string
 	if message, ok := obj.(transport.Message); ok {
 		file = message.Id

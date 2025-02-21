@@ -1,4 +1,4 @@
-package client
+package platform
 
 import (
 	"bytes"
@@ -34,7 +34,7 @@ type Client struct {
 	baseUrl string
 }
 
-func New(baseUrl string, username string, password string, certFile string, caFile string) (*Client, error) {
+func NewClient(baseUrl string, username string, password string, certFile string, caFile string) (*Client, error) {
 	httpTransport := http.DefaultTransport
 	tlsConfig := httpTransport.(*http.Transport).TLSClientConfig
 	if tlsConfig == nil {

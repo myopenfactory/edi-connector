@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/myopenfactory/edi-connector/client"
+	"github.com/myopenfactory/edi-connector/platform"
 	"github.com/myopenfactory/edi-connector/transport"
 )
 
@@ -20,15 +20,15 @@ type inboundFileSettings struct {
 	Exist               string
 }
 
-// InboundFilePlugin type
-type inboundFilePlugin struct {
+// InboundFileTransport type
+type inboundFileTransport struct {
 	logger   *slog.Logger
 	settings inboundFileSettings
-	client   *client.Client
+	client   *platform.Client
 }
 
-// NewInboundFilePlugin returns new InPlugin and checks for basefolder and exist parameter.
-func NewInboundPlugin(logger *slog.Logger, pid string, cfg map[string]any, client *client.Client) (transport.InboundPlugin, error) {
+// NewInboundFileTransport returns new InTransport and checks for basefolder and exist parameter.
+func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any, client *platform.Client) (transport.InboundTransport, error) {
 	var settings inboundFileSettings
 	err := mapstructure.Decode(cfg, &settings)
 	if err != nil {
@@ -51,14 +51,14 @@ func NewInboundPlugin(logger *slog.Logger, pid string, cfg map[string]any, clien
 	}
 
 	logger.Info("configured inbound process", "configId", pid, "folder", settings.Path, "strategy", settings.Exist)
-	return &inboundFilePlugin{
+	return &inboundFileTransport{
 		logger:   logger,
 		settings: settings,
 		client:   client,
 	}, nil
 }
 
-func (p *inboundFilePlugin) HandleAttachment() bool {
+func (p *inboundFileTransport) HandleAttachment() bool {
 	if p.settings.AttachmentPath == "" {
 		return false
 	}
@@ -66,7 +66,7 @@ func (p *inboundFilePlugin) HandleAttachment() bool {
 }
 
 // ConsumeMessage consumes message from plattform and saves it to a file
-func (p *inboundFilePlugin) ProcessMessage(ctx context.Context, msg transport.Message) error {
+func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport.Message) error {
 	filename := fmt.Sprintf("%s.edi", msg.Id)
 	if value, ok := msg.Metadata["filename"]; ok {
 		filename = value
@@ -98,7 +98,7 @@ func (p *inboundFilePlugin) ProcessMessage(ctx context.Context, msg transport.Me
 
 // ProcessAttachment processes the attachment and writes it to specified path. In case of already existing file a
 // new filename is derived.
-func (p *inboundFilePlugin) ProcessAttachment(ctx context.Context, atc transport.Attachment) error {
+func (p *inboundFileTransport) ProcessAttachment(ctx context.Context, atc transport.Attachment) error {
 	path := filepath.Join(p.settings.AttachmentPath, atc.Filename)
 	path = createUniqueFilename(path)
 	if err := createFolderFromFile(path); err != nil {

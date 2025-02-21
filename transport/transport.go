@@ -19,15 +19,12 @@ type Finalizer interface {
 	Finalize(context.Context, any, error) error
 }
 
-// OutboundPlugin is the interface that groups the basic List and Process methods.
-type OutboundPlugin interface {
+type OutboundTransport interface {
 	MessageLister
 }
 
-// InboundPlugin describes a plugin which processes received messages and attachments.
-type InboundPlugin interface {
+type InboundTransport interface {
 	MessageProcessor
-	HandleAttachment() bool
 }
 
 // MessageLister is the interface implemented by an plugin that supports listing messages.
@@ -42,13 +39,16 @@ type AttachmentLister interface {
 	ListAttachments(ctx context.Context) ([]Attachment, error)
 }
 
-// Processor is the interface implemented by an Plugin that supports processing messages and attachments.
+// Processor is the interface implemented by an transport that supports processing messages.
 type MessageProcessor interface {
 	// ProcessMessage processes an message.
 	ProcessMessage(context.Context, Message) error
 }
 
+// Processor is the interface implemented by an transport that supports processing attachments.
 type AttachmentProcessor interface {
 	// ProcessAttachmetn processes an attachment.
 	ProcessAttachment(context.Context, Attachment) error
+	// Return if attachments should be processed by specific processor
+	HandleAttachments() bool
 }
