@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/myopenfactory/edi-connector/platform"
 	"github.com/myopenfactory/edi-connector/transport"
 )
 
@@ -23,11 +22,10 @@ type inboundFileSettings struct {
 type inboundFileTransport struct {
 	logger   *slog.Logger
 	settings inboundFileSettings
-	client   *platform.Client
 }
 
 // NewInboundFileTransport returns new InTransport and checks for basefolder and exist parameter.
-func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any, client *platform.Client) (transport.InboundTransport, error) {
+func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (transport.InboundTransport, error) {
 	var settings inboundFileSettings
 	err := mapstructure.Decode(cfg, &settings)
 	if err != nil {
@@ -53,7 +51,6 @@ func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any, cl
 	return &inboundFileTransport{
 		logger:   logger,
 		settings: settings,
-		client:   client,
 	}, nil
 }
 

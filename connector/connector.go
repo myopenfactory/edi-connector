@@ -64,7 +64,7 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 	for _, pc := range cfg.Inbounds {
 		switch pc.Type {
 		case "FILE":
-			c.inbounds[pc.Id], err = file.NewInboundTransport(c.logger, pc.Id, pc.Settings, platformClient)
+			c.inbounds[pc.Id], err = file.NewInboundTransport(c.logger, pc.Id, pc.Settings)
 			if err != nil {
 				return nil, fmt.Errorf("failed to load transport: processid: %v: %w", pc.Id, err)
 			}
