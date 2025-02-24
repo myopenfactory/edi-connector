@@ -69,7 +69,7 @@ func install(serviceName string) error {
 		DisplayName:  serviceName,
 		Description:  "myOpenFactory EDI-Connector to connect to the EDI platform.",
 		StartType:    mgr.StartAutomatic,
-		ErrorControl: mgr.ServiceRestart,
+		ErrorControl: mgr.NoAction,
 	}
 	s, err = m.CreateService(serviceName, exepath, config)
 	if err != nil {
