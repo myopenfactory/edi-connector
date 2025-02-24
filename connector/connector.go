@@ -79,29 +79,31 @@ func (c *Connector) Run(ctx context.Context) error {
 		select {
 		case <-ticker.C:
 			for configId, transport := range c.outbounds {
-				ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-				defer cancel()
+				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 				if err := c.outboundAttachments(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound attachment: %s", "error", err)
+					cancel()
 					os.Exit(1)
 				}
 				cancel()
 
-				ctx, cancel = context.WithTimeout(context.Background(), 15*time.Second)
-				defer cancel()
+				ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
 				if err := c.outboundMessages(ctx, transport, configId); err != nil {
 					c.logger.Error("error processing outbound message: %s", "error", err)
+					cancel()
 					os.Exit(1)
 				}
 				cancel()
 			}
 
 			for configId, transport := range c.inbounds {
+				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 				if err := c.inboundMessages(ctx, transport, configId); err != nil {
 					c.logger.Error("error processing inbound transmissions", "configId", configId, "error", err)
+					cancel()
 					os.Exit(1)
 				}
-
+				cancel()
 			}
 		case <-ctx.Done():
 			return nil
