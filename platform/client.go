@@ -10,7 +10,11 @@ import (
 	"io"
 	"mime"
 	"net/http"
+	"net/url"
 	"os"
+	"runtime"
+
+	"github.com/myopenfactory/edi-connector/version"
 )
 
 type MessageAttachment struct {
@@ -34,8 +38,15 @@ type Client struct {
 	baseUrl string
 }
 
-func NewClient(baseUrl string, username string, password string, certFile string, caFile string) (*Client, error) {
+func NewClient(baseUrl string, username string, password string, certFile string, caFile string, proxy string) (*Client, error) {
 	httpTransport := http.DefaultTransport
+	if proxy != "" {
+		url, err := url.Parse(proxy)
+		if err != nil {
+			return nil, fmt.Errorf("invalid proxy setup: %w", err)
+		}
+		httpTransport.(*http.Transport).Proxy = http.ProxyURL(url)
+	}
 	tlsConfig := httpTransport.(*http.Transport).TLSClientConfig
 	if tlsConfig == nil {
 		tlsConfig = &tls.Config{}
@@ -55,7 +66,8 @@ func NewClient(baseUrl string, username string, password string, certFile string
 	}
 
 	httpClient := &http.Client{
-		Transport: &usernamePasswordTransport{
+		Transport: &clientTransport{
+			id:        fmt.Sprintf("EDI-Connector/%s %s %s", version.Version, runtime.GOOS, runtime.GOARCH),
 			username:  username,
 			password:  password,
 			transport: httpTransport,
@@ -281,14 +293,16 @@ func (c *Client) ListMessageAttachments(ctx context.Context, id string) ([]Messa
 	return attachments, nil
 }
 
-type usernamePasswordTransport struct {
+type clientTransport struct {
+	id       string
 	username string
 	password string
 
 	transport http.RoundTripper
 }
 
-func (t *usernamePasswordTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+func (t *clientTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	r.Header.Set("User-Agent", t.id)
 	r.SetBasicAuth(t.username, t.password)
 	return t.transport.RoundTrip(r)
 }

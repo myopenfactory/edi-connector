@@ -13,13 +13,11 @@ import (
 	"github.com/myopenfactory/edi-connector/platform"
 	"github.com/myopenfactory/edi-connector/transport"
 	"github.com/myopenfactory/edi-connector/transport/file"
-	"github.com/myopenfactory/edi-connector/version"
 )
 
 // Config configures variables for the client
 type Connector struct {
 	logger      *slog.Logger
-	id          string
 	runWaitTime time.Duration
 
 	// transports
@@ -31,24 +29,18 @@ type Connector struct {
 
 // New creates client with given options
 func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
-	if proxy := cfg.Proxy; proxy != "" {
-		os.Setenv("HTTP_PROXY", proxy)
-		os.Setenv("HTTPS_PROXY", proxy)
-	}
-
-	platformClient, err := platform.NewClient(cfg.Url, cfg.Username, cfg.Password, cfg.ClientCertificate, cfg.CAFile)
+	platformClient, err := platform.NewClient(cfg.Url, cfg.Username, cfg.Password, cfg.ClientCertificate, cfg.CAFile, cfg.Proxy)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create platform client: %w", err)
 	}
 
 	c := &Connector{
 		logger:         logger,
-		id:             fmt.Sprintf("Core_%s", version.Version),
 		runWaitTime:    cfg.RunWaitTime,
 		platformClient: platformClient,
 	}
 
-	logger.Info("Configured connector", "runWaitTime", c.runWaitTime, "id", c.id)
+	logger.Info("Configured connector", "runWaitTime", c.runWaitTime)
 
 	c.inbounds = make(map[string]transport.InboundTransport)
 	c.outbounds = make(map[string]transport.OutboundTransport)
