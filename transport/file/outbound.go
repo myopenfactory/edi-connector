@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -91,82 +90,66 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 // ListMessages lists all messages found within message folder. Each file gets
 // serialized into an transport.Message.
 func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.Message, error) {
-	var files []string
 	message := p.settings.Message
 
-	for _, extension := range message.Extensions {
-		fs, err := listFilesLastModifiedBefore(p.logger, message.Path, extension, time.Now().Add(-message.WaitTime))
-		if err != nil {
-			return nil, fmt.Errorf("failed to list files within %s: %w", message.Path, err)
-		}
-		files = append(files, fs...)
+	fileInfos, err := p.listFilesLastModifiedBefore(message.Path, time.Now().Add(-message.WaitTime))
+	if err != nil {
+		return nil, fmt.Errorf("failed to list files within %s: %w", message.Path, err)
 	}
 
-	messages, err := p.convertToMessages(files)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert message list: %w", err)
+	messages := make([]transport.Message, 0)
+	for _, fileInfo := range fileInfos {
+		fileExtension := filepath.Ext(fileInfo.Name())
+		filePath := filepath.Join(message.Path, fileInfo.Name())
+		for _, extension := range message.Extensions {
+			if fileExtension == extension {
+				buffer, err := os.ReadFile(filePath)
+				if err != nil {
+					return nil, fmt.Errorf("error while reading attachment %s: %w", filePath, err)
+				}
+				messages = append(messages, transport.Message{
+					Id:      filePath,
+					Content: buffer,
+				})
+			}
+		}
 	}
+
 	return messages, nil
 }
 
 // ListAttachments lists all attachments found within attachment folder. Each file gets
 // serialized into an transport.Attachment.
 func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transport.Attachment, error) {
-	var files []string
 	attachment := p.settings.Attachment
 	if attachment.Path == "" {
 		return nil, fmt.Errorf("attachments not configured")
 	}
 
-	for _, extension := range attachment.Extensions {
-		fs, err := listFilesLastModifiedBefore(p.logger, attachment.Path, extension, time.Now().Add(-attachment.WaitTime))
-		if err != nil {
-			return nil, fmt.Errorf("failed to list files within %s: %w", attachment.Path, err)
-		}
-		files = append(files, fs...)
-	}
-
-	attachments, err := p.convertToAttachments(files)
+	fileInfos, err := p.listFilesLastModifiedBefore(attachment.Path, time.Now().Add(-attachment.WaitTime))
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert attachment list: %w", err)
+		return nil, fmt.Errorf("failed to list files within %s: %w", attachment.Path, err)
 	}
 
-	return attachments, nil
-}
-
-func (p *outboundFileTransport) convertToMessages(files []string) ([]transport.Message, error) {
-	messages := make([]transport.Message, 0)
-	for _, f := range files {
-		buffer, err := os.ReadFile(f)
-		if err != nil {
-			if err := backupFileToFolder(p.logger, f, p.settings.ErrorPath); err != nil {
-				p.logger.Error("failed to move file to error folder", "error", err)
-			}
-			return nil, fmt.Errorf("error while reading message %s: %w", f, err)
-		}
-		messages = append(messages, transport.Message{
-			Id:      f,
-			Content: buffer,
-		})
-	}
-	return messages, nil
-}
-
-func (p *outboundFileTransport) convertToAttachments(files []string) ([]transport.Attachment, error) {
 	attachments := make([]transport.Attachment, 0)
-	for _, f := range files {
-		buffer, err := os.ReadFile(f)
-		if err != nil {
-			if err := backupFileToFolder(p.logger, f, p.settings.ErrorPath); err != nil {
-				p.logger.Error("failed to move attachment to error folder", "error", err)
+	for _, fileInfo := range fileInfos {
+		fileExtension := filepath.Ext(fileInfo.Name())
+		filePath := filepath.Join(attachment.Path, fileInfo.Name())
+		for _, extension := range attachment.Extensions {
+			if fileExtension == extension {
+				buffer, err := os.ReadFile(filePath)
+				if err != nil {
+					return nil, fmt.Errorf("error while reading attachment %s: %w", filePath, err)
+				}
+
+				attachments = append(attachments, transport.Attachment{
+					Filename: filePath,
+					Content:  buffer,
+				})
 			}
-			return nil, fmt.Errorf("error while reading attachment %s: %w", f, err)
 		}
-		attachments = append(attachments, transport.Attachment{
-			Filename: f,
-			Content:  buffer,
-		})
 	}
+
 	return attachments, nil
 }
 
@@ -179,7 +162,8 @@ func (p *outboundFileTransport) Finalize(ctx context.Context, obj any, err error
 		file = attachment.Filename
 	}
 	if err != nil {
-		if err := backupFileToFolder(p.logger, file, p.settings.ErrorPath); err != nil {
+		destination := filepath.Join(p.settings.ErrorPath, filepath.FromSlash(file))
+		if _, err := move(file, destination); err != nil {
 			return err
 		}
 		return nil
@@ -210,10 +194,10 @@ func (p *outboundFileTransport) HandleAttachments() bool {
 }
 
 // listFilesLastModifiedBefore lists all files last modified before t for path and extension
-func listFilesLastModifiedBefore(logger *slog.Logger, path, extension string, t time.Time) ([]string, error) {
-	files := []string{}
+func (p *outboundFileTransport) listFilesLastModifiedBefore(path string, t time.Time) ([]os.FileInfo, error) {
+	files := []os.FileInfo{}
 
-	logger.Debug("searching folder %s for files with extension %s", path, extension)
+	p.logger.Debug("searching folder %s for files modified before %t", path, t)
 
 	dirEntries, err := os.ReadDir(path)
 	if err != nil {
@@ -225,49 +209,16 @@ func listFilesLastModifiedBefore(logger *slog.Logger, path, extension string, t 
 			continue
 		}
 
-		fp := filepath.Join(path, dirEntry.Name())
 		fileInfo, err := dirEntry.Info()
 		if err != nil {
 			return nil, fmt.Errorf("failed to retrieve file info: %w", err)
 		}
-		if fileInfo.ModTime().Before(t) && strings.HasSuffix(fp, extension) {
-			files = append(files, fp)
+		if fileInfo.ModTime().Before(t) {
+			files = append(files, fileInfo)
 		}
 	}
 
 	return files, nil
-}
-
-// backupFileToFolder backups a file prefixed with current timestamp
-func backupFileToFolder(logger *slog.Logger, filename, folder string) error {
-	if filename == "" || folder == "" {
-		return nil
-	}
-
-	f := filepath.Join(folder, fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(filename)))
-
-	logger.Debug("trying to backup file %v to %v", filename, f)
-	if _, err := move(filename, f); err != nil {
-		return fmt.Errorf("failed to backup file %s to %s: %w", filename, f, err)
-	}
-	logger.Info("backuped %s to %s", filename, f)
-
-	return nil
-}
-
-func splitPathExtension(pathextension string) (string, string) {
-	path := pathextension
-	extension := ""
-
-	seps := strings.Split(pathextension, ";")
-	if len(seps) > 1 {
-		path = seps[0]
-		extension = seps[1]
-	}
-
-	path = filepath.Clean(strings.TrimSpace(path))
-
-	return path, extension
 }
 
 // move copys src to dst and removes the src file.
