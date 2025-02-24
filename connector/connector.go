@@ -53,7 +53,7 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 	for _, pc := range cfg.Outbounds {
 		switch pc.Type {
 		case "FILE":
-			c.outbounds[pc.Id], err = file.NewOutboundTransport(c.logger, pc.Id, pc.Settings, platformClient)
+			c.outbounds[pc.Id], err = file.NewOutboundTransport(c.logger, pc.Id, pc.Settings)
 			if err != nil {
 				return nil, fmt.Errorf("failed to load transport: processid: %v: %w", pc.Id, err)
 			}
@@ -83,6 +83,7 @@ func (c *Connector) Run(ctx context.Context) error {
 				defer cancel()
 				if err := c.outboundAttachments(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound attachment: %s", "error", err)
+					os.Exit(1)
 				}
 				cancel()
 
@@ -90,6 +91,7 @@ func (c *Connector) Run(ctx context.Context) error {
 				defer cancel()
 				if err := c.outboundMessages(ctx, transport, configId); err != nil {
 					c.logger.Error("error processing outbound message: %s", "error", err)
+					os.Exit(1)
 				}
 				cancel()
 			}
@@ -97,6 +99,7 @@ func (c *Connector) Run(ctx context.Context) error {
 			for configId, transport := range c.inbounds {
 				if err := c.inboundMessages(ctx, transport, configId); err != nil {
 					c.logger.Error("error processing inbound transmissions", "configId", configId, "error", err)
+					os.Exit(1)
 				}
 
 			}

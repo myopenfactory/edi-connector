@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/myopenfactory/edi-connector/platform"
 	"github.com/myopenfactory/edi-connector/transport"
 )
 
@@ -32,11 +31,10 @@ type outboundFileTransport struct {
 	logger    *slog.Logger
 	processID string
 	settings  outboundFileSettings
-	client    *platform.Client
 }
 
 // NewOutboundFileTransport returns new OutTransport and checks for success, error, messagewaittime and attachmentwaittime parameter.
-func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any, client *platform.Client) (transport.OutboundTransport, error) {
+func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (transport.OutboundTransport, error) {
 	var settings outboundFileSettings
 	err := mapstructure.Decode(cfg, &settings)
 	if err != nil {
@@ -47,7 +45,6 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any, c
 		logger:    logger,
 		settings:  settings,
 		processID: pid,
-		client:    client,
 	}
 
 	if pid == "" {
