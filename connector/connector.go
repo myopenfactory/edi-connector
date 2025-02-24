@@ -142,6 +142,9 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 	if !isAttachmentLister {
 		return nil
 	}
+	if !attachmentLister.HandleAttachments() {
+		return nil
+	}
 	attachments, err := attachmentLister.ListAttachments(ctx)
 	if err != nil {
 		c.logger.Error("error while reading attachment: %v", "error", err)

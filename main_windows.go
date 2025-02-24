@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/myopenfactory/edi-connector/config"
-	"github.com/myopenfactory/edi-connector/ediconnector"
+	"github.com/myopenfactory/edi-connector/connector"
 	"golang.org/x/sys/windows/svc"
 )
 
@@ -19,7 +19,7 @@ func init() {
 }
 
 func windowsRun(ctx context.Context, logger *slog.Logger, cfg config.Config, serviceName string) error {
-	cl, err := ediconnector.New(logger, cfg)
+	cl, err := connector.New(logger, cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create edi-connector: %w", err)
 	}
@@ -32,7 +32,7 @@ func windowsRun(ctx context.Context, logger *slog.Logger, cfg config.Config, ser
 
 type service struct {
 	logger    *slog.Logger
-	connector *ediconnector.Connector
+	connector *connector.Connector
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (bool, uint32) {

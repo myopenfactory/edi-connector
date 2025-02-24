@@ -262,13 +262,13 @@ Function pgOutboundSettingsPageLeave
         SetErrors
     ${EndIf}
 
-    nsYaml::write $SettingsDir/config.yaml outbounds.0.settings.messages.0.path $1
+    nsYaml::write $SettingsDir/config.yaml outbounds.0.settings.message.path $1
     ${If} $0 != error
         DetailPrint "Failed to write outbound message path"
         SetErrors
     ${EndIf}
 
-    nsYaml::write $SettingsDir/config.yaml outbounds.0.settings.messages.0.extensions.0 $2
+    nsYaml::write $SettingsDir/config.yaml outbounds.0.settings.message.extensions.0 $2
     ${If} $0 != error
         DetailPrint "Failed to write outbound message path"
         SetErrors
