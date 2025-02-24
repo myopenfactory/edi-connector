@@ -6,16 +6,17 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/myopenfactory/edi-connector/transport"
 )
 
 type inboundFileSettings struct {
-	Path                string
-	AttachmentPath      string
-	AttachmentWhitelist []string
-	Exist               string
+	transport.InboundSettings
+	Path           string
+	AttachmentPath string
+	Exist          string
 }
 
 // InboundFileTransport type
@@ -54,11 +55,18 @@ func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (t
 	}, nil
 }
 
-func (p *inboundFileTransport) HandleAttachment() bool {
-	if p.settings.AttachmentPath == "" {
+func (p *inboundFileTransport) HandleAttachment(url string) bool {
+	if p.settings.AttachmentPath == "" || len(p.settings.AttachmentWhitelist) == 0 {
 		return false
 	}
-	return true
+
+	for _, whitelist := range p.settings.AttachmentWhitelist {
+		if strings.HasPrefix(url, whitelist) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ConsumeMessage consumes message from plattform and saves it to a file
@@ -94,7 +102,7 @@ func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport
 // new filename is derived.
 func (p *inboundFileTransport) ProcessAttachment(ctx context.Context, atc transport.Object) error {
 	filename := atc.Id
-	if value, ok := atc.Metadata["filename"]; ok {
+	if value, ok := atc.Metadata["filename"]; ok && value != "" {
 		filename = value
 	}
 	path := filepath.Join(p.settings.AttachmentPath, filename)

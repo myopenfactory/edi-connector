@@ -5,8 +5,13 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"log/slog"
+	"mime"
+	"net/http"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/myopenfactory/edi-connector/config"
@@ -219,25 +224,28 @@ func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.In
 	if !isAttachmentProcessor {
 		return nil
 	}
-	// only process if transport config has enabled processing attachments
-	if !attachmentProcessor.HandleAttachments() {
-		return nil
-	}
 	messageId, ok := transmission.Metadata["TID"]
 	if !ok {
 		return nil
 	}
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
+
 	attachments, err := c.platformClient.ListMessageAttachments(ctx, messageId)
 	if err != nil {
 		return fmt.Errorf("failed to list message attachments for %s: %w", messageId, err)
 	}
+
 	for _, attachment := range attachments {
-		data, filename, err := c.platformClient.DownloadAttachment(attachment)
+		if !attachmentProcessor.HandleAttachment(attachment.Url) {
+			return nil
+		}
+
+		data, filename, err := c.downloadAttachment(attachment.Url)
 		if err != nil {
 			return fmt.Errorf("failed to download attachment for %s: %w", messageId, err)
 		}
+
 		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
 		if err := attachmentProcessor.ProcessAttachment(ctx, transport.Object{
@@ -249,7 +257,6 @@ func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.In
 		}); err != nil {
 			return fmt.Errorf("error processing attachment: %w", err)
 		}
-		cancel()
 	}
 	return nil
 }
@@ -260,4 +267,43 @@ func generateId() string {
 		panic(err)
 	}
 	return hex.EncodeToString(bytes)
+}
+
+func (c *Connector) downloadAttachment(attachmentUrl string) ([]byte, string, error) {
+	if attachmentUrl == "" {
+		return nil, "", fmt.Errorf("attachment url couldn't be empty")
+	}
+	resp, err := http.Get(attachmentUrl)
+	if err != nil {
+		return nil, "", fmt.Errorf("error while loading attachment with url %q: %w", attachmentUrl, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, "", fmt.Errorf("error bad response for attachment %q: %w", attachmentUrl, err)
+	}
+
+	_, params, err := mime.ParseMediaType(resp.Header.Get("Content-Disposition"))
+	if err != nil {
+		return nil, "", fmt.Errorf("invalid content-disposition on attachment %q: %w", attachmentUrl, err)
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, "", fmt.Errorf("error while writing response data for attachment %q: %w", attachmentUrl, err)
+	}
+
+	filename, ok := params["filename"]
+	if !ok {
+		url, err := url.Parse(attachmentUrl)
+		if err != nil {
+			return nil, "", fmt.Errorf("failed to parse attachment url: %w", err)
+		}
+		slashIndex := strings.LastIndex(url.Path, "/")
+		if slashIndex != -1 {
+			filename = url.Path[slashIndex+1:]
+		}
+	}
+
+	return data, filename, nil
 }

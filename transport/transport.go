@@ -4,6 +4,10 @@ import (
 	"context"
 )
 
+type InboundSettings struct {
+	AttachmentWhitelist []string
+}
+
 type Object struct {
 	Id       string
 	Content  []byte
@@ -34,6 +38,6 @@ type AttachmentLister interface {
 type AttachmentProcessor interface {
 	// ProcessAttachmetn processes an attachment.
 	ProcessAttachment(context.Context, Object) error
-	// Return if attachments should be processed by specific processor
-	HandleAttachments() bool
+	// Return if attachment should be processed by specific processor
+	HandleAttachment(url string) bool
 }

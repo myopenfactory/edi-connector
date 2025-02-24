@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -108,47 +107,6 @@ func (c *Client) DownloadTransmission(transmission Transmission) ([]byte, error)
 		return nil, fmt.Errorf("error while writing response data for transmission %q: %w", url, err)
 	}
 	return data, nil
-}
-
-func (c *Client) DownloadAttachment(attachment MessageAttachment) ([]byte, string, error) {
-	url := attachment.Url
-	if url == "" {
-		return nil, "", fmt.Errorf("attachment url couldn't be empty")
-	}
-	resp, err := c.http.Get(url)
-	if err != nil {
-		return nil, "", fmt.Errorf("error while loading attachment with url %q: %w", url, err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, "", fmt.Errorf("error bad response for attachment %q: %w", url, err)
-	}
-
-	_, params, err := mime.ParseMediaType(resp.Header.Get("Content-Disposition"))
-	if err != nil {
-		return nil, "", fmt.Errorf("invalid content-disposition on attachment %q: %w", url, err)
-	}
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, "", fmt.Errorf("error while writing response data for attachment %q: %w", url, err)
-	}
-	return data, params["filename"], nil
-}
-
-func (c *Client) req(method string, path string, data []byte) (*http.Request, error) {
-	var req *http.Request
-	var err error
-
-	var reader io.Reader
-	if data != nil {
-		reader = bytes.NewReader(data)
-	}
-	req, err = http.NewRequest(method, fmt.Sprintf("%s%s", c.baseUrl, path), reader)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request for %s:%s: %w", method, path, err)
-	}
-	return req, nil
 }
 
 func (c *Client) ListTransmissions(ctx context.Context, configId string) ([]Transmission, error) {
@@ -291,6 +249,21 @@ func (c *Client) ListMessageAttachments(ctx context.Context, id string) ([]Messa
 	}
 
 	return attachments, nil
+}
+
+func (c *Client) req(method string, path string, data []byte) (*http.Request, error) {
+	var req *http.Request
+	var err error
+
+	var reader io.Reader
+	if data != nil {
+		reader = bytes.NewReader(data)
+	}
+	req, err = http.NewRequest(method, fmt.Sprintf("%s%s", c.baseUrl, path), reader)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request for %s:%s: %w", method, path, err)
+	}
+	return req, nil
 }
 
 type clientTransport struct {
