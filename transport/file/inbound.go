@@ -13,10 +13,10 @@ import (
 )
 
 type inboundFileSettings struct {
-	transport.InboundSettings
-	Path           string
-	AttachmentPath string
-	Exist          string
+	transport.InboundSettings `mapstructure:",squash"`
+	Path                      string
+	AttachmentPath            string
+	Exist                     string
 }
 
 // InboundFileTransport type
