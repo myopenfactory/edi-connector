@@ -2,6 +2,8 @@ package connector
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"log/slog"
 	"os"
@@ -157,19 +159,19 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 
 	finalizer, isFinalizer := outbound.(transport.Finalizer)
 	for _, attachment := range attachments {
-		if err := c.platformClient.AddAttachment(ctx, attachment.Content, attachment.Filename); err != nil {
+		if err := c.platformClient.AddAttachment(ctx, attachment.Content, attachment.Id); err != nil {
 			if isFinalizer {
 				err = finalizer.Finalize(ctx, attachment, err)
 				if err != nil {
-					return fmt.Errorf("could not finalize attachment %s: %w", attachment.Filename, err)
+					return fmt.Errorf("could not finalize attachment %s: %w", attachment.Id, err)
 				}
 			}
-			return fmt.Errorf("failed to upload attachment for %s: %w", attachment.Filename, err)
+			return fmt.Errorf("failed to upload attachment for %s: %w", attachment.Id, err)
 		}
 		if isFinalizer {
 			err = finalizer.Finalize(ctx, attachment, nil)
 			if err != nil {
-				return fmt.Errorf("could not finalize attachment %s: %w", attachment.Filename, err)
+				return fmt.Errorf("could not finalize attachment %s: %w", attachment.Id, err)
 			}
 		}
 	}
@@ -198,7 +200,7 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 
 		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		err = inbound.ProcessMessage(ctx, transport.Message{
+		err = inbound.ProcessMessage(ctx, transport.Object{
 			Id:       transmission.Id,
 			Content:  data,
 			Metadata: transmission.Metadata,
@@ -246,13 +248,24 @@ func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.In
 		}
 		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		if err := attachmentProcessor.ProcessAttachment(ctx, transport.Attachment{
-			Filename: filename,
-			Content:  data,
+		if err := attachmentProcessor.ProcessAttachment(ctx, transport.Object{
+			Id:      generateId(),
+			Content: data,
+			Metadata: map[string]string{
+				"filename": filename,
+			},
 		}); err != nil {
 			return fmt.Errorf("error processing attachment: %w", err)
 		}
 		cancel()
 	}
 	return nil
+}
+
+func generateId() string {
+	bytes := make([]byte, 16)
+	if _, err := rand.Read(bytes); err != nil {
+		panic(err)
+	}
+	return hex.EncodeToString(bytes)
 }

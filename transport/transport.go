@@ -4,23 +4,18 @@ import (
 	"context"
 )
 
-type Message struct {
+type Object struct {
 	Id       string
 	Content  []byte
 	Metadata map[string]string
 }
 
-type Attachment struct {
-	Filename string
-	Content  []byte
-}
-
 type OutboundTransport interface {
-	ListMessages(ctx context.Context) ([]Message, error)
+	ListMessages(ctx context.Context) ([]Object, error)
 }
 
 type InboundTransport interface {
-	ProcessMessage(context.Context, Message) error
+	ProcessMessage(context.Context, Object) error
 }
 
 type Finalizer interface {
@@ -30,7 +25,7 @@ type Finalizer interface {
 // AttachmentLister is the interface implemented by an plugin that supports listing attachments.
 type AttachmentLister interface {
 	// ListAttachments lists all found attachments.
-	ListAttachments(ctx context.Context) ([]Attachment, error)
+	ListAttachments(ctx context.Context) ([]Object, error)
 	// Return if attachments should be processed by specific processor
 	HandleAttachments() bool
 }
@@ -38,7 +33,7 @@ type AttachmentLister interface {
 // Processor is the interface implemented by an transport that supports processing attachments.
 type AttachmentProcessor interface {
 	// ProcessAttachmetn processes an attachment.
-	ProcessAttachment(context.Context, Attachment) error
+	ProcessAttachment(context.Context, Object) error
 	// Return if attachments should be processed by specific processor
 	HandleAttachments() bool
 }

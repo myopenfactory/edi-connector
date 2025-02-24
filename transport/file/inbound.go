@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/myopenfactory/edi-connector/platform"
@@ -66,14 +65,14 @@ func (p *inboundFileTransport) HandleAttachment() bool {
 }
 
 // ConsumeMessage consumes message from plattform and saves it to a file
-func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport.Message) error {
+func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport.Object) error {
 	filename := fmt.Sprintf("%s.edi", msg.Id)
 	if value, ok := msg.Metadata["filename"]; ok {
 		filename = value
 	}
 	path := filepath.Join(p.settings.Path, filename)
-	_, err := os.Stat(path)
-	if !os.IsNotExist(err) && p.settings.Exist == "append" {
+	if p.settings.Exist == "append" {
+		p.logger.Info("Appending to file", "path", path)
 		f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0600)
 		if err != nil {
 			return fmt.Errorf("error while open file %s: %w", path, err)
@@ -85,11 +84,9 @@ func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport
 		}
 		return nil
 	}
-	filename = createUniqueFilename(path)
-	if err := createFolderFromFile(path); err != nil {
-		return fmt.Errorf("error while creating message folder %s: %w", path, err)
-	}
+
 	p.logger.Info("Creating file", "path", path)
+
 	if err := os.WriteFile(filename, msg.Content, 0644); err != nil {
 		return fmt.Errorf("error while writing file %s: %w", path, err)
 	}
@@ -98,12 +95,12 @@ func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport
 
 // ProcessAttachment processes the attachment and writes it to specified path. In case of already existing file a
 // new filename is derived.
-func (p *inboundFileTransport) ProcessAttachment(ctx context.Context, atc transport.Attachment) error {
-	path := filepath.Join(p.settings.AttachmentPath, atc.Filename)
-	path = createUniqueFilename(path)
-	if err := createFolderFromFile(path); err != nil {
-		return fmt.Errorf("error while creating attachment folder %s: %w", path, err)
+func (p *inboundFileTransport) ProcessAttachment(ctx context.Context, atc transport.Object) error {
+	filename := fmt.Sprintf("%s.attachment", atc.Id)
+	if value, ok := atc.Metadata["filename"]; ok {
+		filename = value
 	}
+	path := filepath.Join(p.settings.AttachmentPath, filename)
 	f, err := os.Create(path)
 	if err != nil {
 		return fmt.Errorf("could not open target file: %s: %w", path, err)
@@ -116,35 +113,4 @@ func (p *inboundFileTransport) ProcessAttachment(ctx context.Context, atc transp
 	}
 
 	return nil
-}
-
-func createFolderFromFile(filename string) error {
-	if filename == "" {
-		return fmt.Errorf("error filename couldn't be nil")
-	}
-	folder := filepath.Dir(filename)
-	if err := os.MkdirAll(folder, 755); err != nil {
-		return fmt.Errorf("error cannot create folder %s: %w", folder, err)
-	}
-	return nil
-}
-
-func createUniqueFilename(fn string) string {
-	if fn == "" {
-		return ""
-	}
-
-	ext := filepath.Ext(fn)
-	base := strings.TrimSuffix(fn, ext)
-
-	_, err := os.Stat(fn)
-	for i := 1; i < 10000; i++ {
-		if os.IsNotExist(err) {
-			break
-		}
-		fn = fmt.Sprintf("%s_%d%s", base, i, ext)
-		_, err = os.Stat(fn)
-	}
-
-	return fn
 }

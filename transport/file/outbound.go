@@ -88,8 +88,8 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 }
 
 // ListMessages lists all messages found within message folder. Each file gets
-// serialized into an transport.Message.
-func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.Message, error) {
+// serialized into an transport.Object.
+func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.Object, error) {
 	message := p.settings.Message
 
 	fileInfos, err := p.listFilesLastModifiedBefore(message.Path, time.Now().Add(-message.WaitTime))
@@ -97,7 +97,7 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.M
 		return nil, fmt.Errorf("failed to list files within %s: %w", message.Path, err)
 	}
 
-	messages := make([]transport.Message, 0)
+	messages := make([]transport.Object, 0)
 	for _, fileInfo := range fileInfos {
 		fileExtension := filepath.Ext(fileInfo.Name())
 		filePath := filepath.Join(message.Path, fileInfo.Name())
@@ -107,7 +107,7 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.M
 				if err != nil {
 					return nil, fmt.Errorf("error while reading attachment %s: %w", filePath, err)
 				}
-				messages = append(messages, transport.Message{
+				messages = append(messages, transport.Object{
 					Id:      filePath,
 					Content: buffer,
 				})
@@ -119,8 +119,8 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.M
 }
 
 // ListAttachments lists all attachments found within attachment folder. Each file gets
-// serialized into an transport.Attachment.
-func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transport.Attachment, error) {
+// serialized into an transport.Object.
+func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transport.Object, error) {
 	attachment := p.settings.Attachment
 	if attachment.Path == "" {
 		return nil, fmt.Errorf("attachments not configured")
@@ -131,7 +131,7 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 		return nil, fmt.Errorf("failed to list files within %s: %w", attachment.Path, err)
 	}
 
-	attachments := make([]transport.Attachment, 0)
+	attachments := make([]transport.Object, 0)
 	for _, fileInfo := range fileInfos {
 		fileExtension := filepath.Ext(fileInfo.Name())
 		filePath := filepath.Join(attachment.Path, fileInfo.Name())
@@ -142,9 +142,9 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 					return nil, fmt.Errorf("error while reading attachment %s: %w", filePath, err)
 				}
 
-				attachments = append(attachments, transport.Attachment{
-					Filename: filePath,
-					Content:  buffer,
+				attachments = append(attachments, transport.Object{
+					Id:      filePath,
+					Content: buffer,
 				})
 			}
 		}
@@ -155,11 +155,11 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 
 func (p *outboundFileTransport) Finalize(ctx context.Context, obj any, err error) error {
 	var file string
-	if message, ok := obj.(transport.Message); ok {
+	if message, ok := obj.(transport.Object); ok {
 		file = message.Id
 	}
-	if attachment, ok := obj.(transport.Attachment); ok {
-		file = attachment.Filename
+	if attachment, ok := obj.(transport.Object); ok {
+		file = attachment.Id
 	}
 	if err != nil {
 		destination := filepath.Join(p.settings.ErrorPath, filepath.FromSlash(file))
