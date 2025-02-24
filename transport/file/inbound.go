@@ -66,7 +66,7 @@ func (p *inboundFileTransport) HandleAttachment() bool {
 
 // ConsumeMessage consumes message from plattform and saves it to a file
 func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport.Object) error {
-	filename := fmt.Sprintf("%s.edi", msg.Id)
+	filename := msg.Id
 	if value, ok := msg.Metadata["filename"]; ok {
 		filename = value
 	}
@@ -96,7 +96,7 @@ func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport
 // ProcessAttachment processes the attachment and writes it to specified path. In case of already existing file a
 // new filename is derived.
 func (p *inboundFileTransport) ProcessAttachment(ctx context.Context, atc transport.Object) error {
-	filename := fmt.Sprintf("%s.attachment", atc.Id)
+	filename := atc.Id
 	if value, ok := atc.Metadata["filename"]; ok {
 		filename = value
 	}
