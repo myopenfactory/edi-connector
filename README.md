@@ -4,4 +4,10 @@
 
 ![EDI-Connector Logo](doc/EDI-Connector.png)
 
-The EDI-Connector is an custom solution to interact with the myOpenFactory EDI-Platform.
+## Overview
+
+EDI-Connector is a custom software solution provided by myOpenFactory Software GmbH that facilitates seamless integration with the myOpenFactory EDI-Platform. It enables customers to send and receive EDI messages efficiently, ensuring smooth and simple electronic data interchange.
+
+# Usage
+
+The EDI-Connector serves as a bridge between the customer's system and the myOpenFactory EDI-Platform, simplifying electronic business communication.
