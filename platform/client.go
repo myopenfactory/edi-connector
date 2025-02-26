@@ -92,7 +92,13 @@ func NewClient(baseUrl string, username string, password string, certFile string
 
 func (c *Client) DownloadTransmission(transmission Transmission) ([]byte, error) {
 	url := transmission.Url
-	resp, err := c.http.Get(url)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create download transmission request: %w", err)
+	}
+
+	resp, err := c.http.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error while loading transmission with url %q: %w", url, err)
 	}
@@ -276,6 +282,7 @@ type clientTransport struct {
 
 func (t *clientTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("User-Agent", t.id)
+	r.Header.Set("Accept", "application/json")
 	r.SetBasicAuth(t.username, t.password)
 	return t.transport.RoundTrip(r)
 }

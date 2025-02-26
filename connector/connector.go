@@ -142,14 +142,7 @@ func (c *Connector) outboundMessages(ctx context.Context, outbound transport.Out
 }
 
 func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.OutboundTransport) error {
-	attachmentLister, isAttachmentLister := outbound.(transport.AttachmentLister)
-	if !isAttachmentLister {
-		return nil
-	}
-	if !attachmentLister.HandleAttachments() {
-		return nil
-	}
-	attachments, err := attachmentLister.ListAttachments(ctx)
+	attachments, err := outbound.ListAttachments(ctx)
 	if err != nil {
 		c.logger.Error("error while reading attachment: %v", "error", err)
 	}
@@ -219,11 +212,6 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 }
 
 func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.InboundTransport, transmission platform.Transmission) error {
-	// only process if transport supports processing attachments
-	attachmentProcessor, isAttachmentProcessor := inbound.(transport.AttachmentProcessor)
-	if !isAttachmentProcessor {
-		return nil
-	}
 	messageId, ok := transmission.Metadata["TID"]
 	if !ok {
 		return nil
@@ -237,7 +225,7 @@ func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.In
 	}
 
 	for _, attachment := range attachments {
-		if !attachmentProcessor.HandleAttachment(attachment.Url) {
+		if !inbound.HandleAttachment(attachment.Url) {
 			return nil
 		}
 
@@ -248,7 +236,7 @@ func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.In
 
 		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		if err := attachmentProcessor.ProcessAttachment(ctx, transport.Object{
+		if err := inbound.ProcessAttachment(ctx, transport.Object{
 			Id:      generateId(),
 			Content: data,
 			Metadata: map[string]string{
