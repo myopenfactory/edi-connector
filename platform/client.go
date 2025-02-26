@@ -173,7 +173,7 @@ func (c *Client) ConfirmTransmission(ctx context.Context, id string) error {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`
 	}
-	confirmRequest.Message = fmt.Sprintf("processed transmsision %s", id)
+	confirmRequest.Message = fmt.Sprintf("processed transmission %s", id)
 
 	data, err := json.Marshal(confirmRequest)
 	if err != nil {
@@ -204,7 +204,7 @@ func (c *Client) ConfirmTransmission(ctx context.Context, id string) error {
 }
 
 func (c *Client) AddAttachment(ctx context.Context, data []byte, filename string) error {
-	req, err := c.req("POST", fmt.Sprintf("%s/rest/v2/attachments", c.baseUrl), data)
+	req, err := c.req("POST", "/rest/v2/attachments", data)
 	if err != nil {
 		return fmt.Errorf("failed to create attachment upload request: %w", err)
 	}

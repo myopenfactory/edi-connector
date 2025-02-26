@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
+	"mime"
 	"net/http"
 	"net/http/httptest"
 	"runtime"
@@ -218,5 +220,151 @@ func TestAddTransmission(t *testing.T) {
 	err = cl.AddTransmission(t.Context(), configId, testData)
 	if err != nil {
 		t.Errorf("failed to add transmission: %v", err)
+	}
+}
+
+func TestConfirmTransmission(t *testing.T) {
+	transmissionId := "123515"
+	testData := []byte(fmt.Sprintf(`{"error":false,"message":"processed transmission %s"}`, transmissionId))
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		expectedPath := fmt.Sprintf("/rest/v2/transmissions/%s/confirm", transmissionId)
+		gotPath := r.URL.Path
+		if expectedPath != gotPath {
+			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
+		}
+		gotMethod := r.Method
+		expectedMethod := "POST"
+		if expectedMethod != gotMethod {
+			t.Errorf("Expected method: %s, got: %s", expectedMethod, gotMethod)
+		}
+		defer r.Body.Close()
+		gotData, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("failed to read request body: %v", err)
+		}
+
+		if !bytes.Equal(testData, gotData) {
+			t.Errorf("Expected request data: %s, got: %s", testData, gotData)
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	if err != nil {
+		t.Errorf("failed to create edi client: %v", err)
+	}
+
+	err = cl.ConfirmTransmission(t.Context(), transmissionId)
+	if err != nil {
+		t.Errorf("failed to confirm transmission: %v", err)
+	}
+}
+
+func TestAddAttachment(t *testing.T) {
+	testData := []byte("testdata")
+	testFilename := "attachment.txt"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		expectedPath := "/rest/v2/attachments"
+		gotPath := r.URL.Path
+		if expectedPath != gotPath {
+			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
+		}
+		gotMethod := r.Method
+		expectedMethod := "POST"
+		if expectedMethod != gotMethod {
+			t.Errorf("Expected method: %s, got: %s", expectedMethod, gotMethod)
+		}
+
+		contentDisposition := r.Header.Get("Content-Disposition")
+		mediaType, params, err := mime.ParseMediaType(contentDisposition)
+		if err != nil {
+			t.Errorf("Failed to parse media type: %v", err)
+		}
+
+		expectedMediaType := "attachment"
+		if mediaType != expectedMediaType {
+			t.Errorf("Expected media-type: %s, got: %s", expectedMediaType, mediaType)
+		}
+
+		gotFilename, ok := params["filename"]
+		if !ok {
+			t.Errorf("Expected filename parameter got none")
+		}
+		if testFilename != gotFilename {
+			t.Errorf("Expected filename: %s, got: %s", gotFilename, testFilename)
+		}
+
+		defer r.Body.Close()
+		gotData, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("failed to read request body: %v", err)
+		}
+
+		if !bytes.Equal(testData, gotData) {
+			t.Errorf("Expected request data: %s, got: %s", testData, gotData)
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	if err != nil {
+		t.Errorf("failed to create edi client: %v", err)
+	}
+
+	err = cl.AddAttachment(t.Context(), testData, testFilename)
+	if err != nil {
+		t.Errorf("failed to add attachment: %v", err)
+	}
+}
+
+func TestListMessageAttachments(t *testing.T) {
+	testId := "1239785"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		expectedPath := fmt.Sprintf("/rest/v2/messages/%s/attachments", testId)
+		gotPath := r.URL.Path
+		if expectedPath != gotPath {
+			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
+		}
+		gotMethod := r.Method
+		expectedMethod := "GET"
+		if expectedMethod != gotMethod {
+			t.Errorf("Expected method: %s, got: %s", expectedMethod, gotMethod)
+		}
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, `[{
+			"url": "http://test",
+			"item_id": "1"
+		}]`)
+	}))
+	defer server.Close()
+
+	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	if err != nil {
+		t.Errorf("failed to create edi client: %v", err)
+	}
+
+	resp, err := cl.ListMessageAttachments(t.Context(), testId)
+	if err != nil {
+		t.Errorf("failed to list message attachments: %v", err)
+	}
+
+	if len(resp) != 1 {
+		t.Errorf("Expected one message attachment in response, got: %d", len(resp))
+	}
+
+	attachment := resp[0]
+	expectedUrl := "http://test"
+	if attachment.Url != expectedUrl {
+		t.Errorf("Expected attachment url: %s, got: %s", expectedUrl, attachment.Url)
+	}
+
+	expectedItemId := "1"
+	if attachment.ItemId != expectedItemId {
+		t.Errorf("Expected attachment item id: %s, got: %s", expectedItemId, attachment.ItemId)
 	}
 }
