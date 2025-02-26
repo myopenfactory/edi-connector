@@ -1,5 +1,7 @@
-[![Build Status](https://github.com/myopenfactory/client/workflows/CI/badge.svg)](https://github.com/myopenfactory/client/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/myopenfactory/edi-connector/workflows/CI/badge.svg)](https://github.com/myopenfactory/edi-connector/actions?query=workflow%3ACI)
 
-# myOpenFactory Client
+# EDI-Connector
 
-TODO
+![EDI-Connector Logo](doc/EDI-Connector.svg)
+
+The EDI-Connector is an custom solution to interact with the myOpenFactory EDI-Platform.
