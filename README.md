@@ -2,6 +2,6 @@
 
 # EDI-Connector
 
-![EDI-Connector Logo](doc/EDI-Connector-Blue@3x.png)
+![EDI-Connector Logo](doc/EDI-Connector.png)
 
 The EDI-Connector is an custom solution to interact with the myOpenFactory EDI-Platform.
