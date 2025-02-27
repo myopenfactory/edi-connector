@@ -18,7 +18,7 @@ func Run(args []string) error {
 	flagSet.Parse(args)
 
 	remainderArgs := flagSet.Args()
-	if len(args) != 1 {
+	if len(remainderArgs) != 1 {
 		return fmt.Errorf("missing service command")
 	}
 

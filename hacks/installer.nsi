@@ -99,17 +99,8 @@ Section "EDI-Connector"
 
     WriteUninstaller $INSTDIR\uninstaller.exe
 
-    ; remove existing
-    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "Service"
-    ${If} $0 != ""
-        nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall'
-        Pop $0
-        ${If} $0 != 0
-            Abort
-        ${EndIf}
-    ${EndIf}
-
-    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service install --name EDI-Connector'
+    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall'
+    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service install'
 
     Pop $0
     ${If} $0 != 0
@@ -135,7 +126,7 @@ Section "EDI-Connector"
 SectionEnd
 
 Section "Uninstall"
-    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall --name EDI-Connector'
+    nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall'
     RMDir /R "$SMPROGRAMS\myOpenFactory\$(^Name)"
 
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory"
