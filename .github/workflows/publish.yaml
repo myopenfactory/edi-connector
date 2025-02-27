@@ -25,7 +25,7 @@ jobs:
           go-version-file: "go.mod"
       - name: Prepare THIRD_PARTY folder
         run: |
-          go install github.com/google/go-licenses@latest
+          go install github.com/google/go-licenses@v1.0.0
           make third_party
       - name: Release
         uses: goreleaser/goreleaser-action@v6
