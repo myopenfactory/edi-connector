@@ -16,7 +16,7 @@ type inboundFileSettings struct {
 	transport.InboundSettings `mapstructure:",squash"`
 	Path                      string
 	AttachmentPath            string
-	Exist                     string
+	Mode                      string
 }
 
 // InboundFileTransport type
@@ -44,11 +44,7 @@ func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (t
 		return nil, fmt.Errorf("attachment folder %s does not exist: %w", settings.AttachmentPath, err)
 	}
 
-	if settings.Exist != "append" {
-		settings.Exist = "count"
-	}
-
-	logger.Info("configured inbound process", "configId", pid, "folder", settings.Path, "strategy", settings.Exist)
+	logger.Info("configured inbound process", "configId", pid, "folder", settings.Path, "mode", settings.Mode)
 	return &inboundFileTransport{
 		logger:   logger,
 		settings: settings,
@@ -71,12 +67,12 @@ func (p *inboundFileTransport) HandleAttachment(url string) bool {
 
 // ConsumeMessage consumes message from plattform and saves it to a file
 func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport.Object) error {
-	filename := msg.Id
-	if value, ok := msg.Metadata["filename"]; ok {
-		filename = value
-	}
-	path := filepath.Join(p.settings.Path, filename)
-	if p.settings.Exist == "append" {
+	if p.settings.Mode == "append" {
+		filename := msg.Id
+		if value, ok := msg.Metadata["filename"]; ok {
+			filename = value
+		}
+		path := filepath.Join(p.settings.Path, filename)
 		p.logger.Info("Appending to file", "path", path)
 		f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0600)
 		if err != nil {
@@ -90,31 +86,26 @@ func (p *inboundFileTransport) ProcessMessage(ctx context.Context, msg transport
 		return nil
 	}
 
-	p.logger.Info("Creating file", "path", path)
-
-	if err := os.WriteFile(filename, msg.Content, 0644); err != nil {
-		return fmt.Errorf("error while writing file %s: %w", path, err)
-	}
-	return nil
+	return p.writeObject(msg, p.settings.Path)
 }
 
 // ProcessAttachment processes the attachment and writes it to specified path. In case of already existing file a
 // new filename is derived.
 func (p *inboundFileTransport) ProcessAttachment(ctx context.Context, atc transport.Object) error {
-	filename := atc.Id
-	if value, ok := atc.Metadata["filename"]; ok && value != "" {
+	return p.writeObject(atc, p.settings.AttachmentPath)
+}
+
+func (p *inboundFileTransport) writeObject(obj transport.Object, basePath string) error {
+	filename := obj.Id
+	if value, ok := obj.Metadata["filename"]; ok && value != "" {
 		filename = value
 	}
-	path := filepath.Join(p.settings.AttachmentPath, filename)
-	f, err := os.Create(path)
-	if err != nil {
-		return fmt.Errorf("could not open target file: %s: %w", path, err)
-	}
-	defer f.Close()
+	path := filepath.Join(basePath, filename)
 
-	_, err = f.Write(atc.Content)
+	p.logger.Info("Creating file", "path", path)
+	err := os.WriteFile(path, obj.Content, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to write attachment to file %q: %w", path, err)
+		return fmt.Errorf("failed to write to file %q: %w", path, err)
 	}
 
 	return nil

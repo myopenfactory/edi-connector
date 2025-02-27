@@ -27,5 +27,5 @@ type InboundTransport interface {
 }
 
 type Finalizer interface {
-	Finalize(context.Context, any, error) error
+	Finalize(context.Context, Object, error) error
 }

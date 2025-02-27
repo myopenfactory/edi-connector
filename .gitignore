@@ -12,3 +12,4 @@ test/e2e-test
 THIRD_PARTY/
 .direnv/
 .envrc
+*.out

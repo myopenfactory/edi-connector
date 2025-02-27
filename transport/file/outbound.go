@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -74,7 +75,7 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 	p.logger.Info("watching folder for messages", "folder", message.Path, "extensions", message.Extensions, "waitTime", message.WaitTime)
 
 	attachment := settings.Attachment
-	if _, err := os.Stat(attachment.Path); os.IsNotExist(err) {
+	if _, err := os.Stat(attachment.Path); attachment.Path != "" && os.IsNotExist(err) {
 		return nil, fmt.Errorf("error attachment folder does not exist: %v", attachment.Path)
 	}
 
@@ -99,7 +100,7 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.O
 
 	messages := make([]transport.Object, 0)
 	for _, fileInfo := range fileInfos {
-		fileExtension := filepath.Ext(fileInfo.Name())
+		fileExtension := filepath.Ext(fileInfo.Name())[1:]
 		filePath := filepath.Join(message.Path, fileInfo.Name())
 		for _, extension := range message.Extensions {
 			if fileExtension == extension {
@@ -133,7 +134,7 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 
 	attachments := make([]transport.Object, 0)
 	for _, fileInfo := range fileInfos {
-		fileExtension := filepath.Ext(fileInfo.Name())
+		fileExtension := filepath.Ext(fileInfo.Name())[1:]
 		filePath := filepath.Join(attachment.Path, fileInfo.Name())
 		for _, extension := range attachment.Extensions {
 			if fileExtension == extension {
@@ -153,16 +154,10 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 	return attachments, nil
 }
 
-func (p *outboundFileTransport) Finalize(ctx context.Context, obj any, err error) error {
-	var file string
-	if message, ok := obj.(transport.Object); ok {
-		file = message.Id
-	}
-	if attachment, ok := obj.(transport.Object); ok {
-		file = attachment.Id
-	}
+func (p *outboundFileTransport) Finalize(ctx context.Context, obj transport.Object, err error) error {
+	file := obj.Id
 	if err != nil {
-		destination := filepath.Join(p.settings.ErrorPath, filepath.FromSlash(file))
+		destination := filepath.Join(p.settings.ErrorPath, filepath.Base(file))
 		if _, err := move(file, destination); err != nil {
 			return err
 		}
@@ -170,7 +165,7 @@ func (p *outboundFileTransport) Finalize(ctx context.Context, obj any, err error
 	}
 
 	if p.settings.SuccessPath != "" {
-		newfile := filepath.Join(p.settings.SuccessPath, fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(file)))
+		newfile := filepath.Join(p.settings.SuccessPath, filepath.Base(file))
 		if _, err := move(file, newfile); err != nil {
 			return fmt.Errorf("error while moving file %s: %w", file, err)
 		}
@@ -184,13 +179,6 @@ func (p *outboundFileTransport) Finalize(ctx context.Context, obj any, err error
 	p.logger.Info("file deleted", "path", file)
 
 	return nil
-}
-
-func (p *outboundFileTransport) HandleAttachments() bool {
-	if p.settings.Attachment.Path == "" {
-		return false
-	}
-	return true
 }
 
 // listFilesLastModifiedBefore lists all files last modified before t for path and extension
@@ -217,6 +205,15 @@ func (p *outboundFileTransport) listFilesLastModifiedBefore(path string, t time.
 			files = append(files, fileInfo)
 		}
 	}
+
+	slices.SortFunc(files, func(a os.FileInfo, b os.FileInfo) int {
+		if a.ModTime().Before(b.ModTime()) {
+			return -1
+		} else if a.ModTime().After(b.ModTime()) {
+			return 1
+		}
+		return 0
+	})
 
 	return files, nil
 }
