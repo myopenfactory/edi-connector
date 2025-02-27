@@ -44,6 +44,10 @@ func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (t
 		return nil, fmt.Errorf("attachment folder %s does not exist: %w", settings.AttachmentPath, err)
 	}
 
+	if settings.Mode == "" {
+		settings.Mode = "create"
+	}
+
 	logger.Info("configured inbound process", "configId", pid, "folder", settings.Path, "mode", settings.Mode)
 	return &inboundFileTransport{
 		logger:   logger,
