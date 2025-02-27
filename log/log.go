@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/myopenfactory/edi-connector/config"
 	"github.com/myopenfactory/edi-connector/pkg/log/eventlog"
@@ -33,13 +34,23 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 	var logHandler slog.Handler
 
 	if cfg.Folder != "" {
-		var err error
-		logHandler, err = filesystem.NewHandler(cfg.Folder, &slog.HandlerOptions{
+		fileHandler, err := filesystem.NewHandler(cfg.Folder, "edi.log", 7, &slog.HandlerOptions{
 			Level: parsedLogLevel,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("failed to initialize filesystem logging: %w", err)
 		}
+		go func() {
+			interval := 24 * time.Hour
+			now := time.Now()
+			firstTick := now.Truncate(interval).Add(interval)
+			<-time.After(firstTick.Sub(now))
+			t := time.NewTicker(interval)
+			for range t.C {
+				fileHandler.Rotate()
+			}
+		}()
+		logHandler = fileHandler
 	}
 
 	if logHandler == nil {
