@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
-	github.com/magiconair/properties v1.8.7
+	github.com/magiconair/properties v1.8.9
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.7.0
