@@ -51,6 +51,10 @@ func (w *logWriter) Rotate() error {
 	return nil
 }
 
+func (w *logWriter) Close() error {
+	return w.file.Close()
+}
+
 type Handler struct {
 	options         *slog.HandlerOptions
 	internalHandler slog.Handler
@@ -102,4 +106,8 @@ func (h *Handler) WithGroup(name string) slog.Handler {
 
 func (h *Handler) Rotate() error {
 	return h.logWriter.Rotate()
+}
+
+func (h *Handler) Close() error {
+	return h.logWriter.Close()
 }

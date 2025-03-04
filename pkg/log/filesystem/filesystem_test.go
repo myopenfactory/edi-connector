@@ -18,6 +18,7 @@ func TestHandler(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to initialize log handler: %v", err)
 	}
+	defer handler.Close()
 
 	time, err := time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")
 	if err != nil {
@@ -46,6 +47,7 @@ func TestHandlerRotate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to initialize log handler: %v", err)
 	}
+	defer handler.Close()
 
 	time, err := time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")
 	if err != nil {
@@ -108,6 +110,7 @@ func TestHandlerRotateMax(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to initialize log handler: %v", err)
 	}
+	defer handler.Close()
 
 	for i := 0; i < 10; i++ {
 		err := handler.Rotate()
