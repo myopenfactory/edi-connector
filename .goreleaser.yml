@@ -1,3 +1,4 @@
+version: 2
 gomod:
   proxy: true
   env:
@@ -5,8 +6,8 @@ gomod:
     - GOSUMDB=sum.golang.org
 builds:
   -
-    id: "myof-client"
-    binary: myof-client
+    id: "edi-connector"
+    binary: edi-connector
     env:
       - CGO_ENABLED=0
     goos:
@@ -14,9 +15,9 @@ builds:
       - windows
     goarch:
       - amd64
-      - 386
+      - arm64
     ldflags:
-      - -X github.com/myopenfactory/client/pkg/version.Version={{.Version}} -X github.com/myopenfactory/client/pkg/version.Date={{.Date}} -X github.com/myopenfactory/client/pkg/version.Commit={{.Commit}}
+      - -X github.com/myopenfactory/edi-connector/version.Version={{.Version}} -X github.com/myopenfactory/edi-connector/version.Date={{.Date}} -X github.com/myopenfactory/edi-connector/version.Commit={{.Commit}}
 archives:
   - name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
     format: tar.gz
@@ -29,20 +30,6 @@ archives:
       - THIRD_PARTY/*
 checksum:
   name_template: 'checksums.txt'
-dockers:
-  - goos: linux
-    goarch: amd64
-    ids:
-      - myof-client
-    dockerfile: Dockerfile
-    image_templates:
-      - "ghcr.io/myopenfactory/client:{{ .Version }}"
-      - "ghcr.io/myopenfactory/client:{{ .Major}}.{{ .Minor }}"
-      - "ghcr.io/myopenfactory/client:{{ .Major}}"
-      - "ghcr.io/myopenfactory/client:latest"
-    extra_files:
-      - LICENSE
-      - THIRD_PARTY
 changelog:
   sort: asc
   filters:

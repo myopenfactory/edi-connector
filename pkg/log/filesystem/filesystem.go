@@ -1,84 +1,113 @@
 package filesystem
 
 import (
-	"io"
+	"context"
+	"fmt"
+	"log/slog"
+	"os"
 	"path/filepath"
-	"runtime"
-	"time"
-
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/sirupsen/logrus"
-	"golang.org/x/text/transform"
+	"sync"
 )
 
-var defaultFormatter = &logrus.TextFormatter{DisableColors: true}
+type logWriter struct {
+	m        sync.Mutex
+	folder   string
+	filename string
+	file     *os.File
+	count    int
+	keep     int
+}
 
-type crlfTransformer struct{}
+func (w *logWriter) Write(p []byte) (int, error) {
+	w.m.Lock()
+	defer w.m.Unlock()
+	return w.file.Write(p)
+}
 
-func (crlfTransformer) Transform(dst, src []byte, atEOF bool) (nDst, nSrc int, err error) {
-	for nSrc < len(src) {
-		if nDst >= len(dst) {
-			err = transform.ErrShortDst
-			break
-		}
-		c := src[nSrc]
-		if c == '\n' {
-			dst[nDst] = '\r'
-			dst[nDst+1] = c
-			nSrc++
-			nDst += 2
-		} else {
-			dst[nDst] = c
-			nSrc++
-			nDst++
-		}
+func (w *logWriter) Rotate() error {
+	w.m.Lock()
+	defer w.m.Unlock()
+
+	w.file.Close()
+
+	oldFilename := filepath.Join(w.folder, w.filename)
+	newFilename := filepath.Join(w.folder, w.filename+fmt.Sprintf(".%d", w.count+1))
+	w.count++
+	if w.count >= w.keep {
+		w.count = 0
 	}
-	return
-}
-
-func (crlfTransformer) Reset() {}
-
-type FilesystemHook struct {
-	path   string
-	writer io.Writer
-}
-
-func New(path string) (*FilesystemHook, error) {
-	logWriter, err := rotatelogs.New(
-		filepath.Join(path, "log.%Y%m%d%H%M.log"),
-		rotatelogs.WithMaxAge(24*time.Hour),
-		rotatelogs.WithRotationTime(time.Hour),
-	)
-
+	err := os.Rename(oldFilename, newFilename)
 	if err != nil {
-		return nil, err
+		return fmt.Errorf("failed to rename old file: %w", err)
 	}
 
-	var writer io.Writer = logWriter
-
-	if runtime.GOOS == "windows" {
-		writer = transform.NewWriter(logWriter, crlfTransformer{})
+	file, err := os.Create(filepath.Join(w.folder, w.filename))
+	if err != nil {
+		return fmt.Errorf("failed to create log file: %w", err)
 	}
 
-	return &FilesystemHook{
-		path:   path,
-		writer: writer,
+	w.file = file
+
+	return nil
+}
+
+func (w *logWriter) Close() error {
+	return w.file.Close()
+}
+
+type Handler struct {
+	options         *slog.HandlerOptions
+	internalHandler slog.Handler
+	logWriter       *logWriter
+}
+
+func NewHandler(folder string, filename string, keep int, options *slog.HandlerOptions) (*Handler, error) {
+	if err := os.MkdirAll(folder, 0755); err != nil {
+		return nil, fmt.Errorf("failed to create log folder")
+	}
+
+	file, err := os.Create(filepath.Join(folder, filename))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create log file: %w", err)
+	}
+
+	logWriter := &logWriter{
+		m:        sync.Mutex{},
+		folder:   folder,
+		filename: filename,
+		file:     file,
+		keep:     keep,
+	}
+
+	internalHandler := slog.NewJSONHandler(logWriter, options)
+
+	return &Handler{
+		options:         options,
+		internalHandler: internalHandler,
+		logWriter:       logWriter,
 	}, nil
 }
 
-// Fire serializes and writes the log entry to file.
-func (h *FilesystemHook) Fire(entry *logrus.Entry) error {
-	data, err := defaultFormatter.Format(entry)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = h.writer.Write(data)
-	return err
+func (h *Handler) Enabled(ctx context.Context, lvl slog.Level) bool {
+	return h.internalHandler.Enabled(ctx, lvl)
 }
 
-// Levels returns the available logging levels.
-func (h *FilesystemHook) Levels() []logrus.Level {
-	return logrus.AllLevels
+func (h *Handler) Handle(ctx context.Context, rec slog.Record) error {
+	return h.internalHandler.Handle(ctx, rec)
+}
+
+func (h *Handler) WithAttrs(attrs []slog.Attr) slog.Handler {
+	return h.internalHandler.WithAttrs(attrs)
+}
+
+func (h *Handler) WithGroup(name string) slog.Handler {
+	return h.internalHandler.WithGroup(name)
+}
+
+func (h *Handler) Rotate() error {
+	return h.logWriter.Rotate()
+}
+
+func (h *Handler) Close() error {
+	return h.logWriter.Close()
 }
