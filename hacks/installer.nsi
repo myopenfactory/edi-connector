@@ -137,6 +137,7 @@ Function pgAuthorizationSettingsPageCreate
     IfFileExists "$SettingsDir\config.yaml" 0 +2
         Abort
     StrCpy $InitializeConfig "true"
+    CreateDirectory $SettingsDir
 
     !insertmacro MUI_HEADER_TEXT "myOpenFactory EDI-Connector Settings" "Provide authorization configuration."
 
@@ -146,6 +147,9 @@ Function pgAuthorizationSettingsPageCreate
     ${If} $Dialog == error
         Abort
     ${EndIf}
+
+    ${NSD_CreateGroupBox} 5% 5% 90% 40% "Authorization settings"
+    Pop $0
 
     ${NSD_CreateLabel} 15% 16% 20% 10u "Username:"
     Pop $0
@@ -198,6 +202,9 @@ Function pgOutboundSettingsPageCreate
     ${If} $Dialog == error
         Abort
     ${EndIf}
+
+    ${NSD_CreateGroupBox} 5% 5% 90% 80% "Outbound settings"
+    Pop $0
 
     ${NSD_CreateLabel} 15% 16% 20% 10u "Process Id:"
     Pop $0
@@ -285,6 +292,9 @@ Function pgInboundSettingsPageCreate
     ${If} $Dialog == error
         Abort
     ${EndIf}
+
+    ${NSD_CreateGroupBox} 5% 5% 90% 40% "Inbound settings"
+    Pop $0
 
     ${NSD_CreateLabel} 15% 16% 20% 10u "Process Id:"
     Pop $0
