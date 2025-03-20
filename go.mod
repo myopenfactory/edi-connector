@@ -1,4 +1,4 @@
-module github.com/myopenfactory/edi-connector
+module github.com/myopenfactory/edi-connector/v2
 
 go 1.24
 
