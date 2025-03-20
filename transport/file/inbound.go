@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
-	"github.com/myopenfactory/edi-connector/transport"
+	"github.com/myopenfactory/edi-connector/v2/transport"
 )
 
 type inboundFileSettings struct {

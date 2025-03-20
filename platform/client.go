@@ -13,7 +13,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/myopenfactory/edi-connector/version"
+	"github.com/myopenfactory/edi-connector/v2/version"
 )
 
 type MessageAttachment struct {

@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/myopenfactory/edi-connector/config"
-	"github.com/myopenfactory/edi-connector/pkg/log/eventlog"
-	"github.com/myopenfactory/edi-connector/pkg/log/filesystem"
+	"github.com/myopenfactory/edi-connector/v2/config"
+	"github.com/myopenfactory/edi-connector/v2/pkg/log/eventlog"
+	"github.com/myopenfactory/edi-connector/v2/pkg/log/filesystem"
 )
 
 func New() *slog.Logger {

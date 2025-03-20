@@ -13,8 +13,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/myopenfactory/edi-connector/platform"
-	"github.com/myopenfactory/edi-connector/version"
+	"github.com/myopenfactory/edi-connector/v2/platform"
+	"github.com/myopenfactory/edi-connector/v2/version"
 )
 
 func TestUsernamePassword(t *testing.T) {

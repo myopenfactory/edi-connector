@@ -14,10 +14,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/myopenfactory/edi-connector/config"
-	"github.com/myopenfactory/edi-connector/platform"
-	"github.com/myopenfactory/edi-connector/transport"
-	"github.com/myopenfactory/edi-connector/transport/file"
+	"github.com/myopenfactory/edi-connector/v2/config"
+	"github.com/myopenfactory/edi-connector/v2/platform"
+	"github.com/myopenfactory/edi-connector/v2/transport"
+	"github.com/myopenfactory/edi-connector/v2/transport/file"
 )
 
 // Config configures variables for the client

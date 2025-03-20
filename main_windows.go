@@ -8,8 +8,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/myopenfactory/edi-connector/config"
-	"github.com/myopenfactory/edi-connector/connector"
+	"github.com/myopenfactory/edi-connector/v2/config"
+	"github.com/myopenfactory/edi-connector/v2/connector"
 	"golang.org/x/sys/windows/svc"
 )
 
