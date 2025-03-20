@@ -20,10 +20,10 @@ builds:
       - -X github.com/myopenfactory/edi-connector/version.Version={{.Version}} -X github.com/myopenfactory/edi-connector/version.Date={{.Date}} -X github.com/myopenfactory/edi-connector/version.Commit={{.Commit}}
 archives:
   - name_template: "{{.Binary}}_{{.Os}}_{{.Arch}}"
-    format: tar.gz
+    formats: [ 'tar.gz' ]
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [ 'zip' ]
     files:
       - LICENSE
       - README.md
