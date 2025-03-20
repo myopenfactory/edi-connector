@@ -62,8 +62,8 @@ jobs:
           Expand-Archive -LiteralPath "C:\NsProcess.zip" -DestinationPath C:\
           Copy-Item "C:\NsProcess\Plugin\nsProcessW.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsProcess.dll"
           Copy-Item "C:\NsProcess\Include\nsProcess.nsh" -Destination "C:\Program Files (x86)\NSIS\Include\nsProcess.nsh"
-          Invoke-WebRequest https://myopenfactory.blob.core.windows.net/static/NsYaml.zip -OutFile c:\NsYaml.zip
-          Expand-Archive -LiteralPath "C:\NsYaml.zip" -DestinationPath C:\
+          Invoke-WebRequest https://myopenfactory.blob.core.windows.net/static/nsYaml.zip -OutFile c:\nsYaml.zip
+          Expand-Archive -LiteralPath "C:\nsYaml.zip" -DestinationPath C:\
           Copy-Item "C:\nsYaml.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsYaml.dll"
       - name: Build installer
         run: |
