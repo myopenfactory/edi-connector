@@ -3,7 +3,7 @@ package version
 import (
 	"fmt"
 
-	"github.com/myopenfactory/edi-connector/version"
+	"github.com/myopenfactory/edi-connector/v2/version"
 )
 
 func Run() error {

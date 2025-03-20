@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/myopenfactory/edi-connector/transport"
-	"github.com/myopenfactory/edi-connector/transport/file"
+	"github.com/myopenfactory/edi-connector/v2/transport"
+	"github.com/myopenfactory/edi-connector/v2/transport/file"
 )
 
 func TestProcessMessage(t *testing.T) {

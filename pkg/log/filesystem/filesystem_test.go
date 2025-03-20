@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/myopenfactory/edi-connector/pkg/log/filesystem"
+	"github.com/myopenfactory/edi-connector/v2/pkg/log/filesystem"
 )
 
 func TestHandler(t *testing.T) {

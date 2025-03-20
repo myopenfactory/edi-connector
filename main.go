@@ -8,12 +8,12 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/myopenfactory/edi-connector/config"
-	"github.com/myopenfactory/edi-connector/connector"
-	serviceCmd "github.com/myopenfactory/edi-connector/internal/cmd/service"
-	versionCmd "github.com/myopenfactory/edi-connector/internal/cmd/version"
-	"github.com/myopenfactory/edi-connector/log"
-	"github.com/myopenfactory/edi-connector/version"
+	"github.com/myopenfactory/edi-connector/v2/config"
+	"github.com/myopenfactory/edi-connector/v2/connector"
+	serviceCmd "github.com/myopenfactory/edi-connector/v2/internal/cmd/service"
+	versionCmd "github.com/myopenfactory/edi-connector/v2/internal/cmd/version"
+	"github.com/myopenfactory/edi-connector/v2/log"
+	"github.com/myopenfactory/edi-connector/v2/version"
 )
 
 var (
