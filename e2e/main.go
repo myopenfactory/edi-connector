@@ -85,7 +85,7 @@ func main() {
 					os.Exit(1)
 				}
 				if len(attachments) > 0 {
-					fmt.Println("attachment not uploaded")
+					fmt.Println("Attachment file still present in the directory; expected it to be removed after processing.")
 					os.Exit(1)
 				}
 
