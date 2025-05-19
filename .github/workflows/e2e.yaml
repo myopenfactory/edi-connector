@@ -1,0 +1,57 @@
+name: E2E
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - name: Build release
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: latest
+          args: build --snapshot --single-target
+      - name: E2E Tests Linux
+        if: runner.os == 'Linux'
+        working-directory: ./e2e
+        run: |
+          mkdir -p "/tmp/myof"
+          echo -n "${CONFIG}" | base64 --decode > "/tmp/myof/config.yaml"
+          mkdir -p /tmp/myof/logs
+          mkdir -p /tmp/myof/inbound
+          mkdir -p /tmp/myof/outbound
+          mkdir -p /tmp/myof/success
+          mkdir -p /tmp/myof/error
+          mkdir -p /tmp/myof/attachment
+          ../dist/edi-connector_linux_amd64_v1/edi-connector --config /tmp/myof/config.yaml &
+          go run main.go
+        env:
+          CONFIG: ${{ secrets.LINUX_CONFIG }}
+
+      - name: E2E Tests Windows
+        shell: bash
+        if: runner.os == 'Windows'
+        working-directory: ./e2e
+        run: |
+          mkdir -p "C:/myof"
+          echo -n "${CONFIG}" | base64 --decode > "C:/myof/config.yaml"
+          mkdir -p "C:/myof/logs"
+          mkdir -p "C:/myof/inbound/"
+          mkdir -p "C:/myof/outbound/"
+          mkdir -p "C:/myof/success/"
+          mkdir -p "C:/myof/error/"
+          mkdir -p "C:/myof/attachment/"
+          ../dist/edi-connector_windows_amd64_v1/edi-connector.exe --config C:/myof/config.yaml &
+          go run main.go
+        env:
+          CONFIG: ${{ secrets.WINDOWS_CONFIG }}
