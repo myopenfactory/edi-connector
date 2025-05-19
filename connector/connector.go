@@ -122,9 +122,9 @@ func (c *Connector) outboundMessages(ctx context.Context, outbound transport.Out
 		defer cancel()
 		if err := c.platformClient.AddTransmission(ctx, configId, msg.Content); err != nil {
 			if isFinalizer {
-				err = finalizer.Finalize(ctx, msg, err)
-				if err != nil {
-					return fmt.Errorf("could not finalize message %s: %w", msg.Id, err)
+				finalizerErr := finalizer.Finalize(ctx, msg, err)
+				if finalizerErr != nil {
+					return fmt.Errorf("could not finalize message %s: %w", msg.Id, finalizerErr)
 				}
 			}
 			return fmt.Errorf("failed tu upload message %s: %w", msg.Id, err)
