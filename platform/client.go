@@ -104,7 +104,7 @@ func (c *Client) DownloadTransmission(transmission Transmission) ([]byte, error)
 }
 
 func (c *Client) ListTransmissions(ctx context.Context, configId string) ([]Transmission, error) {
-	req, err := c.req("GET", fmt.Sprintf("/rest/v2/transmissions?configID=%s", configId), nil)
+	req, err := c.req("GET", fmt.Sprintf("/v2/transmissions?configID=%s", configId), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create list transmissions request: %w", err)
 	}
@@ -134,7 +134,7 @@ func (c *Client) ListTransmissions(ctx context.Context, configId string) ([]Tran
 }
 
 func (c *Client) AddTransmission(ctx context.Context, configId string, data []byte) error {
-	req, err := c.req("POST", fmt.Sprintf("/rest/v2/transmissions?configID=%s", configId), data)
+	req, err := c.req("POST", fmt.Sprintf("/v2/transmissions?configID=%s", configId), data)
 	if err != nil {
 		return fmt.Errorf("failed to create add transmission request: %w", err)
 	}
@@ -168,7 +168,7 @@ func (c *Client) ConfirmTransmission(ctx context.Context, id string) error {
 		return fmt.Errorf("failed to confirm transmission: %w", err)
 	}
 
-	req, err := c.req("POST", fmt.Sprintf("/rest/v2/transmissions/%s/confirm", id), data)
+	req, err := c.req("POST", fmt.Sprintf("/v2/transmissions/%s/confirm", id), data)
 	if err != nil {
 		return fmt.Errorf("failed to create confirm request: %w", err)
 	}
@@ -192,7 +192,7 @@ func (c *Client) ConfirmTransmission(ctx context.Context, id string) error {
 }
 
 func (c *Client) AddAttachment(ctx context.Context, data []byte, filename string) error {
-	req, err := c.req("POST", "/rest/v2/attachments", data)
+	req, err := c.req("POST", "/v2/attachments", data)
 	if err != nil {
 		return fmt.Errorf("failed to create attachment upload request: %w", err)
 	}
@@ -217,7 +217,7 @@ func (c *Client) AddAttachment(ctx context.Context, data []byte, filename string
 }
 
 func (c *Client) ListMessageAttachments(ctx context.Context, id string) ([]MessageAttachment, error) {
-	req, err := c.req("GET", fmt.Sprintf("/rest/v2/messages/%s/attachments", id), nil)
+	req, err := c.req("GET", fmt.Sprintf("/v2/messages/%s/attachments", id), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch attachments: %w", err)
 	}
