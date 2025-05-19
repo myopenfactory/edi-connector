@@ -34,7 +34,7 @@ type Connector struct {
 
 // New creates client with given options
 func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
-	platformClient, err := platform.NewClient(cfg.Url, cfg.Username, cfg.Password, cfg.ClientCertificate, cfg.CAFile, cfg.Proxy)
+	platformClient, err := platform.NewClient(cfg.Url, cfg.Username, cfg.Password, cfg.CAFile, cfg.Proxy)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create platform client: %w", err)
 	}

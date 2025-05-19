@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -23,17 +22,16 @@ type LogOptions struct {
 }
 
 type Config struct {
-	Proxy             string
-	RunWaitTime       time.Duration
-	Inbounds          []ProcessConfig
-	Outbounds         []ProcessConfig
-	Log               LogOptions
-	Url               string
-	Username          string
-	Password          string
-	CAFile            string `mapstructure:"cafile"`
-	ClientCertificate string `mapstructure:"clientcert"`
-	ServiceName       string
+	Proxy       string
+	RunWaitTime time.Duration
+	Inbounds    []ProcessConfig
+	Outbounds   []ProcessConfig
+	Log         LogOptions
+	Url         string
+	Username    string
+	Password    string
+	CAFile      string `mapstructure:"cafile"`
+	ServiceName string
 }
 
 func ReadConfig(configFile string) (Config, string, error) {
@@ -77,17 +75,6 @@ func ReadConfig(configFile string) (Config, string, error) {
 
 	if err := yaml.NewDecoder(file).Decode(&cfg); err != nil {
 		return Config{}, "", fmt.Errorf("failed to decode configuration file: %w", err)
-	}
-
-	if strings.HasPrefix(cfg.ClientCertificate, "./") {
-		cfg.ClientCertificate = filepath.Join(filepath.Dir(configFile), cfg.ClientCertificate)
-	}
-
-	if cfg.ClientCertificate == "" {
-		clientcert := filepath.Join(filepath.Dir(configFile), "client.crt")
-		if _, err := os.Stat(clientcert); err == nil {
-			cfg.ClientCertificate = clientcert
-		}
 	}
 
 	return cfg, configFile, nil
