@@ -64,7 +64,7 @@ func ReadConfig(configFile string) (Config, string, error) {
 
 	var cfg Config
 	cfg.RunWaitTime = time.Minute
-	cfg.Url = "https://edi.myopenfactory.net"
+	cfg.Url = "https://rest.ediplatform.services"
 	cfg.ServiceName = "EDI-Connector"
 	if proxy := os.Getenv("HTTP_PROXY"); proxy != "" {
 		cfg.Proxy = proxy
