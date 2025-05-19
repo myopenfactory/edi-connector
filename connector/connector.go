@@ -152,7 +152,7 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 		if err := c.platformClient.AddAttachment(ctx, attachment.Content, attachment.Id); err != nil {
 			if isFinalizer {
 				finalizerErr := finalizer.Finalize(ctx, attachment, err)
-				if err != nil {
+				if finalizerErr != nil {
 					return fmt.Errorf("could not finalize attachment %s: %w", attachment.Id, finalizerErr)
 				}
 			}
