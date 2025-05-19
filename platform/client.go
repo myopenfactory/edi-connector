@@ -93,7 +93,7 @@ func (c *Client) DownloadTransmission(transmission Transmission) ([]byte, error)
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("error bad response for transmission %q: %w", url, err)
+		return nil, fmt.Errorf("error bad response for transmission %q: %s", url, resp.Status)
 	}
 
 	data, err := io.ReadAll(resp.Body)
