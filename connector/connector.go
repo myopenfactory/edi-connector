@@ -80,7 +80,7 @@ func (c *Connector) Run(ctx context.Context) error {
 			for configId, transport := range c.outbounds {
 				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 				if err := c.outboundAttachments(ctx, transport); err != nil {
-					c.logger.Error("error processing outbound attachment: %s", "error", err)
+					c.logger.Error("error processing outbound attachment", "error", err)
 					cancel()
 					os.Exit(1)
 				}
@@ -88,7 +88,7 @@ func (c *Connector) Run(ctx context.Context) error {
 
 				ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
 				if err := c.outboundMessages(ctx, transport, configId); err != nil {
-					c.logger.Error("error processing outbound message: %s", "error", err)
+					c.logger.Error("error processing outbound message", "error", err)
 					cancel()
 					os.Exit(1)
 				}
@@ -122,9 +122,9 @@ func (c *Connector) outboundMessages(ctx context.Context, outbound transport.Out
 		defer cancel()
 		if err := c.platformClient.AddTransmission(ctx, configId, msg.Content); err != nil {
 			if isFinalizer {
-				err = finalizer.Finalize(ctx, msg, err)
-				if err != nil {
-					return fmt.Errorf("could not finalize message %s: %w", msg.Id, err)
+				finalizerErr := finalizer.Finalize(ctx, msg, err)
+				if finalizerErr != nil {
+					return fmt.Errorf("could not finalize message %s: %w", msg.Id, finalizerErr)
 				}
 			}
 			return fmt.Errorf("failed tu upload message %s: %w", msg.Id, err)
@@ -151,9 +151,9 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 	for _, attachment := range attachments {
 		if err := c.platformClient.AddAttachment(ctx, attachment.Content, attachment.Id); err != nil {
 			if isFinalizer {
-				err = finalizer.Finalize(ctx, attachment, err)
-				if err != nil {
-					return fmt.Errorf("could not finalize attachment %s: %w", attachment.Id, err)
+				finalizerErr := finalizer.Finalize(ctx, attachment, err)
+				if finalizerErr != nil {
+					return fmt.Errorf("could not finalize attachment %s: %w", attachment.Id, finalizerErr)
 				}
 			}
 			return fmt.Errorf("failed to upload attachment for %s: %w", attachment.Id, err)
