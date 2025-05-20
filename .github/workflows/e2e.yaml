@@ -56,3 +56,4 @@ jobs:
           go run main.go
         env:
           CONFIG: ${{ secrets.WINDOWS_CONFIG }}
+          E2E: "1"
