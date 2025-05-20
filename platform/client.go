@@ -37,7 +37,7 @@ type Client struct {
 	baseUrl string
 }
 
-func NewClient(baseUrl string, username string, password string, certFile string, caFile string, proxy string) (*Client, error) {
+func NewClient(baseUrl string, username string, password string, caFile string, proxy string) (*Client, error) {
 	httpTransport := http.DefaultTransport
 	if proxy != "" {
 		url, err := url.Parse(proxy)
@@ -50,18 +50,6 @@ func NewClient(baseUrl string, username string, password string, certFile string
 	if tlsConfig == nil {
 		tlsConfig = &tls.Config{}
 		httpTransport.(*http.Transport).TLSClientConfig = tlsConfig
-	}
-
-	if certFile != "" {
-		if _, err := os.Stat(certFile); !os.IsNotExist(err) {
-			return nil, fmt.Errorf("client certFileificate %s does not exist", certFile)
-		}
-		certFile, err := tls.LoadX509KeyPair(certFile, certFile)
-		if err != nil {
-			return nil, fmt.Errorf("error loading client certFileificate: %w", err)
-		}
-
-		tlsConfig.Certificates = []tls.Certificate{certFile}
 	}
 
 	httpClient := &http.Client{

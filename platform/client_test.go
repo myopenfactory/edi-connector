@@ -41,7 +41,7 @@ func TestUsernamePassword(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, testUsername, testPassword, "", "", "")
+	cl, err := platform.NewClient(server.URL, testUsername, testPassword, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -77,7 +77,7 @@ func TestUserAgent(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, testUsername, testPassword, "", "", "")
+	cl, err := platform.NewClient(server.URL, testUsername, testPassword, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -100,7 +100,7 @@ func TestAccept(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -118,7 +118,7 @@ func TestDownloadTransmission(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient("", "", "", "", "", "")
+	cl, err := platform.NewClient("", "", "", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -158,7 +158,7 @@ func TestListTransmissions(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -212,7 +212,7 @@ func TestAddTransmission(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -225,7 +225,7 @@ func TestAddTransmission(t *testing.T) {
 
 func TestConfirmTransmission(t *testing.T) {
 	transmissionId := "123515"
-	testData := []byte(fmt.Sprintf(`{"error":false,"message":"processed transmission %s"}`, transmissionId))
+	testData := fmt.Appendf([]byte{}, `{"error":false,"message":"processed transmission %s"}`, transmissionId)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := fmt.Sprintf("/rest/v2/transmissions/%s/confirm", transmissionId)
 		gotPath := r.URL.Path
@@ -251,7 +251,7 @@ func TestConfirmTransmission(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -310,7 +310,7 @@ func TestAddAttachment(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -343,7 +343,7 @@ func TestListMessageAttachments(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
