@@ -140,7 +140,7 @@ func TestDownloadTransmission(t *testing.T) {
 func TestListTransmissions(t *testing.T) {
 	configId := "xaz43I"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		expectedPath := "/rest/v2/transmissions"
+		expectedPath := "/v2/transmissions"
 		gotPath := r.URL.Path
 		if expectedPath != gotPath {
 			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
@@ -184,7 +184,7 @@ func TestAddTransmission(t *testing.T) {
 	configId := "xaz43I"
 	testData := []byte("test1235")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		expectedPath := "/rest/v2/transmissions"
+		expectedPath := "/v2/transmissions"
 		gotPath := r.URL.Path
 		if expectedPath != gotPath {
 			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
@@ -227,7 +227,7 @@ func TestConfirmTransmission(t *testing.T) {
 	transmissionId := "123515"
 	testData := fmt.Appendf([]byte{}, `{"error":false,"message":"processed transmission %s"}`, transmissionId)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		expectedPath := fmt.Sprintf("/rest/v2/transmissions/%s/confirm", transmissionId)
+		expectedPath := fmt.Sprintf("/v2/transmissions/%s/confirm", transmissionId)
 		gotPath := r.URL.Path
 		if expectedPath != gotPath {
 			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
@@ -266,7 +266,7 @@ func TestAddAttachment(t *testing.T) {
 	testData := []byte("testdata")
 	testFilename := "attachment.txt"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		expectedPath := "/rest/v2/attachments"
+		expectedPath := "/v2/attachments"
 		gotPath := r.URL.Path
 		if expectedPath != gotPath {
 			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
@@ -324,7 +324,7 @@ func TestAddAttachment(t *testing.T) {
 func TestListMessageAttachments(t *testing.T) {
 	testId := "1239785"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		expectedPath := fmt.Sprintf("/rest/v2/messages/%s/attachments", testId)
+		expectedPath := fmt.Sprintf("/v2/messages/%s/attachments", testId)
 		gotPath := r.URL.Path
 		if expectedPath != gotPath {
 			t.Errorf("Expected request path: %s, got: %s", expectedPath, gotPath)
