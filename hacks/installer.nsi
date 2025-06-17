@@ -91,11 +91,11 @@ Section "EDI-Connector"
     IfFileExists $SettingsDir +2 0
         CreateDirectory $SettingsDir
 
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "DisplayName" "EDI-Connector"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "DisplayIcon" "$\"$INSTDIR\logo.ico$\""
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "Publisher" "myOpenFactory Software GmbH"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "DisplayVersion" "$%VERSION%"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory\EDI-Connector" "UninstallString" "$\"$INSTDIR\uninstaller.exe$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\{97379ac3-c194-45d3-a610-334700f90593}" "DisplayName" "EDI-Connector"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\{97379ac3-c194-45d3-a610-334700f90593}" "DisplayIcon" "$\"$INSTDIR\logo.ico$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\{97379ac3-c194-45d3-a610-334700f90593}" "Publisher" "myOpenFactory Software GmbH"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\{97379ac3-c194-45d3-a610-334700f90593}" "DisplayVersion" "$%VERSION%"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\{97379ac3-c194-45d3-a610-334700f90593}" "UninstallString" "$\"$INSTDIR\uninstaller.exe$\""
 
     WriteUninstaller $INSTDIR\uninstaller.exe
 
@@ -129,7 +129,7 @@ Section "Uninstall"
     nsExec::ExecToLog '"$INSTDIR\edi-connector.exe" service uninstall'
     RMDir /R "$SMPROGRAMS\myOpenFactory\$(^Name)"
 
-    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\myOpenFactory"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\{97379ac3-c194-45d3-a610-334700f90593}"
     RMDir /R $INSTDIR
 SectionEnd
 
