@@ -1,12 +1,10 @@
 module github.com/myopenfactory/edi-connector/v2
 
-go 1.24
-
-toolchain go1.24.0
+go 1.24.0
 
 require (
 	github.com/mitchellh/mapstructure v1.5.0
-	golang.org/x/sys v0.33.0
+	golang.org/x/sys v0.36.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
