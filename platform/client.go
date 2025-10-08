@@ -156,12 +156,12 @@ func (c *Client) AddTransmission(ctx context.Context, configId string, data []by
 	return nil
 }
 
-func (c *Client) ConfirmTransmission(ctx context.Context, id string) error {
+func (c *Client) ConfirmTransmission(ctx context.Context, id, status string) error {
 	var confirmRequest struct {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`
 	}
-	confirmRequest.Message = fmt.Sprintf("processed transmission %s", id)
+	confirmRequest.Message = status
 
 	data, err := json.Marshal(confirmRequest)
 	if err != nil {

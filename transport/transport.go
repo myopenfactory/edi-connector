@@ -20,7 +20,7 @@ type OutboundTransport interface {
 }
 
 type InboundTransport interface {
-	ProcessMessage(context.Context, Object) error
+	ProcessMessage(context.Context, Object) (string, error)
 	ProcessAttachment(context.Context, Object) error
 	// Return if attachment should be processed by specific processor
 	HandleAttachment(url string) bool

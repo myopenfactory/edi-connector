@@ -190,7 +190,7 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 
 		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		err = inbound.ProcessMessage(ctx, transport.Object{
+		statusMsg, err := inbound.ProcessMessage(ctx, transport.Object{
 			Id:       transmission.Id,
 			Content:  data,
 			Metadata: transmission.Metadata,
@@ -202,7 +202,7 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 
 		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		err = c.platformClient.ConfirmTransmission(ctx, transmission.Id)
+		err = c.platformClient.ConfirmTransmission(ctx, transmission.Id, statusMsg)
 		if err != nil {
 			return fmt.Errorf("could not confirm inbound transmission %s: %w", transmission.Id, err)
 		}

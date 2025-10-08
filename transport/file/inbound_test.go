@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/myopenfactory/edi-connector/v2/transport"
@@ -23,7 +24,7 @@ func TestProcessMessage(t *testing.T) {
 		t.Errorf("Failed to create inbound transport: %v", err)
 	}
 
-	err = inbound.ProcessMessage(context.TODO(), transport.Object{
+	statusMsg, err := inbound.ProcessMessage(context.TODO(), transport.Object{
 		Id:      "78i7987129878921798",
 		Content: []byte("test"),
 		Metadata: map[string]string{
@@ -33,7 +34,9 @@ func TestProcessMessage(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to process message: %v", err)
 	}
-
+	if !(strings.HasPrefix(statusMsg, "Created file:") && strings.HasSuffix(statusMsg, "inbound.csv")) {
+		t.Errorf("Unexpected message, got: %v", statusMsg)
+	}
 	filePath := filepath.Join(inboundDir, "inbound.csv")
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		t.Fatal("Expected inbound file to exist")
@@ -67,7 +70,7 @@ func TestProcessMessageAppend(t *testing.T) {
 		t.Fatalf("Failed to write existing inbound file: %v", err)
 	}
 
-	err = inbound.ProcessMessage(context.TODO(), transport.Object{
+	statusMsg, err := inbound.ProcessMessage(context.TODO(), transport.Object{
 		Id:      "78i7987129878921798",
 		Content: []byte("test"),
 		Metadata: map[string]string{
@@ -76,6 +79,9 @@ func TestProcessMessageAppend(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatalf("Failed to process message: %v", err)
+	}
+	if !(strings.HasPrefix(statusMsg, "Appending to file:") && strings.HasSuffix(statusMsg, "inbound.csv")) {
+		t.Errorf("Unexpected message, got: %v", statusMsg)
 	}
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
