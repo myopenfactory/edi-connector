@@ -225,7 +225,7 @@ func TestAddTransmission(t *testing.T) {
 
 func TestConfirmTransmission(t *testing.T) {
 	transmissionId := "123515"
-	testData := fmt.Appendf([]byte{}, `{"error":false,"message":"Creaded file: test.txt"}`)
+	testData := fmt.Appendf([]byte{}, `{"error":false,"message":"Created file: test.txt"}`)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := fmt.Sprintf("/v2/transmissions/%s/confirm", transmissionId)
 		gotPath := r.URL.Path
@@ -256,7 +256,7 @@ func TestConfirmTransmission(t *testing.T) {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	err = cl.ConfirmTransmission(t.Context(), transmissionId, "Creaded file: test.txt")
+	err = cl.ConfirmTransmission(t.Context(), transmissionId, "Created file: test.txt")
 	if err != nil {
 		t.Errorf("failed to confirm transmission: %v", err)
 	}
