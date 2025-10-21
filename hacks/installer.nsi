@@ -258,7 +258,7 @@ Function pgOutboundSettingsPageLeave
     ${OrIf} $1 == ""
     ${OrIf} $2 == ""
     ${OrIf} $3 == ""
-        MessageBox MB_RETRYCANCEL|MB_ICONSTOP "All fields are required!" /SD IDOK
+        MessageBox MB_RETRYCANCEL|MB_ICONSTOP "All fields are required!" /SD IDCANCEL
         Abort
     ${EndIf}
 
