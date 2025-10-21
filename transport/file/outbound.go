@@ -33,6 +33,14 @@ type outboundFileTransport struct {
 	settings  outboundFileSettings
 }
 
+func (p *outboundFileTransport) isMessageEnabled() bool {
+	return p.settings.Message.Path != ""
+}
+
+func (p *outboundFileTransport) isAttachmentEnabled() bool {
+	return p.settings.Attachment.Path != ""
+}
+
 // NewOutboundFileTransport returns new OutTransport and checks for success, error, messagewaittime and attachmentwaittime parameter.
 func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (transport.OutboundTransport, error) {
 	var settings outboundFileSettings
@@ -51,39 +59,42 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 		return nil, fmt.Errorf("no process id provided")
 	}
 
-	if _, err := os.Stat(settings.ErrorPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("error folder does not exist: %v", settings.ErrorPath)
+	if p.isMessageEnabled() {
+		if _, err := os.Stat(settings.ErrorPath); os.IsNotExist(err) {
+			return nil, fmt.Errorf("error folder does not exist: %v", settings.ErrorPath)
+		}
+
+		p.logger.Info("configured outbound process", "configId", pid, "successFolder", settings.SuccessPath, "errorFolder", settings.ErrorPath)
+
+		message := settings.Message
+		if _, err := os.Stat(message.Path); os.IsNotExist(err) {
+			return nil, fmt.Errorf("error outbound folder does not exist: %v", message.Path)
+		} else if err != nil {
+			return nil, fmt.Errorf("could not verify existence of outbound folder: %w", err)
+		}
+
+		if message.WaitTime == time.Duration(0) {
+			message.WaitTime = 15 * time.Second
+		}
+		p.logger.Info("watching folder for messages", "folder", message.Path, "extensions", message.Extensions, "waitTime", message.WaitTime)
+	} else {
+		p.logger.Info("message polling disabled")
 	}
 
-	p.logger.Info("configured outbound process", "configId", pid, "successFolder", settings.SuccessPath, "errorFolder", settings.ErrorPath)
+	if p.isAttachmentEnabled() {
+		attachment := settings.Attachment
+		if _, err := os.Stat(attachment.Path); attachment.Path != "" && os.IsNotExist(err) {
+			return nil, fmt.Errorf("error attachment folder does not exist: %v", attachment.Path)
+		}
 
-	if settings.Message.Path == "" && settings.Attachment.Path == "" {
-		return nil, fmt.Errorf("either messages or attachments needs to be configured")
+		if attachment.WaitTime == time.Duration(0) {
+			attachment.WaitTime = 15 * time.Second
+		}
+
+		p.logger.Info("watching folder for attachments", "folder", attachment.Path, "extensions", attachment.Extensions, "waitTime", attachment.WaitTime)
+	} else {
+		p.logger.Info("attachment polling disabled")
 	}
-
-	message := settings.Message
-	if _, err := os.Stat(message.Path); os.IsNotExist(err) {
-		return nil, fmt.Errorf("error outbound folder does not exist: %v", message.Path)
-	} else if err != nil {
-		return nil, fmt.Errorf("could not verify existence of outbound folder: %w", err)
-	}
-
-	if message.WaitTime == time.Duration(0) {
-		message.WaitTime = 15 * time.Second
-	}
-
-	p.logger.Info("watching folder for messages", "folder", message.Path, "extensions", message.Extensions, "waitTime", message.WaitTime)
-
-	attachment := settings.Attachment
-	if _, err := os.Stat(attachment.Path); attachment.Path != "" && os.IsNotExist(err) {
-		return nil, fmt.Errorf("error attachment folder does not exist: %v", attachment.Path)
-	}
-
-	if attachment.WaitTime == time.Duration(0) {
-		attachment.WaitTime = 15 * time.Second
-	}
-
-	p.logger.Info("watching folder for attachments", "folder", attachment.Path, "extensions", attachment.Extensions, "waitTime", attachment.WaitTime)
 
 	return p, nil
 }
@@ -91,14 +102,17 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 // ListMessages lists all messages found within message folder. Each file gets
 // serialized into an transport.Object.
 func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.Object, error) {
-	message := p.settings.Message
+	messages := make([]transport.Object, 0)
+	if !p.isMessageEnabled() {
+		return messages, nil
+	}
 
+	message := p.settings.Message
 	fileInfos, err := p.listFilesLastModifiedBefore(message.Path, time.Now().Add(-message.WaitTime))
 	if err != nil {
 		return nil, fmt.Errorf("failed to list files within %s: %w", message.Path, err)
 	}
 
-	messages := make([]transport.Object, 0)
 	for _, fileInfo := range fileInfos {
 		fileExtension := filepath.Ext(fileInfo.Name())[1:]
 		filePath := filepath.Join(message.Path, fileInfo.Name())
@@ -122,17 +136,17 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.O
 // ListAttachments lists all attachments found within attachment folder. Each file gets
 // serialized into an transport.Object.
 func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transport.Object, error) {
-	attachment := p.settings.Attachment
-	if attachment.Path == "" {
-		return nil, fmt.Errorf("attachments not configured")
+	attachments := make([]transport.Object, 0)
+	if !p.isAttachmentEnabled() {
+		return attachments, nil
 	}
+	attachment := p.settings.Attachment
 
 	fileInfos, err := p.listFilesLastModifiedBefore(attachment.Path, time.Now().Add(-attachment.WaitTime))
 	if err != nil {
 		return nil, fmt.Errorf("failed to list files within %s: %w", attachment.Path, err)
 	}
 
-	attachments := make([]transport.Object, 0)
 	for _, fileInfo := range fileInfos {
 		fileExtension := filepath.Ext(fileInfo.Name())[1:]
 		filePath := filepath.Join(attachment.Path, fileInfo.Name())
