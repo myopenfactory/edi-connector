@@ -170,9 +170,15 @@ Function pgAuthoriziationSettingsPageLeave
     ${NSD_GetText} $UserHWND $0
     ${NSD_GetText} $PasswordHWND $1
 
+    ${If} $0 == ""
+    ${OrIf} $1 == ""
+        MessageBox MB_RETRYCANCEL|MB_ICONSTOP "All fields are required!" /SD IDOK
+        Abort
+    ${EndIf}
+
     nsYaml::write $SettingsDir/config.yaml serviceName "EDI-Connector"
     ${If} $0 != error
-        DetailPrint "Failed to write password"
+        DetailPrint "Failed to write serviceName"
         SetErrors
     ${EndIf}
 
@@ -248,6 +254,14 @@ Function pgOutboundSettingsPageLeave
     ${NSD_GetText} $OutboundExtensionHWND $2
     ${NSD_GetText} $OutboundErrorFolderHWND $3
 
+    ${If} $0 == ""
+    ${OrIf} $1 == ""
+    ${OrIf} $2 == ""
+    ${OrIf} $3 == ""
+        MessageBox MB_RETRYCANCEL|MB_ICONSTOP "All fields are required!" /SD IDOK
+        Abort
+    ${EndIf}
+
     nsYaml::write $SettingsDir/config.yaml outbounds.0.id $0
     ${If} $0 != error
         DetailPrint "Failed to write outbound process id"
@@ -319,6 +333,12 @@ FunctionEnd
 Function pgInboundSettingsPageLeave
     ${NSD_GetText} $InboundProcessIdHWND $0
     ${NSD_GetText} $InboundFolderHWND $1
+
+    ${If} $0 == ""
+    ${OrIf} $1 == ""
+        MessageBox MB_RETRYCANCEL|MB_ICONSTOP "All fields are required!" /SD IDOK
+        Abort
+    ${EndIf}
 
     nsYaml::write $SettingsDir/config.yaml inbounds.0.id $0
     ${If} $0 != error
