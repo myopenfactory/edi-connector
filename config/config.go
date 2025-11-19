@@ -89,7 +89,7 @@ func ReadConfig(configFile string) (Config, string, error) {
 	}
 	auth, err := credManager.GetCredential("")
 	if err != nil {
-		return Config{}, "", fmt.Errorf("failed to retriev username and password from credential manager")
+		return Config{}, "", fmt.Errorf("failed to retrieve username and password from credential manager")
 	}
 	cfg.Username = auth.Username
 	cfg.Password = auth.Password
