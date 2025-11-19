@@ -34,7 +34,7 @@ func (m *envCredManager) GetCredential(name string) (*PasswordAuth, error) {
 
 	authElements := strings.SplitN(auth, ":", 2)
 	if len(authElements) != 2 {
-		return nil, fmt.Errorf("failed to split auth")
+		return nil, fmt.Errorf("invalid auth format: expected 'username:password'")
 	}
 
 	return &PasswordAuth{
