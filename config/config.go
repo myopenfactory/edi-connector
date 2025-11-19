@@ -14,7 +14,6 @@ import (
 type ProcessConfig struct {
 	Id       string
 	Type     string
-	AuthName string
 	Settings map[string]any
 }
 
