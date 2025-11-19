@@ -85,7 +85,7 @@ func ReadConfig(configFile string) (Config, string, error) {
 		if err != nil {
 			return Config{}, "", fmt.Errorf("failed to save credentials: %w", err)
 		}
-		return Config{}, "", fmt.Errorf("password is set in the config file, please remove it before running again")
+		return Config{}, "", fmt.Errorf("password found in config file. It has been stored in the credential manager. Please remove the password from the config file and run again")
 	}
 	auth, err := credManager.GetCredential("")
 	if err != nil {
