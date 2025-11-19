@@ -21,6 +21,7 @@ type inboundFileSettings struct {
 
 // InboundFileTransport type
 type inboundFileTransport struct {
+	configId string
 	logger   *slog.Logger
 	settings inboundFileSettings
 }
@@ -50,9 +51,14 @@ func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (t
 
 	logger.Info("configured inbound process", "configId", pid, "folder", settings.Path, "mode", settings.Mode)
 	return &inboundFileTransport{
+		configId: pid,
 		logger:   logger,
 		settings: settings,
 	}, nil
+}
+
+func (p *inboundFileTransport) ConfigId() string {
+	return p.configId
 }
 
 func (p *inboundFileTransport) HandleAttachment(url string) bool {
