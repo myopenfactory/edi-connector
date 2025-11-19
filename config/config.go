@@ -7,12 +7,14 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/myopenfactory/edi-connector/v2/credentials"
 	"gopkg.in/yaml.v3"
 )
 
 type ProcessConfig struct {
 	Id       string
 	Type     string
+	AuthName string
 	Settings map[string]any
 }
 
@@ -76,6 +78,21 @@ func ReadConfig(configFile string) (Config, string, error) {
 	if err := yaml.NewDecoder(file).Decode(&cfg); err != nil {
 		return Config{}, "", fmt.Errorf("failed to decode configuration file: %w", err)
 	}
+
+	credManager := credentials.NewCredManager(cfg.ServiceName)
+	if cfg.Password != "" {
+		err := credManager.CreateCredential("", cfg.Username, cfg.Password)
+		if err != nil {
+			return Config{}, "", fmt.Errorf("failed to save credentials: %w", err)
+		}
+		return Config{}, "", fmt.Errorf("password is set in the config file, please remove it before running again")
+	}
+	auth, err := credManager.GetCredential("")
+	if err != nil {
+		return Config{}, "", fmt.Errorf("failed to retriev username and password from credential manager")
+	}
+	cfg.Username = auth.Username
+	cfg.Password = auth.Password
 
 	return cfg, configFile, nil
 }
