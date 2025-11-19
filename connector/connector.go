@@ -26,8 +26,8 @@ type Connector struct {
 	runWaitTime time.Duration
 
 	// transports
-	inbounds  map[string]transport.InboundTransport
-	outbounds map[string]transport.OutboundTransport
+	inbounds  []transport.InboundTransport
+	outbounds []transport.OutboundTransport
 
 	platformClient *platform.Client
 }
@@ -47,24 +47,26 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 
 	logger.Info("Configured connector", "runWaitTime", c.runWaitTime)
 
-	c.inbounds = make(map[string]transport.InboundTransport)
-	c.outbounds = make(map[string]transport.OutboundTransport)
+	c.inbounds = []transport.InboundTransport{}
+	c.outbounds = []transport.OutboundTransport{}
 	for _, pc := range cfg.Outbounds {
 		switch pc.Type {
 		case "FILE":
-			c.outbounds[pc.Id], err = file.NewOutboundTransport(c.logger, pc.Id, pc.Settings)
+			outbound, err := file.NewOutboundTransport(c.logger, pc.Id, pc.Settings)
 			if err != nil {
 				return nil, fmt.Errorf("failed to load transport: processid: %v: %w", pc.Id, err)
 			}
+			c.outbounds = append(c.outbounds, outbound)
 		}
 	}
 	for _, pc := range cfg.Inbounds {
 		switch pc.Type {
 		case "FILE":
-			c.inbounds[pc.Id], err = file.NewInboundTransport(c.logger, pc.Id, pc.Settings)
+			inbound, err := file.NewInboundTransport(c.logger, pc.Id, pc.Settings)
 			if err != nil {
 				return nil, fmt.Errorf("failed to load transport: processid: %v: %w", pc.Id, err)
 			}
+			c.inbounds = append(c.inbounds, inbound)
 		}
 	}
 
@@ -77,7 +79,7 @@ func (c *Connector) Run(ctx context.Context) error {
 	for {
 		select {
 		case <-ticker.C:
-			for configId, transport := range c.outbounds {
+			for _, transport := range c.outbounds {
 				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 				if err := c.outboundAttachments(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound attachment", "error", err)
@@ -87,7 +89,7 @@ func (c *Connector) Run(ctx context.Context) error {
 				cancel()
 
 				ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
-				if err := c.outboundMessages(ctx, transport, configId); err != nil {
+				if err := c.outboundMessages(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound message", "error", err)
 					cancel()
 					os.Exit(1)
@@ -95,10 +97,10 @@ func (c *Connector) Run(ctx context.Context) error {
 				cancel()
 			}
 
-			for configId, transport := range c.inbounds {
+			for _, transport := range c.inbounds {
 				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
-				if err := c.inboundMessages(ctx, transport, configId); err != nil {
-					c.logger.Error("error processing inbound transmissions", "configId", configId, "error", err)
+				if err := c.inboundMessages(ctx, transport); err != nil {
+					c.logger.Error("error processing inbound transmissions", "configId", transport.ConfigId(), "error", err)
 					cancel()
 					os.Exit(1)
 				}
@@ -110,7 +112,7 @@ func (c *Connector) Run(ctx context.Context) error {
 	}
 }
 
-func (c *Connector) outboundMessages(ctx context.Context, outbound transport.OutboundTransport, configId string) error {
+func (c *Connector) outboundMessages(ctx context.Context, outbound transport.OutboundTransport) error {
 	messages, err := outbound.ListMessages(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to list messages")
@@ -120,7 +122,7 @@ func (c *Connector) outboundMessages(ctx context.Context, outbound transport.Out
 	for _, msg := range messages {
 		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		if err := c.platformClient.AddTransmission(ctx, configId, msg.Content); err != nil {
+		if err := c.platformClient.AddTransmission(ctx, msg.Id, msg.Content); err != nil {
 			if isFinalizer {
 				finalizerErr := finalizer.Finalize(ctx, msg, err)
 				if finalizerErr != nil {
@@ -168,10 +170,10 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 	return nil
 }
 
-func (c *Connector) inboundMessages(ctx context.Context, inbound transport.InboundTransport, configId string) error {
+func (c *Connector) inboundMessages(ctx context.Context, inbound transport.InboundTransport) error {
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	transmissions, err := c.platformClient.ListTransmissions(ctx, configId)
+	transmissions, err := c.platformClient.ListTransmissions(ctx, inbound.ConfigId())
 	if err != nil {
 		return fmt.Errorf("failed to list transmissions: %w", err)
 	}
