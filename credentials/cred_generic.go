@@ -32,7 +32,7 @@ func (m *envCredManager) GetCredential(name string) (*PasswordAuth, error) {
 		return nil, fmt.Errorf("failed to load authentication environment variable")
 	}
 
-	authElements := strings.Split(auth, ":")
+	authElements := strings.SplitN(auth, ":", 2)
 	if len(authElements) != 2 {
 		return nil, fmt.Errorf("failed to split auth")
 	}
