@@ -28,7 +28,7 @@ func (m *windowsCredManager) CreateCredential(name, username, password string) e
 func (m *windowsCredManager) GetCredential(name string) (*PasswordAuth, error) {
 	credential, err := wincred.GetGenericCredential(m.generateWindowsCredName(name))
 	if err != nil {
-		return nil, fmt.Errorf("failed to retive credential: %w", err)
+		return nil, fmt.Errorf("failed to retrieve credential: %w", err)
 	}
 	return &PasswordAuth{
 		Username: credential.UserName,
