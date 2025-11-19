@@ -29,7 +29,7 @@ func (m *envCredManager) GetCredential(name string) (*PasswordAuth, error) {
 	}
 	auth, ok := os.LookupEnv(envName)
 	if !ok {
-		return nil, fmt.Errorf("failed to load authentication enviroment variable")
+		return nil, fmt.Errorf("failed to load authentication environment variable")
 	}
 
 	authElements := strings.Split(auth, ":")
