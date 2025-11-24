@@ -102,7 +102,7 @@ func (c *Client) DownloadTransmission(transmission Transmission, authName string
 		return nil, fmt.Errorf("failed to create download transmission request: %w", err)
 	}
 	if err = c.setAuth(authName, req); err != nil {
-		return nil, fmt.Errorf("failed to set authentication: %w", err)
+		return nil, err
 	}
 
 	resp, err := c.http.Do(req)
@@ -128,7 +128,7 @@ func (c *Client) ListTransmissions(ctx context.Context, configId, authName strin
 		return nil, fmt.Errorf("failed to create list transmissions request: %w", err)
 	}
 	if err = c.setAuth(authName, req); err != nil {
-		return nil, fmt.Errorf("failed to set authenticate: %w", err)
+		return nil, err
 	}
 
 	res, err := c.http.Do(req)
@@ -161,7 +161,7 @@ func (c *Client) AddTransmission(ctx context.Context, configId, authName string,
 		return fmt.Errorf("failed to create add transmission request: %w", err)
 	}
 	if err = c.setAuth(authName, req); err != nil {
-		return fmt.Errorf("failed to set authenticate: %w", err)
+		return err
 	}
 
 	res, err := c.http.Do(req)
@@ -199,7 +199,7 @@ func (c *Client) ConfirmTransmission(ctx context.Context, id, status, authName s
 	}
 	req.Header.Add("Content-Type", "application/json")
 	if err = c.setAuth(authName, req); err != nil {
-		return fmt.Errorf("failed to set authenticate: %w", err)
+		return err
 	}
 
 	res, err := c.http.Do(req)
@@ -227,7 +227,7 @@ func (c *Client) AddAttachment(ctx context.Context, data []byte, filename, authN
 	req.Header.Add("Content-Type", "application/octet-stream")
 	req.Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
 	if err = c.setAuth(authName, req); err != nil {
-		return fmt.Errorf("failed to set authenticate: %w", err)
+		return err
 	}
 	res, err := c.http.Do(req)
 	if err != nil {
@@ -252,7 +252,7 @@ func (c *Client) ListMessageAttachments(ctx context.Context, id, authName string
 		return nil, fmt.Errorf("failed to fetch attachments: %w", err)
 	}
 	if err = c.setAuth(authName, req); err != nil {
-		return nil, fmt.Errorf("failed to set authenticate: %w", err)
+		return nil, err
 	}
 
 	res, err := c.http.Do(req)

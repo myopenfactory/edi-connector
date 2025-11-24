@@ -56,6 +56,10 @@ func TestUsernamePassword(t *testing.T) {
 }
 
 func TestUserAgent(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userAgentEntries := strings.Split(r.Header.Get("User-Agent"), " ")
 		product := strings.Split(userAgentEntries[0], "/")
@@ -90,6 +94,10 @@ func TestUserAgent(t *testing.T) {
 }
 
 func TestAccept(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Accept") != "application/json" {
 			t.Errorf("Expected Accept: application/json header, got: %s", r.Header.Get("Accept"))
@@ -113,6 +121,10 @@ func TestAccept(t *testing.T) {
 }
 
 func TestDownloadTransmission(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("data"))
@@ -139,6 +151,10 @@ func TestDownloadTransmission(t *testing.T) {
 }
 
 func TestListTransmissions(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	configId := "xaz43I"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := "/v2/transmissions"
@@ -182,6 +198,10 @@ func TestListTransmissions(t *testing.T) {
 }
 
 func TestAddTransmission(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	configId := "xaz43I"
 	testData := []byte("test1235")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -225,6 +245,10 @@ func TestAddTransmission(t *testing.T) {
 }
 
 func TestConfirmTransmission(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	transmissionId := "123515"
 	testData := fmt.Appendf([]byte{}, `{"error":false,"message":"Created file: test.txt"}`)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -264,6 +288,10 @@ func TestConfirmTransmission(t *testing.T) {
 }
 
 func TestAddAttachment(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	testData := []byte("testdata")
 	testFilename := "attachment.txt"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -323,6 +351,10 @@ func TestAddAttachment(t *testing.T) {
 }
 
 func TestListMessageAttachments(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	testId := "1239785"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := fmt.Sprintf("/v2/messages/%s/attachments", testId)
