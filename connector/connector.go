@@ -151,7 +151,7 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 
 	finalizer, isFinalizer := outbound.(transport.Finalizer)
 	for _, attachment := range attachments {
-		if err := c.platformClient.AddAttachment(ctx, attachment.Content, outbound.ConfigId(), outbound.AuthName()); err != nil {
+		if err := c.platformClient.AddAttachment(ctx, attachment.Content, attachment.Id, outbound.AuthName()); err != nil {
 			if isFinalizer {
 				finalizerErr := finalizer.Finalize(ctx, attachment, err)
 				if finalizerErr != nil {
