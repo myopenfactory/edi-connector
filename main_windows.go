@@ -18,14 +18,14 @@ func init() {
 	serviceRun = &run
 }
 
-func windowsRun(ctx context.Context, logger *slog.Logger, cfg config.Config, serviceName string) error {
+func windowsRun(ctx context.Context, logger *slog.Logger, cfg config.Config) error {
 	cl, err := connector.New(logger, cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create edi-connector: %w", err)
 	}
 
-	if err := svc.Run(serviceName, &service{connector: cl}); err != nil {
-		return fmt.Errorf("service %q failed to run: %w", serviceName, err)
+	if err := svc.Run("EDI-Connector", &service{connector: cl}); err != nil {
+		return fmt.Errorf("service EDI-Connector failed to run: %w", err)
 	}
 	return nil
 }

@@ -13,6 +13,7 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/myopenfactory/edi-connector/v2/credentials"
 	"github.com/myopenfactory/edi-connector/v2/version"
 )
 
@@ -33,11 +34,13 @@ type Transmission struct {
 }
 
 type Client struct {
-	http    *http.Client
-	baseUrl string
+	http              *http.Client
+	baseUrl           string
+	authCache         map[string]*credentials.PasswordAuth
+	credentialManager credentials.CredManager
 }
 
-func NewClient(baseUrl string, username string, password string, caFile string, proxy string) (*Client, error) {
+func NewClient(baseUrl string, caFile string, proxy string) (*Client, error) {
 	httpTransport := http.DefaultTransport
 	if proxy != "" {
 		url, err := url.Parse(proxy)
@@ -55,15 +58,15 @@ func NewClient(baseUrl string, username string, password string, caFile string, 
 	httpClient := &http.Client{
 		Transport: &clientTransport{
 			id:        fmt.Sprintf("EDI-Connector/%s %s %s", version.Version, runtime.GOOS, runtime.GOARCH),
-			username:  username,
-			password:  password,
 			transport: httpTransport,
 		},
 	}
 
 	c := &Client{
-		http:    httpClient,
-		baseUrl: baseUrl,
+		http:              httpClient,
+		baseUrl:           baseUrl,
+		authCache:         make(map[string]*credentials.PasswordAuth),
+		credentialManager: credentials.NewCredManager(),
 	}
 
 	if caFile != "" {
@@ -78,12 +81,28 @@ func NewClient(baseUrl string, username string, password string, caFile string, 
 	return c, nil
 }
 
-func (c *Client) DownloadTransmission(transmission Transmission) ([]byte, error) {
+func (c *Client) setAuth(authName string, r *http.Request) error {
+	auth, ok := c.authCache[authName]
+	if !ok {
+		var err error
+		auth, err = c.credentialManager.GetCredential(authName)
+		if err != nil {
+			return fmt.Errorf("failed to get credential for name: %s: %w", authName, err)
+		}
+	}
+	r.SetBasicAuth(auth.Username, auth.Password)
+	return nil
+}
+
+func (c *Client) DownloadTransmission(transmission Transmission, authName string) ([]byte, error) {
 	url := transmission.Url
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create download transmission request: %w", err)
+	}
+	if err = c.setAuth(authName, req); err != nil {
+		return nil, fmt.Errorf("failed to set authenticate: %w", err)
 	}
 
 	resp, err := c.http.Do(req)
@@ -103,10 +122,13 @@ func (c *Client) DownloadTransmission(transmission Transmission) ([]byte, error)
 	return data, nil
 }
 
-func (c *Client) ListTransmissions(ctx context.Context, configId string) ([]Transmission, error) {
+func (c *Client) ListTransmissions(ctx context.Context, configId, authName string) ([]Transmission, error) {
 	req, err := c.req("GET", fmt.Sprintf("/v2/transmissions?configID=%s", configId), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create list transmissions request: %w", err)
+	}
+	if err = c.setAuth(authName, req); err != nil {
+		return nil, fmt.Errorf("failed to set authenticate: %w", err)
 	}
 
 	res, err := c.http.Do(req)
@@ -133,10 +155,13 @@ func (c *Client) ListTransmissions(ctx context.Context, configId string) ([]Tran
 	return response.Transmissions, nil
 }
 
-func (c *Client) AddTransmission(ctx context.Context, configId string, data []byte) error {
+func (c *Client) AddTransmission(ctx context.Context, configId, authName string, data []byte) error {
 	req, err := c.req("POST", fmt.Sprintf("/v2/transmissions?configID=%s", configId), data)
 	if err != nil {
 		return fmt.Errorf("failed to create add transmission request: %w", err)
+	}
+	if err = c.setAuth(authName, req); err != nil {
+		return fmt.Errorf("failed to set authenticate: %w", err)
 	}
 
 	res, err := c.http.Do(req)
@@ -156,7 +181,7 @@ func (c *Client) AddTransmission(ctx context.Context, configId string, data []by
 	return nil
 }
 
-func (c *Client) ConfirmTransmission(ctx context.Context, id, status string) error {
+func (c *Client) ConfirmTransmission(ctx context.Context, id, status, authName string) error {
 	var confirmRequest struct {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`
@@ -173,6 +198,9 @@ func (c *Client) ConfirmTransmission(ctx context.Context, id, status string) err
 		return fmt.Errorf("failed to create confirm request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
+	if err = c.setAuth(authName, req); err != nil {
+		return fmt.Errorf("failed to set authenticate: %w", err)
+	}
 
 	res, err := c.http.Do(req)
 	if err != nil {
@@ -191,14 +219,16 @@ func (c *Client) ConfirmTransmission(ctx context.Context, id, status string) err
 	return nil
 }
 
-func (c *Client) AddAttachment(ctx context.Context, data []byte, filename string) error {
+func (c *Client) AddAttachment(ctx context.Context, data []byte, filename, authName string) error {
 	req, err := c.req("POST", "/v2/attachments", data)
 	if err != nil {
 		return fmt.Errorf("failed to create attachment upload request: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/octet-stream")
 	req.Header.Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", filename))
-
+	if err = c.setAuth(authName, req); err != nil {
+		return fmt.Errorf("failed to set authenticate: %w", err)
+	}
 	res, err := c.http.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed issue to attachment upload request: %w", err)
@@ -216,10 +246,13 @@ func (c *Client) AddAttachment(ctx context.Context, data []byte, filename string
 	return nil
 }
 
-func (c *Client) ListMessageAttachments(ctx context.Context, id string) ([]MessageAttachment, error) {
+func (c *Client) ListMessageAttachments(ctx context.Context, id, authName string) ([]MessageAttachment, error) {
 	req, err := c.req("GET", fmt.Sprintf("/v2/messages/%s/attachments", id), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch attachments: %w", err)
+	}
+	if err = c.setAuth(authName, req); err != nil {
+		return nil, fmt.Errorf("failed to set authenticate: %w", err)
 	}
 
 	res, err := c.http.Do(req)
@@ -261,9 +294,7 @@ func (c *Client) req(method string, path string, data []byte) (*http.Request, er
 }
 
 type clientTransport struct {
-	id       string
-	username string
-	password string
+	id string
 
 	transport http.RoundTripper
 }
@@ -271,6 +302,5 @@ type clientTransport struct {
 func (t *clientTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("User-Agent", t.id)
 	r.Header.Set("Accept", "application/json")
-	r.SetBasicAuth(t.username, t.password)
 	return t.transport.RoundTrip(r)
 }

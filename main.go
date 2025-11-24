@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	serviceRun *func(context.Context, *slog.Logger, config.Config, string) error
+	serviceRun *func(context.Context, *slog.Logger, config.Config) error
 )
 
 func execute(configFile string, logLevel string) error {
@@ -57,7 +57,7 @@ func execute(configFile string, logLevel string) error {
 	}()
 
 	if serviceRun != nil && os.Getenv("E2E") == "" {
-		if err := (*serviceRun)(ctx, logger, cfg, cfg.ServiceName); err != nil {
+		if err := (*serviceRun)(ctx, logger, cfg); err != nil {
 			logger.With("error", err).Error("unable to run edi-connector")
 			os.Exit(1)
 		}

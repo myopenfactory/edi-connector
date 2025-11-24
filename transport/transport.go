@@ -14,13 +14,19 @@ type Object struct {
 	Metadata map[string]string
 }
 
+type ConfigInfo interface {
+	AuthName() string
+	ConfigId() string
+}
+
 type OutboundTransport interface {
+	ConfigInfo
 	ListMessages(ctx context.Context) ([]Object, error)
 	ListAttachments(ctx context.Context) ([]Object, error)
 }
 
 type InboundTransport interface {
-	ConfigId() string
+	ConfigInfo
 	ProcessMessage(context.Context, Object) (string, error)
 	ProcessAttachment(context.Context, Object) error
 	// Return if attachment should be processed by specific processor
