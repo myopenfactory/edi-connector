@@ -22,6 +22,7 @@ func TestUsernamePassword(t *testing.T) {
 	testUsername := "user"
 	testPassword := "password"
 	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
 		if !ok {
