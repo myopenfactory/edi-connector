@@ -10,19 +10,8 @@ type windowsCredManager struct {
 	serviceName string
 }
 
-func NewCredManager(serviceName string) *windowsCredManager {
-	return &windowsCredManager{serviceName: serviceName}
-}
-
-func (m *windowsCredManager) CreateCredential(name, username, password string) error {
-	cred := wincred.NewGenericCredential(m.generateWindowsCredName(name))
-	cred.UserName = username
-	cred.CredentialBlob = []byte(password)
-	err := cred.Write()
-	if err != nil {
-		return fmt.Errorf("failed to store credentials: %w", err)
-	}
-	return nil
+func NewCredManager() *windowsCredManager {
+	return &windowsCredManager{serviceName: "EDI-Connector"}
 }
 
 func (m *windowsCredManager) GetCredential(name string) (*PasswordAuth, error) {

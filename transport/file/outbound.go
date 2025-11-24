@@ -28,9 +28,10 @@ type outboundFileSettings struct {
 }
 
 type outboundFileTransport struct {
-	logger    *slog.Logger
-	processID string
-	settings  outboundFileSettings
+	logger   *slog.Logger
+	configId string
+	authName string
+	settings outboundFileSettings
 }
 
 func (p *outboundFileTransport) isMessageEnabled() bool {
@@ -42,7 +43,7 @@ func (p *outboundFileTransport) isAttachmentEnabled() bool {
 }
 
 // NewOutboundFileTransport returns new OutTransport and checks for success, error, messagewaittime and attachmentwaittime parameter.
-func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (transport.OutboundTransport, error) {
+func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg map[string]any) (transport.OutboundTransport, error) {
 	var settings outboundFileSettings
 	err := mapstructure.Decode(cfg, &settings)
 	if err != nil {
@@ -50,12 +51,13 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 	}
 
 	p := &outboundFileTransport{
-		logger:    logger,
-		settings:  settings,
-		processID: pid,
+		logger:   logger,
+		settings: settings,
+		configId: configId,
+		authName: authName,
 	}
 
-	if pid == "" {
+	if configId == "" {
 		return nil, fmt.Errorf("no process id provided")
 	}
 
@@ -64,7 +66,7 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 			return nil, fmt.Errorf("error folder does not exist: %v", settings.ErrorPath)
 		}
 
-		p.logger.Info("configured outbound process", "configId", pid, "successFolder", settings.SuccessPath, "errorFolder", settings.ErrorPath)
+		p.logger.Info("configured outbound process", "configId", configId, "successFolder", settings.SuccessPath, "errorFolder", settings.ErrorPath)
 
 		message := settings.Message
 		if _, err := os.Stat(message.Path); os.IsNotExist(err) {
@@ -97,6 +99,14 @@ func NewOutboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (
 	}
 
 	return p, nil
+}
+
+func (p *outboundFileTransport) ConfigId() string {
+	return p.configId
+}
+
+func (p *outboundFileTransport) AuthName() string {
+	return p.authName
 }
 
 // ListMessages lists all messages found within message folder. Each file gets

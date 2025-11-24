@@ -9,13 +9,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/myopenfactory/edi-connector/v2/credentials"
 	"gopkg.in/yaml.v3"
 )
 
 type ProcessConfig struct {
 	Id       string
 	Type     string
+	AuthName string
 	Settings map[string]any
 }
 
@@ -31,10 +31,7 @@ type Config struct {
 	Outbounds   []ProcessConfig
 	Log         LogOptions
 	Url         string
-	Username    string
-	Password    string
 	CAFile      string `mapstructure:"cafile"`
-	ServiceName string
 }
 
 type Decoder interface {
@@ -86,7 +83,6 @@ func ReadConfig(configFile string) (Config, string, error) {
 	var cfg Config
 	cfg.RunWaitTime = time.Minute
 	cfg.Url = "https://rest.ediplatform.services"
-	cfg.ServiceName = "EDI-Connector"
 	if proxy := os.Getenv("HTTP_PROXY"); proxy != "" {
 		cfg.Proxy = proxy
 	}
@@ -102,21 +98,6 @@ func ReadConfig(configFile string) (Config, string, error) {
 	if err := decoder.Decode(&cfg); err != nil {
 		return Config{}, "", fmt.Errorf("failed to decode configuration file: %w", err)
 	}
-
-	credManager := credentials.NewCredManager(cfg.ServiceName)
-	if cfg.Password != "" {
-		err := credManager.CreateCredential("", cfg.Username, cfg.Password)
-		if err != nil {
-			return Config{}, "", fmt.Errorf("failed to save credentials: %w", err)
-		}
-		return Config{}, "", fmt.Errorf("password found in config file. It has been stored in the credential manager. Please remove the password from the config file and run again")
-	}
-	auth, err := credManager.GetCredential("")
-	if err != nil {
-		return Config{}, "", fmt.Errorf("failed to retrieve username and password from credential manager")
-	}
-	cfg.Username = auth.Username
-	cfg.Password = auth.Password
 
 	return cfg, configFile, nil
 }

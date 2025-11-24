@@ -34,7 +34,7 @@ type Connector struct {
 
 // New creates client with given options
 func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
-	platformClient, err := platform.NewClient(cfg.Url, cfg.Username, cfg.Password, cfg.CAFile, cfg.Proxy)
+	platformClient, err := platform.NewClient(cfg.Url, cfg.CAFile, cfg.Proxy)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create platform client: %w", err)
 	}
@@ -52,7 +52,7 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 	for _, pc := range cfg.Outbounds {
 		switch pc.Type {
 		case "FILE":
-			outbound, err := file.NewOutboundTransport(c.logger, pc.Id, pc.Settings)
+			outbound, err := file.NewOutboundTransport(c.logger, pc.Id, pc.AuthName, pc.Settings)
 			if err != nil {
 				return nil, fmt.Errorf("failed to load transport: processid: %v: %w", pc.Id, err)
 			}
@@ -62,7 +62,7 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 	for _, pc := range cfg.Inbounds {
 		switch pc.Type {
 		case "FILE":
-			inbound, err := file.NewInboundTransport(c.logger, pc.Id, pc.Settings)
+			inbound, err := file.NewInboundTransport(c.logger, pc.Id, pc.AuthName, pc.Settings)
 			if err != nil {
 				return nil, fmt.Errorf("failed to load transport: processid: %v: %w", pc.Id, err)
 			}
@@ -122,7 +122,7 @@ func (c *Connector) outboundMessages(ctx context.Context, outbound transport.Out
 	for _, msg := range messages {
 		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		if err := c.platformClient.AddTransmission(ctx, msg.Id, msg.Content); err != nil {
+		if err := c.platformClient.AddTransmission(ctx, outbound.ConfigId(), outbound.AuthName(), msg.Content); err != nil {
 			if isFinalizer {
 				finalizerErr := finalizer.Finalize(ctx, msg, err)
 				if finalizerErr != nil {
@@ -151,7 +151,7 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 
 	finalizer, isFinalizer := outbound.(transport.Finalizer)
 	for _, attachment := range attachments {
-		if err := c.platformClient.AddAttachment(ctx, attachment.Content, attachment.Id); err != nil {
+		if err := c.platformClient.AddAttachment(ctx, attachment.Content, attachment.Id, outbound.AuthName()); err != nil {
 			if isFinalizer {
 				finalizerErr := finalizer.Finalize(ctx, attachment, err)
 				if finalizerErr != nil {
@@ -173,7 +173,7 @@ func (c *Connector) outboundAttachments(ctx context.Context, outbound transport.
 func (c *Connector) inboundMessages(ctx context.Context, inbound transport.InboundTransport) error {
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	transmissions, err := c.platformClient.ListTransmissions(ctx, inbound.ConfigId())
+	transmissions, err := c.platformClient.ListTransmissions(ctx, inbound.ConfigId(), inbound.AuthName())
 	if err != nil {
 		return fmt.Errorf("failed to list transmissions: %w", err)
 	}
@@ -184,7 +184,7 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 			return fmt.Errorf("could not process attachment for %s: %w", transmission.Id, err)
 		}
 
-		data, err := c.platformClient.DownloadTransmission(transmission)
+		data, err := c.platformClient.DownloadTransmission(transmission, inbound.AuthName())
 		if err != nil {
 			c.logger.Error("failed to download transmission", "error", err)
 			continue
@@ -204,7 +204,7 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 
 		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		err = c.platformClient.ConfirmTransmission(ctx, transmission.Id, statusMsg)
+		err = c.platformClient.ConfirmTransmission(ctx, transmission.Id, inbound.AuthName(), statusMsg)
 		if err != nil {
 			return fmt.Errorf("could not confirm inbound transmission %s: %w", transmission.Id, err)
 		}
@@ -221,7 +221,7 @@ func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.In
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 
-	attachments, err := c.platformClient.ListMessageAttachments(ctx, messageId)
+	attachments, err := c.platformClient.ListMessageAttachments(ctx, messageId, inbound.AuthName())
 	if err != nil {
 		return fmt.Errorf("failed to list message attachments for %s: %w", messageId, err)
 	}

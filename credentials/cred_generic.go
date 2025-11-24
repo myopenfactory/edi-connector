@@ -12,14 +12,10 @@ type envCredManager struct {
 	serviceName string
 }
 
-func NewCredManager(serviceName string) *envCredManager {
+func NewCredManager() *envCredManager {
 	return &envCredManager{
-		serviceName: strings.ToUpper(serviceName),
+		serviceName: "EDI_CONNECTOR",
 	}
-}
-
-func (m *envCredManager) CreateCredential(name, username, password string) error {
-	return fmt.Errorf("not supported to store credentials")
 }
 
 func (m *envCredManager) GetCredential(name string) (*PasswordAuth, error) {
