@@ -102,7 +102,7 @@ func (c *Client) DownloadTransmission(transmission Transmission, authName string
 		return nil, fmt.Errorf("failed to create download transmission request: %w", err)
 	}
 	if err = c.setAuth(authName, req); err != nil {
-		return nil, fmt.Errorf("failed to set authenticate: %w", err)
+		return nil, fmt.Errorf("failed to set authentication: %w", err)
 	}
 
 	resp, err := c.http.Do(req)
