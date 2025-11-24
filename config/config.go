@@ -1,10 +1,12 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/myopenfactory/edi-connector/v2/credentials"
@@ -35,6 +37,10 @@ type Config struct {
 	ServiceName string
 }
 
+type Decoder interface {
+	Decode(v any) error
+}
+
 func ReadConfig(configFile string) (Config, string, error) {
 	if configFile == "" {
 		workdir, err := os.Getwd()
@@ -44,17 +50,31 @@ func ReadConfig(configFile string) (Config, string, error) {
 		searchLocations := []string{workdir}
 		switch {
 		case runtime.GOOS == "windows":
-			searchLocations = append(searchLocations, filepath.Join(os.Getenv("ProgramData"), "myOpenFactory", "EDI-Connector"))
+			searchLocations = append(searchLocations, filepath.Join(os.Getenv("ProgramData"), "myOpenFactory Software GmbH", "EDI-Connector"))
 		case runtime.GOOS == "linux":
 			searchLocations = append(searchLocations, filepath.Join("etc", "myopenfactory", "edi-connector"))
 		}
 
 		for _, searchLocation := range searchLocations {
-			path := filepath.Join(searchLocation, "config.yaml")
-			if _, err := os.Stat(path); os.IsNotExist(err) {
-				continue
+			entires, err := os.ReadDir(searchLocation)
+			if err != nil {
+				if os.IsNotExist(err) {
+					continue
+				}
+				return Config{}, "", fmt.Errorf("failed to list config directory: %w", err)
 			}
-			configFile = path
+			for _, entry := range entires {
+				if entry.IsDir() {
+					continue
+				}
+				if entry.Name() == "config.yaml" || entry.Name() == "config.json" {
+					configFile = filepath.Join(searchLocation, entry.Name())
+					break
+				}
+			}
+		}
+		if configFile == "" {
+			return Config{}, "", fmt.Errorf("no config file found")
 		}
 	}
 	file, err := os.Open(configFile)
@@ -73,8 +93,13 @@ func ReadConfig(configFile string) (Config, string, error) {
 	if proxy := os.Getenv("HTTPS_PROXY"); proxy != "" {
 		cfg.Proxy = proxy
 	}
-
-	if err := yaml.NewDecoder(file).Decode(&cfg); err != nil {
+	var decoder Decoder
+	if strings.HasSuffix(configFile, ".json") {
+		decoder = json.NewDecoder(file)
+	} else if strings.HasSuffix(configFile, ".yaml") {
+		decoder = yaml.NewDecoder(file)
+	}
+	if err := decoder.Decode(&cfg); err != nil {
 		return Config{}, "", fmt.Errorf("failed to decode configuration file: %w", err)
 	}
 
