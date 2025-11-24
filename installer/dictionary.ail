@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DICTIONARY type="multilanguage">
+  <!-- Dialog table -->
+  <ENTRY id="Dialog.AuthDlg">
+    <STRING lang="en" value="[ProductName] [Setup]"/>
+  </ENTRY>
+  <ENTRY id="Dialog.ConfigurationDlg">
+    <STRING lang="en" value="[ProductName] [Setup]"/>
+  </ENTRY>
+  <ENTRY id="Dialog.InboundCfgDlg">
+    <STRING lang="en" value="Inbound"/>
+  </ENTRY>
+  <ENTRY id="Dialog.InboundTestCfgDlg">
+    <STRING lang="en" value="Inbound test"/>
+  </ENTRY>
+  <ENTRY id="Dialog.OutboundCfgDlg">
+    <STRING lang="en" value="Outbound"/>
+  </ENTRY>
+  <ENTRY id="Dialog.OutboundTestCfgDlg">
+    <STRING lang="en" value="Outbound test"/>
+  </ENTRY>
+  <!-- Control table -->
+  <ENTRY id="Control.Text.AuthDlg#Edit_1">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.AuthDlg#Edit_2">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.AuthDlg#Text_1">
+    <STRING lang="en" value="Password:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.AuthDlg#Text_2">
+    <STRING lang="en" value="Username:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.AuthDlg#Title">
+    <STRING lang="en" value="Authentification"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.ConfigurationDlg#TabHost_1">
+    <STRING lang="en" value="TabHost"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.ConfigurationDlg#Title">
+    <STRING lang="en" value="Configuration"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundCfgDlg#Edit_1">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundCfgDlg#PushButton_2">
+    <STRING lang="en" value="[ButtonText_Browse]"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundCfgDlg#Text_1">
+    <STRING lang="en" value="Configuration Id:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundCfgDlg#Text_2">
+    <STRING lang="en" value="Folder:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundConfiguration#Title">
+    <STRING lang="en" value="Inbound configurations"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundTestCfgDlg#Edit_1">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundTestCfgDlg#PushButton_2">
+    <STRING lang="en" value="[ButtonText_Browse]"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundTestCfgDlg#Text_1">
+    <STRING lang="en" value="Configuration Id:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.InboundTestCfgDlg#Text_2">
+    <STRING lang="en" value="Folder:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#Edit_1">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#Edit_2">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#OUTBOUND_ERROR_PATH_PROP">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#PushButton_1">
+    <STRING lang="en" value="[ButtonText_Browse]"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#PushButton_2">
+    <STRING lang="en" value="[ButtonText_Browse]"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#Text_1">
+    <STRING lang="en" value="Configuration Id:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#Text_2">
+    <STRING lang="en" value="Folder:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#Text_3">
+    <STRING lang="en" value="Error folder:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundCfgDlg#Text_4">
+    <STRING lang="en" value="Extension:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#Edit_1">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#Edit_2">
+    <STRING lang="en" value="{260}"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#PushButton_1">
+    <STRING lang="en" value="[ButtonText_Browse]"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#PushButton_2">
+    <STRING lang="en" value="[ButtonText_Browse]"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#Text_1">
+    <STRING lang="en" value="Configuration Id:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#Text_2">
+    <STRING lang="en" value="Folder:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#Text_3">
+    <STRING lang="en" value="Error folder:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.OutboundTestCfgDlg#Text_4">
+    <STRING lang="en" value="Extension:"/>
+  </ENTRY>
+</DICTIONARY>
