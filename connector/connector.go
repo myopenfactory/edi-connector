@@ -204,7 +204,7 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 
 		ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
 		defer cancel()
-		err = c.platformClient.ConfirmTransmission(ctx, inbound.ConfigId(), inbound.AuthName(), statusMsg)
+		err = c.platformClient.ConfirmTransmission(ctx, transmission.Id, inbound.AuthName(), statusMsg)
 		if err != nil {
 			return fmt.Errorf("could not confirm inbound transmission %s: %w", transmission.Id, err)
 		}
