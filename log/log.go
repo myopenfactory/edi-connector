@@ -63,7 +63,7 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 		logHandler = fileHandler
 	case "EVENT":
 		if runtime.GOOS != "windows" {
-			return nil, fmt.Errorf("event log is only on windows available")
+			return nil, fmt.Errorf("event log is only available on Windows")
 		}
 		var err error
 		logHandler, err = eventlog.NewHandler("EDI-Connector", &slog.HandlerOptions{
