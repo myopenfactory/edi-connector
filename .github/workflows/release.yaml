@@ -31,7 +31,7 @@ jobs:
       - name: Get current version
         id: next-version
         run: |-
-          lastVersion=$(git tag -l --sort=-creatordate | head -1 | cut -dv -f2)
+          lastVersion=$(git tag -l --sort=-version:refname | head -1 | cut -dv -f2)
           IFS=. read -r major minor patch <<EOF
           $lastVersion
           EOF
