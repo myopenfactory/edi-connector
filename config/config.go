@@ -22,6 +22,7 @@ type ProcessConfig struct {
 type LogOptions struct {
 	Level  string
 	Folder string
+	Type   string
 }
 
 type Config struct {
