@@ -281,7 +281,7 @@ func TestConfirmTransmission(t *testing.T) {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	err = cl.ConfirmTransmission(t.Context(), transmissionId, "Created file: test.txt", "")
+	err = cl.ConfirmTransmission(t.Context(), transmissionId, "", "Created file: test.txt")
 	if err != nil {
 		t.Errorf("failed to confirm transmission: %v", err)
 	}
