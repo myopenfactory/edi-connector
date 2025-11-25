@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DOCUMENT Type="Advanced Installer" CreateVersion="23.2" version="23.2" Modules="enterprise" RootPath="." Language="de" Id="{5D897E26-0AD9-452F-9084-6C3294322384}">
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
+    <ROW Property="AI_APP_FILE" Value="[#ediconnector.exe_1]"/>
+    <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
+    <ROW Property="AI_BackgroundColor" Value="lightblue" MultiBuildValue="DefaultBuild:powderblue" MsiKey="AI_BackgroundColor"/>
+    <ROW Property="AI_FINDEXE_TITLE" Value="Wöhle das Installationspaket für [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
+    <ROW Property="AI_PREDEF_LCONDS_PROPS" Value="AI_DETECTED_INTERNET_CONNECTION;AI_DETECTED_PHYSICAL_MEMORY"/>
+    <ROW Property="AI_REQUIRED_PHYSICAL_MEMORY" MultiBuildValue="DefaultBuild:512" ValueLocId="-"/>
+    <ROW Property="ALLUSERS" Value="1"/>
+    <ROW Property="ARPCOMMENTS" Value=" (Evaluation Installer)" ValueLocId="*"/>
+    <ROW Property="ARPCONTACT" Value="support@myopenfactory.com"/>
+    <ROW Property="ARPHELPTELEPHONE" Value="+4924199000300"/>
+    <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
+    <ROW Property="ARPNOREPAIR" Value="1" MultiBuildValue="DefaultBuild:1"/>
+    <ROW Property="ARPPRODUCTICON" Value="logo_1.exe" Type="8"/>
+    <ROW Property="INBOUND_PATH_PROP" Value="C:\edi\inbound"/>
+    <ROW Property="INBOUND_TEST_PATH_PROP" Value="C:\edi\inbound_test"/>
+    <ROW Property="Manufacturer" Value="myOpenFactory Software GmbH"/>
+    <ROW Property="OUTBOUND_ERROR_PATH_PROP" Value="C:\edi\error"/>
+    <ROW Property="OUTBOUND_EXTENSION_PROP" Value="xml" Type="4"/>
+    <ROW Property="OUTBOUND_PATH_PROP" Value="C:\edi\outbound"/>
+    <ROW Property="OUTBOUND_TEST_ERROR_PATH_PROP" Value="C:\edi\error"/>
+    <ROW Property="OUTBOUND_TEST_EXTENSION_PROP" Value="xml" Type="4"/>
+    <ROW Property="OUTBOUND_TEST_PATH_PROP" Value="C:\edi\outbound_test"/>
+    <ROW Property="ProductCode" Value="1031:{93E507D7-DB60-4982-A7B8-38194B7490F9} 1033:{93E507D7-DB60-4982-A7B8-38194B7490F9} " Type="16"/>
+    <ROW Property="ProductLanguage" Value="1031"/>
+    <ROW Property="ProductName" Value="EDI-Connector"/>
+    <ROW Property="ProductVersion" Value="1.0.0" Options="32"/>
+    <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
+    <ROW Property="UpgradeCode" Value="{FBD0C8E3-6F57-4B52-A73A-42D919029725}"/>
+    <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT50Display" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5X" MultiBuildValue="DefaultBuild:Windows XP/2003" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="DefaultBuild:Windows XP/2003" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT60" MultiBuildValue="DefaultBuild:Windows Vista/Server 2008" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT60Display" MultiBuildValue="DefaultBuild:Windows Vista/Server 2008" ValueLocId="-"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
+    <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1" DirectoryOptions="3"/>
+    <ROW Directory="CommonAppDataFolder" Directory_Parent="TARGETDIR" DefaultDir="COMMON~1|CommonAppDataFolder" IsPseudoRoot="1"/>
+    <ROW Directory="EDIConnector_Dir" Directory_Parent="myOpenFactory_Dir" DefaultDir="EDI-CO~1|EDI-Connector"/>
+    <ROW Directory="INBOUND_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="INBOUN~1|INBOUND_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="INBOUND_TEST_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="INBOUN~2|INBOUND_TEST_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="OUTBOUND_ERROR_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~1|OUTBOUND_ERROR_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="OUTBOUND_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~2|OUTBOUND_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="OUTBOUND_TEST_ERROR_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~3|OUTBOUND_TEST_ERROR_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="OUTBOUND_TEST_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~4|OUTBOUND_TEST_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
+    <ROW Directory="TARGETDIR" DefaultDir="SourceDir"/>
+    <ROW Directory="THIRD_PARTY_Dir" Directory_Parent="APPDIR" DefaultDir="THIRD_~1|THIRD_PARTY" DirectoryOptions="3"/>
+    <ROW Directory="ediconnector_Dir" Directory_Parent="myopenfactory_Dir" DefaultDir="EDI-CO~1|edi-connector" DirectoryOptions="3"/>
+    <ROW Directory="github.com_Dir" Directory_Parent="THIRD_PARTY_Dir" DefaultDir="github.com" DirectoryOptions="3"/>
+    <ROW Directory="gopkg.in_Dir" Directory_Parent="THIRD_PARTY_Dir" DefaultDir="gopkg.in" DirectoryOptions="3"/>
+    <ROW Directory="mapstructure_Dir" Directory_Parent="mitchellh_Dir" DefaultDir="MAPSTR~1|mapstructure" DirectoryOptions="3"/>
+    <ROW Directory="mitchellh_Dir" Directory_Parent="github.com_Dir" DefaultDir="MITCHE~1|mitchellh" DirectoryOptions="3"/>
+    <ROW Directory="myOpenFactory_Dir" Directory_Parent="CommonAppDataFolder" DefaultDir="MYOPEN~1|myOpenFactory Software GmbH"/>
+    <ROW Directory="myopenfactory_Dir" Directory_Parent="github.com_Dir" DefaultDir="MYOPEN~1|myopenfactory" DirectoryOptions="3"/>
+    <ROW Directory="v2_Dir" Directory_Parent="ediconnector_Dir" DefaultDir="v2" DirectoryOptions="3"/>
+    <ROW Directory="yaml.v3_Dir" Directory_Parent="gopkg.in_Dir" DefaultDir="yaml.v3" DirectoryOptions="3"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.SideBySideGuidComponent">
+    <ROW Component="APPDIR" Value="{90A45367-88AA-4486-91FD-D30E3E3C1F8D}"/>
+    <ROW Component="ProductInformation" Value="{3DBFAA70-23C1-4E24-A8FC-E056722DE690}"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
+    <ROW Component="AI_ExePath" ComponentId="{2F28255D-EE9F-472F-B39D-A772F8C7EC66}" Directory_="APPDIR" Attributes="260" KeyPath="AI_ExePath"/>
+    <ROW Component="APPDIR" ComponentId="{90A45367-88AA-4486-91FD-D30E3E3C1F8D}" Directory_="APPDIR" Attributes="0"/>
+    <ROW Component="EDIConnector" ComponentId="{6C8CCAC0-AAEB-4F12-858B-664496C0F29C}" Directory_="EDIConnector_Dir" Attributes="0"/>
+    <ROW Component="INBOUND_PATH_PROP" ComponentId="{27A4AD48-C05E-4170-9F37-1CE61D078C54}" Directory_="INBOUND_PATH_PROP" Attributes="0"/>
+    <ROW Component="INBOUND_TEST_PATH_PROP" ComponentId="{A9375D4D-918F-4AAF-A3B1-CF25A9F274AA}" Directory_="INBOUND_TEST_PATH_PROP" Attributes="0"/>
+    <ROW Component="LICENSE" ComponentId="{C715E731-1E0B-41CC-8603-E0A83ED745F8}" Directory_="yaml.v3_Dir" Attributes="0" KeyPath="LICENSE" Type="0"/>
+    <ROW Component="LICENSE_1" ComponentId="{E0B15864-E362-43F8-9807-E2AEFE457B40}" Directory_="mapstructure_Dir" Attributes="0" KeyPath="LICENSE_1" Type="0"/>
+    <ROW Component="LICENSE_2" ComponentId="{70CC9A44-2A19-4A8D-B776-9B55C8AA257A}" Directory_="v2_Dir" Attributes="0" KeyPath="LICENSE_2" Type="0"/>
+    <ROW Component="OUTBOUND_ERROR_PATH_PROP" ComponentId="{C708E094-491B-48EF-900C-169B632265C1}" Directory_="OUTBOUND_ERROR_PATH_PROP" Attributes="0"/>
+    <ROW Component="OUTBOUND_PATH_PROP" ComponentId="{299A8D84-DC9E-48E0-932B-F75544995A37}" Directory_="OUTBOUND_PATH_PROP" Attributes="0"/>
+    <ROW Component="OUTBOUND_TEST_ERROR_PATH_PROP" ComponentId="{4E2137BC-37E4-4AE2-B574-D5D2960FD783}" Directory_="OUTBOUND_TEST_ERROR_PATH_PROP" Attributes="0"/>
+    <ROW Component="OUTBOUND_TEST_PATH_PROP" ComponentId="{24B6B346-12C2-4879-A5AC-3DD375447C8C}" Directory_="OUTBOUND_TEST_PATH_PROP" Attributes="0"/>
+    <ROW Component="ProductInformation" ComponentId="{3DBFAA70-23C1-4E24-A8FC-E056722DE690}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{DBADF297-1E25-444B-8690-EC889283D2E0}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="ediconnector.exe" ComponentId="{D537D05C-BDBB-4C37-8BFE-04BDAD8FF871}" Directory_="APPDIR" Attributes="256" KeyPath="ediconnector.exe"/>
+    <ROW Component="updater.exe" ComponentId="{07951EE5-018B-4427-ADB9-A0F41CA9C33C}" Directory_="APPDIR" Attributes="0" KeyPath="updater.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
+    <ROW Feature="Core" Title="MainFeature" Display="3" Level="1" Directory_="APPDIR" Attributes="16"/>
+    <ATTRIBUTE name="CurrentFeature" value="Core"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
+    <ROW File="updater.exe" Component_="updater.exe" FileName="updater.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="&lt;AI_STUBS&gt;updater.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="ediconnector.exe" Component_="ediconnector.exe" FileName="EDI-CO~1.EXE|edi-connector.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\edi-connector_windows_amd64_v1\edi-connector.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="LICENSE" Component_="LICENSE" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\gopkg.in\yaml.v3\LICENSE" SelfReg="false"/>
+    <ROW File="NOTICE" Component_="LICENSE" FileName="NOTICE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\gopkg.in\yaml.v3\NOTICE" SelfReg="false"/>
+    <ROW File="LICENSE_1" Component_="LICENSE_1" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\github.com\mitchellh\mapstructure\LICENSE" SelfReg="false"/>
+    <ROW File="LICENSE_2" Component_="LICENSE_2" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\THIRD_PARTY\github.com\myopenfactory\edi-connector\v2\LICENSE" SelfReg="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
+    <ROW MsiShortcutProperty="Verknpfungzu0" Shortcut_="Verknpfungzu" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
+    <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="6" UpdatesUrl="https://api.github.com/repos/myopenfactory/edi-connector/releases"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BootstrapperUISequenceComponent">
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="249"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="251"/>
+    <ROW Action="AI_DetectSoftware" Sequence="151"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="..\dist" PackageFileName="edi-connector-install" Languages="de;en" LangOpt="2" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExeIconPath="logo.ico" SummInfoMetadata="Page Count:450" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName] [|ProductVersion]\install" ExtUI="true" Options="2" UseLargeSchema="true" Unicode="true" MsiPackageType="x64"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
+    <ROW Path="&lt;AI_DICTS&gt;ui.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_de.ail"/>
+    <ROW Path="&lt;AI_DICTS&gt;ui_en.ail"/>
+    <ROW Path="dictionary.ail" Options="1"/>
+    <ATTRIBUTE name="TranslateSegments" value="0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000111100011110000000110000000000000"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.DigCertStoreComponent">
+    <ROW TimeStampUrl="http://timestamp.digicert.com" SignerDescription="[|ProductName]" DescriptionUrl="https://github.com/myopenfactory/edi-connector" SignOptions="0" SignTool="0" UseSha256="1" Store="User\MY"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
+    <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
+    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\FolderDlg.aip"/>
+    <ROW Fragment="LicenseAgreementDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\LicenseAgreementDlg.aip"/>
+    <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\MaintenanceTypeDlg.aip"/>
+    <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\MaintenanceWelcomeDlg.aip"/>
+    <ROW Fragment="MessageDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\MessageDlg.aip"/>
+    <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;azure\fragments\SequenceDialogs.aip"/>
+    <ROW Fragment="Sequences.aip" Path="&lt;AI_FRAGS&gt;Sequences.aip"/>
+    <ROW Fragment="StaticUIStrings.aip" Path="&lt;AI_FRAGS&gt;StaticUIStrings.aip"/>
+    <ROW Fragment="Themes.aip" Path="&lt;AI_FRAGS&gt;Themes.aip"/>
+    <ROW Fragment="UI.aip" Path="&lt;AI_THEMES&gt;azure\fragments\UI.aip"/>
+    <ROW Fragment="Validation.aip" Path="&lt;AI_FRAGS&gt;Validation.aip"/>
+    <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\VerifyRemoveDlg.aip"/>
+    <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\VerifyRepairDlg.aip"/>
+    <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\WelcomeDlg.aip"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.JsonFileComponent">
+    <ROW JsonFile="Newfile.json" FileName="CONFIG~1.JSO|config.json" DirProperty="EDIConnector_Dir" Component="AI_ExePath" RootProperty="Root" Flags="2" IndentUnits="2"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.JsonPropertyComponent">
+    <ROW JsonProperty="Root" Name="Root" Condition="1" Order="0" Flags="60"/>
+    <ROW JsonProperty="_" Parent="inbounds" Name="0" Condition="INBOUND_ID_PROP &lt;&gt; &quot;&quot;" Order="0" Flags="12"/>
+    <ROW JsonProperty="__1" Parent="inbounds" Name="1" Condition="INBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;" Order="1" Flags="12"/>
+    <ROW JsonProperty="__2" Parent="outbounds" Name="0" Condition="OUTBOUND_ID_PROP &lt;&gt; &quot;&quot;" Order="0" Flags="12"/>
+    <ROW JsonProperty="__3" Parent="extension" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__4" Parent="outbounds" Name="1" Condition="OUTBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;" Order="1" Flags="28"/>
+    <ROW JsonProperty="__5" Parent="extension_1" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_EXTENSION_PROP]"/>
+    <ROW JsonProperty="errorPath" Parent="settings_2" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_ERROR_PATH_PROP]"/>
+    <ROW JsonProperty="errorPath_1" Parent="settings_3" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_TEST_ERROR_PATH_PROP]"/>
+    <ROW JsonProperty="extension" Parent="message" Name="extension" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="extension_1" Parent="message_1" Name="extension" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="id" Parent="_" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_ID_PROP]"/>
+    <ROW JsonProperty="id_1" Parent="__1" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_TEST_ID_PROP]"/>
+    <ROW JsonProperty="id_2" Parent="__2" Name="id" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_ID_PROP]"/>
+    <ROW JsonProperty="id_3" Parent="__4" Name="id" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_ID_PROP]"/>
+    <ROW JsonProperty="inbounds" Parent="Root" Name="inbounds" Condition="1" Order="0" Flags="13"/>
+    <ROW JsonProperty="message" Parent="settings_2" Name="message" Condition="1" Order="0" Flags="12"/>
+    <ROW JsonProperty="message_1" Parent="settings_3" Name="message" Condition="1" Order="0" Flags="12"/>
+    <ROW JsonProperty="outbounds" Parent="Root" Name="outbounds" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="path" Parent="settings" Name="path" Condition="1" Order="0" Flags="9" Value="[INBOUND_PATH_PROP]"/>
+    <ROW JsonProperty="path_1" Parent="settings_1" Name="path" Condition="1" Order="0" Flags="9" Value="[INBOUND_TEST_PATH_PROP]"/>
+    <ROW JsonProperty="path_2" Parent="message" Name="path" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_PATH_PROP]"/>
+    <ROW JsonProperty="path_3" Parent="message_1" Name="path" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_PATH_PROP]"/>
+    <ROW JsonProperty="settings" Parent="_" Name="settings" Condition="1" Order="2" Flags="12"/>
+    <ROW JsonProperty="settings_1" Parent="__1" Name="settings" Condition="1" Order="2" Flags="12"/>
+    <ROW JsonProperty="settings_2" Parent="__2" Name="settings" Condition="1" Order="2" Flags="12"/>
+    <ROW JsonProperty="settings_3" Parent="__4" Name="settings" Condition="1" Order="2" Flags="12"/>
+    <ROW JsonProperty="type" Parent="_" Name="type" Condition="1" Order="1" Flags="9" Value="FILE"/>
+    <ROW JsonProperty="type_1" Parent="__1" Name="type" Condition="1" Order="1" Flags="9" Value="FILE"/>
+    <ROW JsonProperty="type_2" Parent="__2" Name="type" Condition="1" Order="1" Flags="9" Value="FILE"/>
+    <ROW JsonProperty="type_3" Parent="__4" Name="type" Condition="1" Order="1" Flags="9" Value="FILE"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_DeleteLzma" Description="Lösche die aus dem Archiv extrahierten Dateien" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
+    <ROW Action="AI_DeleteRLzma" Description="Lösche die aus dem Archiv extrahierten Dateien" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
+    <ROW Action="AI_ExtractFiles" Description="Extrahiere Dateien aus dem Archiv" DescriptionLocId="ActionText.Description.AI_ExtractLzma" TemplateLocId="-"/>
+    <ROW Action="AI_ExtractLzma" Description="Extrahiere Dateien aus dem Archiv" DescriptionLocId="ActionText.Description.AI_ExtractLzma" TemplateLocId="-"/>
+    <ROW Action="AI_JsonCommit" Description="JSON Dateikonfigurationen vornehmen." DescriptionLocId="ActionText.Description.AI_JsonCommit" Template="JSON Dateikonfigurationen vornehmen." TemplateLocId="ActionText.Template.AI_JsonCommit"/>
+    <ROW Action="AI_JsonConfig" Description="Führe JSON Dateikonfiguration aus" DescriptionLocId="ActionText.Description.AI_JsonConfig" Template="Konfiguriere JSON Datei: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_JsonConfig"/>
+    <ROW Action="AI_JsonInstall" Description="Erzeuge Konfigurationsaktionen für JSON Dateien" DescriptionLocId="ActionText.Description.AI_JsonInstall"/>
+    <ROW Action="AI_JsonRemove" Description="Führe JSON Dateikonfiguration aus" DescriptionLocId="ActionText.Description.AI_JsonRemove" Template="Konfiguriere JSON Datei: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_JsonRemove"/>
+    <ROW Action="AI_JsonRollback" Description="Setze JSON Dateikonfiguration zurück" DescriptionLocId="ActionText.Description.AI_JsonRollback" Template="Setze JSON Dateikonfiguration zurück" TemplateLocId="ActionText.Template.AI_JsonRollback"/>
+    <ROW Action="AI_JsonUninstall" Description="Erzeuge Konfigurationsaktionen für JSON Dateien" DescriptionLocId="ActionText.Description.AI_JsonUninstall"/>
+    <ROW Action="AI_ProcessTasks2" Description="Erzeuge Aktionen um geplante Tasks auf dem lokalen Computer zu erstellen:" DescriptionLocId="ActionText.Description.AI_ProcessTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_ProcessTasks"/>
+    <ROW Action="AI_RemoveTasks2" Description="Entferne geplante Task vom lokalen Computer" DescriptionLocId="ActionText.Description.AI_RemoveTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_RemoveTasks"/>
+    <ROW Action="AI_RollbackTasks2" Description="Zurücksetzen der geplanten Tasks auf dem lokalen Computer" DescriptionLocId="ActionText.Description.AI_RollbackTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_RollbackTasks"/>
+    <ROW Action="AI_ScheduleTasks2" Description="Plane Task auf dem lokalen Computer" DescriptionLocId="ActionText.Description.AI_ScheduleTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_ScheduleTasks"/>
+    <ROW Action="AI_UninstallTasks2" Description="Erzeuge Aktionen um geplante Tasks vom lokalen Computer zu entfernen" DescriptionLocId="ActionText.Description.AI_UninstallTasks"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiAppSearchComponent">
+    <ROW Property="AI_SETUPEXEPATH" Signature_="AI_EXE_PATH_LM" Builds="DefaultBuild"/>
+    <ROW Property="AI_SETUPEXEPATH" Signature_="AI_EXE_PATH_CU" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
+    <ROW Name="PowerShellScriptLauncher.dll" SourcePath="&lt;AI_CUSTACTS&gt;PowerShellScriptLauncher.dll"/>
+    <ROW Name="Prereq.dll" SourcePath="&lt;AI_CUSTACTS&gt;Prereq.dll"/>
+    <ROW Name="SoftwareDetector.dll" SourcePath="&lt;AI_CUSTACTS&gt;SoftwareDetector.dll"/>
+    <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
+    <ROW Name="aischeduler2.dll" SourcePath="&lt;AI_CUSTACTS&gt;aischeduler2.dll"/>
+    <ROW Name="jsonCfg.dll" SourcePath="&lt;AI_CUSTACTS&gt;jsonCfg.dll"/>
+    <ROW Name="lzmaextractor.dll" SourcePath="&lt;AI_CUSTACTS&gt;lzmaextractor.dll"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
+    <ROW Dialog_="AuthDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="450" Height="360" Attributes="1048577" Text="[Background]" Order="100"/>
+    <ROW Dialog_="AuthDlg" Control="Next" Type="PushButton" X="380" Y="330" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="200" TextLocId="-"/>
+    <ROW Dialog_="AuthDlg" Control="Cancel" Type="PushButton" X="450" Y="0" Width="0" Height="0" Attributes="2" Text="[ButtonText_Cancel]" Order="300" TextLocId="-"/>
+    <ROW Dialog_="AuthDlg" Control="Back" Type="PushButton" X="320" Y="330" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="400" TextLocId="-"/>
+    <ROW Dialog_="AuthDlg" Control="Title" Type="Text" X="33" Y="23" Width="200" Height="15" Attributes="196611" Text="Authentifizierung" TextStyle="TitleFont_TitleFont" Order="500"/>
+    <ROW Dialog_="AuthDlg" Control="Text_1" Type="Text" X="83" Y="171" Width="118" Height="18" Attributes="65539" Property="TEXT_1_PROP_1" Text="Passwort:" Order="600"/>
+    <ROW Dialog_="AuthDlg" Control="Text_2" Type="Text" X="83" Y="142" Width="118" Height="18" Attributes="65539" Property="TEXT_2_PROP_1" Text="Benutzername:" Order="700"/>
+    <ROW Dialog_="AuthDlg" Control="Edit_1" Type="Edit" X="201" Y="142" Width="221" Height="18" Attributes="3" Property="USERNAME_PROP" Text="{260}" Order="800"/>
+    <ROW Dialog_="AuthDlg" Control="Edit_2" Type="Edit" X="201" Y="171" Width="221" Height="18" Attributes="2097155" Property="PASSWORD_PROP" Text="{260}" Order="900"/>
+    <ROW Dialog_="ConfigurationDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="450" Height="360" Attributes="1048577" Text="[Background]" Order="100"/>
+    <ROW Dialog_="ConfigurationDlg" Control="Next" Type="PushButton" X="380" Y="330" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="200" TextLocId="-" Options="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control="Cancel" Type="PushButton" X="450" Y="0" Width="0" Height="0" Attributes="2" Text="[ButtonText_Cancel]" Order="300" TextLocId="-" Options="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control="Back" Type="PushButton" X="320" Y="330" Width="56" Height="17" Attributes="3" Text="[ButtonText_Back]" Order="400" TextLocId="-" Options="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control="Title" Type="Text" X="33" Y="23" Width="380" Height="40" Attributes="196611" Text="Konfiguration" TextStyle="TitleFont" Order="500"/>
+    <ROW Dialog_="ConfigurationDlg" Control="TabHost_1" Type="TabHost" X="36" Y="63" Width="375" Height="241" Attributes="1" Property="TABHOST_1_PROP" Text="TabHost" TextStyle="DlgFontBold8" Order="600" ExtType="TabHost"/>
+    <ROW Dialog_="ExitDialog" Control="ViewReadmeCheckBox" Type="PushButton" X="178" Y="185" Width="95" Height="26" Attributes="2" Property="VIEWREADME" Text="Readme-Datei ansehen" Order="300" TextLocId="Azure.Control.Text.ExitDialog#ViewReadmeCheckBox" MsiKey="ExitDialog#ViewReadmeCheckBox" Options="1"/>
+    <ROW Dialog_="InboundCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="INBOUND_ID_PROP" Text="{260}" Order="200"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP" Text="Konfigurationsid:" Order="300"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP" Text="Ordner:" Order="400"/>
+    <ROW Dialog_="InboundCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="67" Width="220" Height="18" Attributes="7" Property="INBOUND_PATH_PROP" Order="500"/>
+    <ROW Dialog_="InboundCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="67" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="600"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="INBOUND_TEST_ID_PROP" Text="{260}" Order="200"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_3" Text="Konfigurationsid:" Order="300"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_3" Text="Ordner:" Order="400"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="67" Width="220" Height="18" Attributes="7" Property="INBOUND_TEST_PATH_PROP" Order="500"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="67" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="600"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control="AgreementText" Type="ScrollableText" X="55" Y="110" Width="372" Height="180" Attributes="3" Property="EulaRead" Text="..\LICENSE.rtf" Order="800" TextLocId="-" MsiKey="LicenseAgreementDlg#AgreementText"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="OUTBOUND_ID_PROP" Text="{260}" Order="200"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2" Text="Konfigurationsid:" Order="300"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2" Text="Ordner:" Order="400"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_3" Type="Text" X="24" Y="149" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2_1" Text="Fehlerordner:" Order="500"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Edit_2" Type="Edit" X="24" Y="118" Width="220" Height="18" Attributes="7" Property="OUTBOUND_EXTENSION_PROP" Text="{260}" Order="600"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_4" Type="Text" X="24" Y="103" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2_1" Text="Dateiendung:" Order="700"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="OUTBOUND_PATH_PROP" Type="PathEdit" X="24" Y="70" Width="220" Height="18" Attributes="7" Property="OUTBOUND_PATH_PROP" Order="800"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="OUTBOUND_ERROR_PATH_PROP" Type="PathEdit" X="24" Y="167" Width="220" Height="18" Attributes="3" Property="OUTBOUND_ERROR_PATH_PROP" Text="{260}" Order="900"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="PushButton_1" Type="PushButton" X="253" Y="70" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1000"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="167" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1100"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_ID_PROP" Text="{260}" Order="200"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2_2" Text="Konfigurationsid:" Order="300"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2_2" Text="Ordner:" Order="400"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_3" Type="Text" X="24" Y="149" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2_1_1" Text="Fehlerordner:" Order="500"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Edit_2" Type="Edit" X="24" Y="118" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_EXTENSION_PROP" Text="{260}" Order="600"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_4" Type="Text" X="24" Y="103" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2_1_1" Text="Dateiendung:" Order="700"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="OUTBOUND_PATH_PROP" Type="PathEdit" X="24" Y="70" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_PATH_PROP" Order="800"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="PushButton_1" Type="PushButton" X="253" Y="70" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="900"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="162" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_ERROR_PATH_PROP" Order="1000"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="162" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1100"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
+    <ROW Dialog_="AuthDlg" Control_="Next" Action="Disable" Condition="USERNAME_PROP = &quot;&quot; OR PASSWORD_PROP = &quot;&quot;"/>
+    <ROW Dialog_="AuthDlg" Control_="Next" Action="Enable" Condition="USERNAME_PROP &lt;&gt; &quot;&quot; AND PASSWORD_PROP &lt;&gt; &quot;&quot;"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Action="Enable" Condition="INBOUND_ID_PROP &lt;&gt; &quot;&quot; OR INBOUND_TEST_ID &lt;&gt; &quot;&quot; OR OUTBOUND_ID_PROP &lt;&gt; &quot;&quot; OR OUTBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Action="Disable" Condition="INBOUND_ID_PROP = &quot;&quot; AND INBOUND_TEST_ID = &quot;&quot; AND OUTBOUND_ID_PROP = &quot;&quot; AND OUTBOUND_TEST_ID_PROP = &quot;&quot;"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="203"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="501"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RepairButton" Event="NewDialog" Argument="VerifyRepairDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="601"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="1"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Repair&quot;" Ordering="399" Options="1"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="299" Options="1"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="204"/>
+    <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
+    <ROW Dialog_="AuthDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="InboundCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="0"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="OutboundCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="2"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="InboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="OutboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="3"/>
+    <ROW Dialog_="AuthDlg" Control_="Next" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL" Ordering="4"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="4"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="AuthDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="OUTBOUND_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="OUTBOUND_ERROR_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="OUTBOUND_TEST_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="OUTBOUND_TEST_ERROR_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="INBOUND_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="INBOUND_TEST_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[INBOUND_PATH_PROP]" Condition="AI_INSTALL AND ( INBOUND_ID_PROP )" Ordering="5"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[INBOUND_TEST_PATH_PROP]" Condition="AI_INSTALL AND ( INBOUND_TEST_ID_PROP )" Ordering="6"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_ID_PROP )" Ordering="7"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_ERROR_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_ID_PROP )" Ordering="8"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_TEST_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_TEST_ID_PROP )" Ordering="9"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_TEST_ERROR_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_TEST_ID_PROP )" Ordering="10"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
+    <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
+    <ROW Directory_="EDIConnector_Dir" Component_="EDIConnector" ManualDelete="false"/>
+    <ROW Directory_="INBOUND_PATH_PROP" Component_="INBOUND_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="INBOUND_TEST_PATH_PROP" Component_="INBOUND_TEST_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="OUTBOUND_ERROR_PATH_PROP" Component_="OUTBOUND_ERROR_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="OUTBOUND_PATH_PROP" Component_="OUTBOUND_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="OUTBOUND_TEST_ERROR_PATH_PROP" Component_="OUTBOUND_TEST_ERROR_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="OUTBOUND_TEST_PATH_PROP" Component_="OUTBOUND_TEST_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="SHORTCUTDIR" Component_="SHORTCUTDIR" ManualDelete="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAE4AQQBNAEUAXwBQAFIATwBQAA0ACgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIAA9ACAAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAUABBAFMAUwBXAE8AUgBEAF8AUABSAE8AUAANAAoADQAKAGMAbQBkAGsAZQB5ACAALwBkAGUAbABlAHQAZQA6AEUARABJAC0AQwBvAG4AbgBlAGMAdABvAHIADQAKAGMAbQBkAGsAZQB5ACAALwBnAGUAbgBlAHIAaQBjADoARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAgAC8AdQBzAGUAcgA6ACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAC8AcABhAHMAcwB3AG8AcgBkADoAJABwAGEAcwBzAHcAbwByAGQAVgBhAGwAdQBl"/>
+    <ROW Action="AI_DATA_SETTER_4" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
+    <ROW Action="AI_DeleteCadLzma" Type="51" Source="AI_DeleteLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
+    <ROW Action="AI_DeleteRCadLzma" Type="51" Source="AI_DeleteRLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_DeleteRLzma" Type="1281" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
+    <ROW Action="AI_DetectSoftware" Type="257" Source="SoftwareDetector.dll" Target="OnDetectSoftware"/>
+    <ROW Action="AI_DpiContentScale" Type="1" Source="aicustact.dll" Target="DpiContentScale"/>
+    <ROW Action="AI_EnableDebugLog" Type="321" Source="aicustact.dll" Target="EnableDebugLog"/>
+    <ROW Action="AI_ExtractCadLzma" Type="51" Source="AI_ExtractLzma" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_ExtractFiles" Type="1" Source="Prereq.dll" Target="ExtractSourceFiles" AdditionalSeq="AI_DATA_SETTER"/>
+    <ROW Action="AI_ExtractLzma" Type="1025" Source="lzmaextractor.dll" Target="ExtractLZMAFiles"/>
+    <ROW Action="AI_FindExeLzma" Type="1" Source="lzmaextractor.dll" Target="FindEXE"/>
+    <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
+    <ROW Action="AI_JsonCommit" Type="11777" Source="jsonCfg.dll" Target="OnJsonCommit" WithoutSeq="true"/>
+    <ROW Action="AI_JsonConfig" Type="11265" Source="jsonCfg.dll" Target="OnJsonConfig" WithoutSeq="true"/>
+    <ROW Action="AI_JsonInstall" Type="1" Source="jsonCfg.dll" Target="OnJsonInstall" AdditionalSeq="AI_DATA_SETTER_1"/>
+    <ROW Action="AI_JsonRemove" Type="11265" Source="jsonCfg.dll" Target="OnJsonRemove" WithoutSeq="true"/>
+    <ROW Action="AI_JsonRollback" Type="11521" Source="jsonCfg.dll" Target="OnJsonRollback" WithoutSeq="true"/>
+    <ROW Action="AI_JsonUninstall" Type="1" Source="jsonCfg.dll" Target="OnJsonUninstall" AdditionalSeq="AI_DATA_SETTER_4"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
+    <ROW Action="AI_PRESERVE_INSTALL_TYPE" Type="65" Source="aicustact.dll" Target="PreserveInstallType"/>
+    <ROW Action="AI_ProcessTasks2" Type="1" Source="aischeduler2.dll" Target="ProcessTasks"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH" Target="[AI_SETUPEXEPATH_ORIGINAL]"/>
+    <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
+    <ROW Action="AI_RemoveTasks2" Type="11265" Source="aischeduler2.dll" Target="DeleteTasks" WithoutSeq="true"/>
+    <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
+    <ROW Action="AI_RollbackTasks2" Type="11521" Source="aischeduler2.dll" Target="DeleteTasks" WithoutSeq="true"/>
+    <ROW Action="AI_RunFinishActions" Type="1" Source="aicustact.dll" Target="RunFinishActions" WithoutSeq="true"/>
+    <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
+    <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
+    <ROW Action="AI_ScheduleTasks2" Type="11265" Source="aischeduler2.dll" Target="ScheduleTasks" WithoutSeq="true"/>
+    <ROW Action="AI_UPDATER_UNINSTALL" Type="82" Source="updater.exe" Target="/clean silent"/>
+    <ROW Action="AI_UninstallTasks2" Type="1" Source="aischeduler2.dll" Target="UninstallTasks"/>
+    <ROW Action="AddCredentialsToWindows" Type="65" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_3"/>
+    <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\[ProductName]"/>
+    <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
+    <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">
+    <ROW Dialog="AdminBrowseDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="Cancel" TitleLocId="Dialog.AdminBrowseDlg" MsiKey="AdminBrowseDlg"/>
+    <ROW Dialog="AdminInstallPointDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.AdminInstallPointDlg" MsiKey="AdminInstallPointDlg"/>
+    <ROW Dialog="AdminWelcomeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.AdminWelcomeDlg" MsiKey="AdminWelcomeDlg"/>
+    <ROW Dialog="AuthDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="7" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="BrowseDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="Cancel" TitleLocId="Dialog.BrowseDlg" MsiKey="BrowseDlg"/>
+    <ROW Dialog="ConfigurationDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="7" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel"/>
+    <ROW Dialog="CustomizeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="35" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.CustomizeDlg" MsiKey="CustomizeDlg"/>
+    <ROW Dialog="DiskCostDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="OK" TitleLocId="Dialog.DiskCostDlg" MsiKey="DiskCostDlg"/>
+    <ROW Dialog="ExitDialog" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="LaunchProdCheckBox" Control_Cancel="Finish" TitleLocId="Dialog.ExitDialog" MsiKey="ExitDialog"/>
+    <ROW Dialog="FatalError" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Finish" Control_Cancel="Finish" TitleLocId="Dialog.FatalError" MsiKey="FatalError"/>
+    <ROW Dialog="FilesInUse" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="19" Title="[ProductName] [Setup]" Control_Default="Retry" Control_Cancel="Retry" TitleLocId="Dialog.FilesInUse" MsiKey="FilesInUse"/>
+    <ROW Dialog="FolderDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="39" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.FolderDlg" MsiKey="FolderDlg"/>
+    <ROW Dialog="InboundCfgDlg" HCentering="50" VCentering="50" Width="330" Height="150" Attributes="3" Title="Eingehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="InboundTestCfgDlg" HCentering="50" VCentering="50" Width="330" Height="150" Attributes="3" Title="Eingehend Test" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="LicenseAgreementDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.LicenseAgreementDlg" MsiKey="LicenseAgreementDlg"/>
+    <ROW Dialog="MaintenanceTypeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="ChangeButton" Control_Cancel="Cancel" TitleLocId="Dialog.MaintenanceTypeDlg" MsiKey="MaintenanceTypeDlg"/>
+    <ROW Dialog="MaintenanceWelcomeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.MaintenanceWelcomeDlg" MsiKey="MaintenanceWelcomeDlg"/>
+    <ROW Dialog="MsiRMFilesInUse" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="19" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="Cancel" TitleLocId="Dialog.MsiRMFilesInUse" MsiKey="MsiRMFilesInUse"/>
+    <ROW Dialog="OutOfDiskDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="OK" TitleLocId="Dialog.OutOfDiskDlg" MsiKey="OutOfDiskDlg"/>
+    <ROW Dialog="OutOfRbDiskDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OkButton" Control_Cancel="OkButton" TitleLocId="Dialog.OutOfRbDiskDlg" MsiKey="OutOfRbDiskDlg"/>
+    <ROW Dialog="OutboundCfgDlg" HCentering="50" VCentering="50" Width="330" Height="216" Attributes="3" Title="Ausgehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="OutboundTestCfgDlg" HCentering="50" VCentering="50" Width="330" Height="248" Attributes="3" Title="Ausgehend Test" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="PatchWelcomeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.PatchWelcomeDlg" MsiKey="PatchWelcomeDlg"/>
+    <ROW Dialog="PrepareDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="1" Title="[ProductName] [Setup]" Control_Default="Cancel" Control_Cancel="Cancel" TitleLocId="Dialog.PrepareDlg" MsiKey="PrepareDlg"/>
+    <ROW Dialog="ProgressDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="1" Title="[ProductName] [Setup]" Control_Default="Cancel" Control_Cancel="Cancel" TitleLocId="Dialog.ProgressDlg" MsiKey="ProgressDlg"/>
+    <ROW Dialog="ResumeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Install" Control_Cancel="Cancel" TitleLocId="Dialog.ResumeDlg" MsiKey="ResumeDlg"/>
+    <ROW Dialog="UserExit" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Finish" Control_Cancel="Finish" TitleLocId="Dialog.UserExit" MsiKey="UserExit"/>
+    <ROW Dialog="VerifyReadyDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="35" Title="[ProductName] [Setup]" Control_Default="Install" Control_Cancel="Cancel" TitleLocId="Dialog.VerifyReadyDlg" MsiKey="VerifyReadyDlg"/>
+    <ROW Dialog="VerifyRemoveDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="35" Title="[ProductName] [Setup]" Control_Default="Back" Control_Cancel="Cancel" TitleLocId="Dialog.VerifyRemoveDlg" MsiKey="VerifyRemoveDlg"/>
+    <ROW Dialog="VerifyRepairDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="35" Title="[ProductName] [Setup]" Control_Default="Repair" Control_Cancel="Cancel" TitleLocId="Dialog.VerifyRepairDlg" MsiKey="VerifyRepairDlg"/>
+    <ROW Dialog="WelcomeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.WelcomeDlg" MsiKey="WelcomeDlg"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiEnvComponent">
+    <ROW Environment="Path" Name="=-*Path" Value="[~];" Component_="APPDIR"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatCompsComponent">
+    <ROW Feature_="Core" Component_="APPDIR"/>
+    <ROW Feature_="Core" Component_="ProductInformation"/>
+    <ROW Feature_="Core" Component_="AI_ExePath"/>
+    <ROW Feature_="Core" Component_="EDIConnector"/>
+    <ROW Feature_="Core" Component_="ediconnector.exe"/>
+    <ROW Feature_="Core" Component_="INBOUND_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="INBOUND_TEST_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="OUTBOUND_ERROR_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="OUTBOUND_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="OUTBOUND_TEST_ERROR_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="OUTBOUND_TEST_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="SHORTCUTDIR"/>
+    <ROW Feature_="Core" Component_="updater.exe"/>
+    <ROW Feature_="Core" Component_="LICENSE"/>
+    <ROW Feature_="Core" Component_="LICENSE_1"/>
+    <ROW Feature_="Core" Component_="LICENSE_2"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
+    <ROW Name="logo_1.exe" SourcePath="logo.ico" Index="0"/>
+    <ROW Name="updater.exe" SourcePath="logo_updater.ico" Index="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiIniFileComponent">
+    <ROW IniFile="AppDir" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="AppDir" Value="[APPDIR]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ApplicationName" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationName" Value="[ProductName]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ApplicationVersion" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationVersion" Value="[ProductVersion]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="CheckFrequency" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="CheckFrequency" Value="2" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="CompanyName" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="CompanyName" Value="[Manufacturer]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="DefaultCommandLine" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="DefaultCommandLine" Value="/silent" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="DownloadsFolder" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="DownloadsFolder" Value="[CommonAppDataFolder][Manufacturer]\[ProductName]\updates\" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="Flags" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="Flags" Value="PerMachine|ShowConfigOptionsButton|GitHubUpdates" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ID" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ID" Value="[UpgradeCode]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="URL" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="URL" Value="https://api.github.com/repos/myopenfactory/edi-connector/releases" Action="0" Component_="updater.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
+    <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_STORE_LOCATION" Condition="(Not Installed) OR REINSTALL" Sequence="1501"/>
+    <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1397"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99" Builds="DefaultBuild"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="102" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="199" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteRCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="198" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="197" Builds="DefaultBuild"/>
+    <ROW Action="AI_FindExeLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="196" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1549" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteRLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1548" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="6599" Builds="DefaultBuild"/>
+    <ROW Action="AI_ExtractFiles" Sequence="1399" Builds="DefaultBuild"/>
+    <ROW Action="AI_DATA_SETTER" Sequence="1398"/>
+    <ROW Action="AI_UPDATER_UNINSTALL" Condition="($updater.exe = 2) AND (?updater.exe = 3) AND NOT (UPGRADINGPRODUCTCODE)" Sequence="1551"/>
+    <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4001"/>
+    <ROW Action="AI_UninstallTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE=&quot;ALL&quot;)" Sequence="1699"/>
+    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed )" Sequence="6402"/>
+    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed )" Sequence="6401"/>
+    <ROW Action="AI_JsonInstall" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5102"/>
+    <ROW Action="AI_DATA_SETTER_1" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5101"/>
+    <ROW Action="AI_JsonUninstall" Condition="(REMOVE)" Sequence="3102"/>
+    <ROW Action="AI_DATA_SETTER_4" Condition="(REMOVE)" Sequence="3101"/>
+    <ROW Action="AI_DetectSoftware" Sequence="101"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
+    <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
+    <ROW Action="AI_DpiContentScale" Sequence="52"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+    <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99"/>
+    <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="102"/>
+    <ROW Action="AI_DetectSoftware" Sequence="101"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
+    <ROW Condition="((VersionNT &lt;&gt; 501) AND (VersionNT &lt;&gt; 502))" Description="[ProductName] kann nicht auf [WindowsTypeNT5XDisplay] installiert werden." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] kann nicht auf [WindowsTypeNT40Display] installiert werden." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] kann nicht auf [WindowsTypeNT50Display] installiert werden." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="(VersionNT &lt;&gt; 600)" Description="[ProductName] kann nicht auf [WindowsTypeNT60Display] installiert werden." DescriptionLocId="AI.LaunchCondition.NoNT60" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="AI_DETECTED_INTERNET_CONNECTION" Description="[ProductName] erfordert eine aktive Internet Verbindung für die Installation. Bitte überprüfen Sie die Netzwerkkonfiguration und die Proxy Einstellungen." DescriptionLocId="AI.LaunchCondition.Internet" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="AI_DETECTED_PHYSICAL_MEMORY &gt;= AI_REQUIRED_PHYSICAL_MEMORY" Description="[ProductName] kann nicht auf Systemen mit weniger als [AI_REQUIRED_PHYSICAL_MEMORY] MB RAM installiert werden." DescriptionLocId="AI.LaunchCondition.RAM" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="SETUPEXEDIR OR (REMOVE=&quot;ALL&quot;)" Description="Dieses Paket kann nur von einem Bootstrapper aus ausgeführt werden" DescriptionLocId="AI.LaunchCondition.RequireBootstrapper" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="VersionNT" Description="[ProductName] kann nicht auf [WindowsType9XDisplay] installiert werden." DescriptionLocId="AI.LaunchCondition.No9X" IsPredefined="true" Builds="DefaultBuild"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegLocatorComponent">
+    <ROW Signature_="AI_EXE_PATH_CU" Root="1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Type="2"/>
+    <ROW Signature_="AI_EXE_PATH_LM" Root="2" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Type="2"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
+    <ROW Registry="AI_ExePath" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Value="[AI_SETUPEXEPATH]" Component_="AI_ExePath"/>
+    <ROW Registry="AdvancedInstaller" Root="-1" Key="Software\Caphyon\Advanced Installer" Name="\"/>
+    <ROW Registry="Caphyon" Root="-1" Key="Software\Caphyon" Name="\"/>
+    <ROW Registry="LZMA" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA" Name="\"/>
+    <ROW Registry="Manufacturer" Root="-1" Key="Software\[Manufacturer]" Name="\"/>
+    <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
+    <ROW Registry="ProductCode" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]" Name="\"/>
+    <ROW Registry="ProductName" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="\"/>
+    <ROW Registry="ProductVersion" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="\"/>
+    <ROW Registry="Software" Root="-1" Key="Software" Name="\"/>
+    <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiServCtrlComponent">
+    <ROW ServiceControl="ediconnector.exe" Name="EDI-Connector" Event="161" Wait="0" Component_="ediconnector.exe"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiServInstComponent">
+    <ROW ServiceInstall="ediconnector.exe" Name="EDI-Connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="1" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
+    <ROW Shortcut="Verknpfungzu" Directory_="SHORTCUTDIR" Name="EDI-CO~1|EDI-Connector" Component_="ediconnector.exe" Target="[#ediconnector.exe]" Hotkey="0" Icon_="logo_1.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="Verknpfungzu_1" Directory_="SHORTCUTDIR" Name="Updater" Component_="updater.exe" Target="[#updater.exe]" Hotkey="0" Icon_="updater.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiTextStyleComponent">
+    <ROW TextStyle="TitleFont_TitleFont" FaceName="Verdana" Size="13" Color="8847617" StyleBits="0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
+    <ATTRIBUTE name="UsedTheme" value="azure"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="0.0.1" VersionMax="255.255.6555.6555" Attributes="257" ActionProperty="OLDPRODUCTS"/>
+    <ROW UpgradeCode="[|UpgradeCode]" VersionMin="255.255.6555.6555" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.ScheduledTasksComponent">
+    <ROW TaskId="AI_updater" TaskName="edi-connector-updater" Run="[#updater.exe]" WorkDir="[APPDIR]" UserProp="[%UserDomain]\[LogonUser]" Flags="9216" Trigger="1|1|1|1|0|0|0||0|0|0" Settings="2|259200" Condition="1" TaskVersion="2.0"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.UpdaterComponent">
+    <ROW Updater="updater.exe" URL="URL" SearchFreq="CheckFrequency" DownloadsFolder="DownloadsFolder" ID="ID" TargetDir="AppDir" AppName="ApplicationName" AppVersion="ApplicationVersion" CompanyName="CompanyName" DefCommandLine="DefaultCommandLine" Flags="Flags" IconPath="logo_updater.ico" IconIndex="0" UnistallCASeq="AI_UPDATER_UNINSTALL" TaskId="AI_updater" Description="[|UpdaterName] [|ProductVersion]"/>
+  </COMPONENT>
+</DOCUMENT>

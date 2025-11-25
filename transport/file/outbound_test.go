@@ -34,7 +34,7 @@ func TestListMessages(t *testing.T) {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
 	errorDir := t.TempDir()
-	outbound, err := file.NewOutboundTransport(logger, "12345", map[string]any{
+	outbound, err := file.NewOutboundTransport(logger, "12345", "", map[string]any{
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt", "csv"},
@@ -87,7 +87,7 @@ func TestListAttachments(t *testing.T) {
 		t.Fatalf("Failed to create attachment file: %v", err)
 	}
 	errorDir := t.TempDir()
-	outbound, err := file.NewOutboundTransport(logger, "12345", map[string]any{
+	outbound, err := file.NewOutboundTransport(logger, "12345", "", map[string]any{
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},
@@ -136,7 +136,7 @@ func TestFinalizeOnSuccess(t *testing.T) {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
 	errorDir := t.TempDir()
-	outbound, err := file.NewOutboundTransport(logger, "12345", map[string]any{
+	outbound, err := file.NewOutboundTransport(logger, "12345", "", map[string]any{
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},
@@ -185,7 +185,7 @@ func TestFinalizeOnSuccessWithoutDirectory(t *testing.T) {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
 	errorDir := t.TempDir()
-	outbound, err := file.NewOutboundTransport(logger, "12345", map[string]any{
+	outbound, err := file.NewOutboundTransport(logger, "12345", "", map[string]any{
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},
@@ -230,7 +230,7 @@ func TestFinalizeOnError(t *testing.T) {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
 	errorDir := t.TempDir()
-	outbound, err := file.NewOutboundTransport(logger, "12345", map[string]any{
+	outbound, err := file.NewOutboundTransport(logger, "12345", "", map[string]any{
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},

@@ -56,31 +56,34 @@ jobs:
         with:
           name: third_party
           path: THIRD_PARTY
-      - name: Setup NSIS
-        run: |
-          Invoke-WebRequest https://myopenfactory.blob.core.windows.net/static/NsProcess.zip -OutFile c:\NsProcess.zip
-          Expand-Archive -LiteralPath "C:\NsProcess.zip" -DestinationPath C:\
-          Copy-Item "C:\NsProcess\Plugin\nsProcessW.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsProcess.dll"
-          Copy-Item "C:\NsProcess\Include\nsProcess.nsh" -Destination "C:\Program Files (x86)\NSIS\Include\nsProcess.nsh"
-          Invoke-WebRequest https://myopenfactory.blob.core.windows.net/static/nsYaml.zip -OutFile c:\nsYaml.zip
-          Expand-Archive -LiteralPath "C:\nsYaml.zip" -DestinationPath C:\
-          Copy-Item "C:\nsYaml.dll" -Destination "C:\Program Files (x86)\NSIS\Plugins\x86-unicode\nsYaml.dll"
-      - name: Build installer
-        run: |
-          $env:VERSION = $(jq -r '.version' .\dist\metadata.json)
-          makensis hacks\installer.nsi
-          Remove-Item Env:\VERSION
+      - name: Extract tag name
+        id: tag
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            return "${{ github.ref_name }}".substring(1);
+      - name: Create installer
+        uses: caphyon/advinst-github-action@main
+        with:
+          advinst-version: '23.2'
+          advinst-license: '${{ secrets.ADVANCED_INSTALLER_KEY }}'
+          aip-path: '${{ github.workspace }}\installer\EDI-Connector.aip'
+          aip-build-name: 'DefaultBuild'
+          aip-output-dir: '${{ github.workspace }}\dist\'
+          aip-commands: |
+            SetVersion ${{ steps.tag.outputs.result }}
       - uses: actions/upload-artifact@v4
         with:
-          name: edi-connector_installer.exe
-          path: hacks/edi-connector_installer.exe
-      - uses: actions/github-script@v7
+          name: edi-connector-install.exe
+          path: dist/edi-connector-install.exe
+      - uses: actions/github-script@v8
         with:
           script: |
             const owner = 'myopenfactory';
             const repo = 'edi-connector';
             const fs = require('fs');
-            const data = fs.readFileSync('hacks/edi-connector_installer.exe');
+            const data = fs.readFileSync('dist/edi-connector-install.exe');
             
             const { data: tag }= await github.request('GET /repos/{owner}/{repo}/releases/tags/{tag}', {
               owner,
@@ -95,6 +98,6 @@ jobs:
               owner,
               repo,
               release_id: tag.id,
-              name: 'edi-connector_installer.exe',
+              name: 'edi-connector-install.exe',
               data,
             });

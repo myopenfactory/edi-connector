@@ -22,12 +22,13 @@ type inboundFileSettings struct {
 // InboundFileTransport type
 type inboundFileTransport struct {
 	configId string
+	authName string
 	logger   *slog.Logger
 	settings inboundFileSettings
 }
 
 // NewInboundFileTransport returns new InTransport and checks for basefolder and exist parameter.
-func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (transport.InboundTransport, error) {
+func NewInboundTransport(logger *slog.Logger, configId, authName string, cfg map[string]any) (transport.InboundTransport, error) {
 	var settings inboundFileSettings
 	err := mapstructure.Decode(cfg, &settings)
 	if err != nil {
@@ -49,9 +50,10 @@ func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (t
 		settings.Mode = "create"
 	}
 
-	logger.Info("configured inbound process", "configId", pid, "folder", settings.Path, "mode", settings.Mode)
+	logger.Info("configured inbound process", "configId", configId, "folder", settings.Path, "mode", settings.Mode)
 	return &inboundFileTransport{
-		configId: pid,
+		configId: configId,
+		authName: authName,
 		logger:   logger,
 		settings: settings,
 	}, nil
@@ -59,6 +61,10 @@ func NewInboundTransport(logger *slog.Logger, pid string, cfg map[string]any) (t
 
 func (p *inboundFileTransport) ConfigId() string {
 	return p.configId
+}
+
+func (p *inboundFileTransport) AuthName() string {
+	return p.authName
 }
 
 func (p *inboundFileTransport) HandleAttachment(url string) bool {

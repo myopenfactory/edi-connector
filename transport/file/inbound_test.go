@@ -17,7 +17,7 @@ import (
 func TestProcessMessage(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	inboundDir := t.TempDir()
-	inbound, err := file.NewInboundTransport(logger, "12345", map[string]any{
+	inbound, err := file.NewInboundTransport(logger, "12345", "", map[string]any{
 		"path": inboundDir,
 	})
 	if err != nil {
@@ -56,7 +56,7 @@ func TestProcessMessage(t *testing.T) {
 func TestProcessMessageAppend(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	inboundDir := t.TempDir()
-	inbound, err := file.NewInboundTransport(logger, "12345", map[string]any{
+	inbound, err := file.NewInboundTransport(logger, "12345", "", map[string]any{
 		"path": inboundDir,
 		"mode": "append",
 	})
@@ -103,7 +103,7 @@ func TestHandleAttachment(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	inboundDir := t.TempDir()
 	attachmentDir := t.TempDir()
-	inbound, err := file.NewInboundTransport(logger, "12345", map[string]any{
+	inbound, err := file.NewInboundTransport(logger, "12345", "", map[string]any{
 		"path":           inboundDir,
 		"attachmentPath": attachmentDir,
 		"attachmentWhitelist": []string{
@@ -129,7 +129,7 @@ func TestProcessAttachment(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	inboundDir := t.TempDir()
 	attachmentDir := t.TempDir()
-	inbound, err := file.NewInboundTransport(logger, "12345", map[string]any{
+	inbound, err := file.NewInboundTransport(logger, "12345", "", map[string]any{
 		"path":           inboundDir,
 		"attachmentPath": attachmentDir,
 	})

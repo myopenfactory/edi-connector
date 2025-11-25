@@ -9,6 +9,7 @@ import (
 	"mime"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"runtime"
 	"strings"
 	"testing"
@@ -20,6 +21,8 @@ import (
 func TestUsernamePassword(t *testing.T) {
 	testUsername := "user"
 	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
 		if !ok {
@@ -41,12 +44,12 @@ func TestUsernamePassword(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, testUsername, testPassword, "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	_, err = cl.ListTransmissions(context.TODO(), "1")
+	_, err = cl.ListTransmissions(context.TODO(), "1", "")
 	if err != nil {
 		t.Errorf("failed to verify username password: %v", err)
 	}
@@ -55,6 +58,8 @@ func TestUsernamePassword(t *testing.T) {
 func TestUserAgent(t *testing.T) {
 	testUsername := "user"
 	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userAgentEntries := strings.Split(r.Header.Get("User-Agent"), " ")
 		product := strings.Split(userAgentEntries[0], "/")
@@ -77,18 +82,22 @@ func TestUserAgent(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, testUsername, testPassword, "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	_, err = cl.ListTransmissions(context.TODO(), "1")
+	_, err = cl.ListTransmissions(context.TODO(), "1", "")
 	if err != nil {
 		t.Errorf("failed to verify user agent: %v", err)
 	}
 }
 
 func TestAccept(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Accept") != "application/json" {
 			t.Errorf("Expected Accept: application/json header, got: %s", r.Header.Get("Accept"))
@@ -100,25 +109,29 @@ func TestAccept(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	_, err = cl.ListTransmissions(context.TODO(), "1")
+	_, err = cl.ListTransmissions(context.TODO(), "1", "")
 	if err != nil {
 		t.Errorf("failed to verify accept header: %v", err)
 	}
 }
 
 func TestDownloadTransmission(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("data"))
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient("", "", "", "", "")
+	cl, err := platform.NewClient("", "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -126,7 +139,7 @@ func TestDownloadTransmission(t *testing.T) {
 	data, err := cl.DownloadTransmission(platform.Transmission{
 		Id:  "1",
 		Url: server.URL,
-	})
+	}, "")
 	if err != nil {
 		t.Errorf("failed to download transmission: %v", err)
 	}
@@ -138,6 +151,10 @@ func TestDownloadTransmission(t *testing.T) {
 }
 
 func TestListTransmissions(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	configId := "xaz43I"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := "/v2/transmissions"
@@ -158,12 +175,12 @@ func TestListTransmissions(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	transmissions, err := cl.ListTransmissions(t.Context(), configId)
+	transmissions, err := cl.ListTransmissions(t.Context(), configId, "")
 	if err != nil {
 		t.Errorf("failed to list transmission: %v", err)
 	}
@@ -181,6 +198,10 @@ func TestListTransmissions(t *testing.T) {
 }
 
 func TestAddTransmission(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	configId := "xaz43I"
 	testData := []byte("test1235")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -212,18 +233,22 @@ func TestAddTransmission(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	err = cl.AddTransmission(t.Context(), configId, testData)
+	err = cl.AddTransmission(t.Context(), configId, "", testData)
 	if err != nil {
 		t.Errorf("failed to add transmission: %v", err)
 	}
 }
 
 func TestConfirmTransmission(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	transmissionId := "123515"
 	testData := fmt.Appendf([]byte{}, `{"error":false,"message":"Created file: test.txt"}`)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -251,18 +276,22 @@ func TestConfirmTransmission(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	err = cl.ConfirmTransmission(t.Context(), transmissionId, "Created file: test.txt")
+	err = cl.ConfirmTransmission(t.Context(), transmissionId, "Created file: test.txt", "")
 	if err != nil {
 		t.Errorf("failed to confirm transmission: %v", err)
 	}
 }
 
 func TestAddAttachment(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	testData := []byte("testdata")
 	testFilename := "attachment.txt"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -310,18 +339,22 @@ func TestAddAttachment(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	err = cl.AddAttachment(t.Context(), testData, testFilename)
+	err = cl.AddAttachment(t.Context(), testData, testFilename, "")
 	if err != nil {
 		t.Errorf("failed to add attachment: %v", err)
 	}
 }
 
 func TestListMessageAttachments(t *testing.T) {
+	testUsername := "user"
+	testPassword := "password"
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	testId := "1239785"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := fmt.Sprintf("/v2/messages/%s/attachments", testId)
@@ -343,12 +376,12 @@ func TestListMessageAttachments(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "", "", "")
+	cl, err := platform.NewClient(server.URL, "", "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	resp, err := cl.ListMessageAttachments(t.Context(), testId)
+	resp, err := cl.ListMessageAttachments(t.Context(), testId, "")
 	if err != nil {
 		t.Errorf("failed to list message attachments: %v", err)
 	}

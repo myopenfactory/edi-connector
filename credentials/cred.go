@@ -6,6 +6,5 @@ type PasswordAuth struct {
 }
 
 type CredManager interface {
-	CreateCredential(name, username, password string) error
 	GetCredential(name string) (*PasswordAuth, error)
 }
