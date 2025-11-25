@@ -44,7 +44,7 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	</Body>
 	<Subject>MIRROR</Subject>
     <MessageID>%s</MessageID>
-    <ReceiverID>myopenfactory.test</ReceiverID>
+    <ReceiverID>autoresponder.myopenfactory.com</ReceiverID>
     <SenderID>client.myopenfactory.test</SenderID>
     <TypeID>ORDER</TypeID>
 </Message>`
