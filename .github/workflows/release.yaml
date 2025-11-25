@@ -41,7 +41,7 @@ jobs:
           minor)     tag="$major.$((minor+1)).0"; ;;
           *) echo "failed"; exit 1; ;;
           esac
-          echo "found ${{ inputs.project }} with level ${{ inputs.level }} has version $lastVersion and new version $tag"
+          echo "found release with level ${{ inputs.level }} has version $lastVersion and new version $tag"
           echo "version=$tag" >> "$GITHUB_OUTPUT"
       - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
