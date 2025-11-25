@@ -28,6 +28,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          token: ${{ steps.app-token.outputs.token }}
       - name: Get current version
         id: next-version
         run: |-
