@@ -44,7 +44,7 @@ jobs:
           path: THIRD_PARTY
 
   windows_installer:
-    runs-on: windows-2022
+    runs-on: windows-latest
     needs: release
     steps:
       - uses: actions/checkout@v4
