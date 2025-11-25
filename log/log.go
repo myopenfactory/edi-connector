@@ -77,7 +77,7 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 			Level: parsedLogLevel,
 		})
 	default:
-		return nil, fmt.Errorf("unkown log type: %s", cfg.Type)
+		return nil, fmt.Errorf("unknown log type: %s", cfg.Type)
 	}
 
 	return slog.New(logHandler), nil
