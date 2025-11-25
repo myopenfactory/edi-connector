@@ -66,7 +66,7 @@ func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg ma
 			return nil, fmt.Errorf("error folder does not exist: %v", settings.ErrorPath)
 		}
 
-		p.logger.Info("configured outbound process", "configId", configId, "successFolder", settings.SuccessPath, "errorFolder", settings.ErrorPath)
+		p.logger.Info("configured outbound process", "configId", p.configId, "authName", p.authName, "successFolder", settings.SuccessPath, "errorFolder", settings.ErrorPath)
 
 		message := settings.Message
 		if _, err := os.Stat(message.Path); os.IsNotExist(err) {

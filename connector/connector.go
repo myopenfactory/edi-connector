@@ -100,7 +100,7 @@ func (c *Connector) Run(ctx context.Context) error {
 			for _, transport := range c.inbounds {
 				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 				if err := c.inboundMessages(ctx, transport); err != nil {
-					c.logger.Error("error processing inbound transmissions", "configId", transport.ConfigId(), "error", err)
+					c.logger.Error("error processing inbound transmissions", "configId", transport.ConfigId(), "authName", transport.AuthName(), "error", err)
 					cancel()
 					os.Exit(1)
 				}

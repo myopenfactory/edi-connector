@@ -2,13 +2,18 @@ name: E2E
 
 on:
   workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: main
+  cancel-in-progress: true
 
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ ubuntu-latest, windows-latest ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,34 +30,40 @@ jobs:
         if: runner.os == 'Linux'
         working-directory: ./e2e
         run: |
-          mkdir -p "/tmp/myof"
-          echo -n "${CONFIG}" | base64 --decode > "/tmp/myof/config.yaml"
           mkdir -p /tmp/myof/logs
           mkdir -p /tmp/myof/inbound
+          mkdir -p /tmp/myof/inbound_special
+          mkdir -p /tmp/myof/attachment_inbound
+          mkdir -p /tmp/myof/attachment_inbound_special
           mkdir -p /tmp/myof/outbound
+          mkdir -p /tmp/myof/outbound_special
           mkdir -p /tmp/myof/success
           mkdir -p /tmp/myof/error
           mkdir -p /tmp/myof/attachment
-          ../dist/edi-connector_linux_amd64_v1/edi-connector --config /tmp/myof/config.yaml &
+          mkdir -p /tmp/myof/attachment_special
+          ../dist/edi-connector_linux_amd64_v1/edi-connector --config config_linux.yaml &
           go run main.go
         env:
-          CONFIG: ${{ secrets.LINUX_CONFIG }}
+          EDI_CONNECTOR: "${{ vars.LINUX_USERNAME }}:${{ secrets.LINUX_PASSWORD }}"
+          EDI_CONNECTOR_SPECIAL: "${{ vars.LINUX_SPECIAL_USERNAME }}:${{ secrets.LINUX_SPECIAL_PASSWORD }}"
 
       - name: E2E Tests Windows
         shell: bash
         if: runner.os == 'Windows'
         working-directory: ./e2e
         run: |
-          mkdir -p "C:/myof"
-          echo -n "${CONFIG}" | base64 --decode > "C:/myof/config.yaml"
+          cmdkey /generic:EDI-Connector /user:${{ vars.WINDOWS_USERNAME }} /pass:${{ secrets.WINDOWS_PASSWORD }}
+          cmdkey /generic:EDI-Connector/special /user:${{ vars.WINDOWS_SPECIAL_USERNAME }} /pass:${{ secrets.WINDOWS_SPECIAL_PASSWORD }}
           mkdir -p "C:/myof/logs"
           mkdir -p "C:/myof/inbound/"
+          mkdir -p "C:/myof/inbound_special/"
+          mkdir -p "C:/myof/attachment_inbound/"
+          mkdir -p "C:/myof/attachment_inbound_special/"
           mkdir -p "C:/myof/outbound/"
+          mkdir -p "C:/myof/outbound_special/"
           mkdir -p "C:/myof/success/"
           mkdir -p "C:/myof/error/"
           mkdir -p "C:/myof/attachment/"
-          ../dist/edi-connector_windows_amd64_v1/edi-connector.exe --config C:/myof/config.yaml &
+          mkdir -p "C:/myof/attachment_special/"
+          ../dist/edi-connector_windows_amd64_v1/edi-connector.exe --config config_windows.yaml &
           go run main.go
-        env:
-          CONFIG: ${{ secrets.WINDOWS_CONFIG }}
-          E2E: "1"

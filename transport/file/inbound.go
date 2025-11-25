@@ -50,7 +50,7 @@ func NewInboundTransport(logger *slog.Logger, configId, authName string, cfg map
 		settings.Mode = "create"
 	}
 
-	logger.Info("configured inbound process", "configId", configId, "folder", settings.Path, "mode", settings.Mode)
+	logger.Info("configured inbound process", "configId", configId, "authName", authName, "folder", settings.Path, "mode", settings.Mode)
 	return &inboundFileTransport{
 		configId: configId,
 		authName: authName,
