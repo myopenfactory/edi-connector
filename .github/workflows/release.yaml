@@ -38,7 +38,7 @@ jobs:
           case "${{ inputs.level }}" in
           patch) tag="$major.$minor.$((patch+1))"; ;;
           major) tag="$((major+1)).0.0"; ;;
-          minor)     tag="$major.$((minor+1)).0"; ;;
+          minor) tag="$major.$((minor+1)).0"; ;;
           *) echo "failed"; exit 1; ;;
           esac
           echo "found release with level ${{ inputs.level }} has version $lastVersion and new version $tag"
