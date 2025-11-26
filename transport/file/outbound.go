@@ -217,7 +217,7 @@ func (p *outboundFileTransport) Finalize(ctx context.Context, obj transport.Obje
 func (p *outboundFileTransport) listFilesLastModifiedBefore(path string, t time.Time) ([]os.FileInfo, error) {
 	files := []os.FileInfo{}
 
-	p.logger.Debug("searching folder %s for files modified before %t", path, t)
+	p.logger.Debug("searching folder for files modified before", "folder", path, "time", t)
 
 	dirEntries, err := os.ReadDir(path)
 	if err != nil {
