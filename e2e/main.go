@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"time"
 )
 
@@ -33,10 +34,17 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <Unit>PCE</Unit>
             </Item>
         </Items>
+	<Features>
+		<Feature>
+			<ClassID>CLIENT</ClassID>
+			<FeatureID>User</FeatureID>
+			<Value>%s</Value>
+		</Feature>
+	</Features>
 	</Body>
 	<Subject>MIRROR</Subject>
     <MessageID>%s</MessageID>
-    <ReceiverID>myopenfactory.test</ReceiverID>
+    <ReceiverID>autoresponder.myopenfactory.com</ReceiverID>
     <SenderID>client.myopenfactory.test</SenderID>
     <TypeID>ORDER</TypeID>
 </Message>`
@@ -47,54 +55,98 @@ func main() {
 		basePath = "C:/myof"
 	}
 
-	outboundPath := filepath.Join(basePath, "outbound")
-	err := os.WriteFile(filepath.Join(outboundPath, "message.xml"), []byte(fmt.Sprintf(messageTpl, time.Now().Format(time.RFC3339))), 0666)
+	messageId := time.Now().Format("20060102150405Z0700")
+	attachmentPath := filepath.Join(basePath, "attachment")
+	err := os.WriteFile(filepath.Join(attachmentPath, fmt.Sprintf("attachment-%s.sample", messageId)), []byte(fmt.Sprintf("%s", messageId)), 0666)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	attachmentPath := filepath.Join(basePath, "attachment")
-	err = os.WriteFile(filepath.Join(attachmentPath, "attachment.sample"), []byte(fmt.Sprintf("%s", time.Now().Format(time.RFC3339))), 0666)
+	outboundPath := filepath.Join(basePath, "outbound")
+	err = os.WriteFile(filepath.Join(outboundPath, "message.xml"), []byte(fmt.Sprintf(messageTpl, runtime.GOOS, messageId)), 0666)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	messageId = time.Now().Format("20060102150405Z0700") + "-special"
+	attachmentSpecialPath := filepath.Join(basePath, "attachment_special")
+	err = os.WriteFile(filepath.Join(attachmentSpecialPath, fmt.Sprintf("attachment-%s.sample", messageId)), []byte(fmt.Sprintf("%s", messageId)), 0666)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	outboundSpecialPath := filepath.Join(basePath, "outbound_special")
+	err = os.WriteFile(filepath.Join(outboundSpecialPath, "message.xml"), []byte(fmt.Sprintf(messageTpl, runtime.GOOS+"-special", messageId)), 0666)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	inboundPath := filepath.Join(basePath, "inbound")
+	inboundSpecialPath := filepath.Join(basePath, "inbound_special")
+	inboundAttachmentPath := filepath.Join(basePath, "attachment_inbound")
+	inboundAttachmentSpecialPath := filepath.Join(basePath, "attachment_inbound_special")
+
+	var wg sync.WaitGroup
+	wg.Go(func() {
+		checkForFile(inboundPath, attachmentPath, inboundAttachmentPath)
+	})
+	wg.Go(func() {
+		checkForFile(inboundSpecialPath, attachmentSpecialPath, inboundAttachmentSpecialPath)
+	})
+	complete := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(complete)
+	}()
 
 	timeout := time.After(5 * time.Minute)
-	ticker := time.NewTicker(10 * time.Second)
-	defer ticker.Stop()
+	select {
+	case <-timeout:
+		fmt.Println("Timed out!")
+		os.Exit(1)
+		return
+	case <-complete:
+		return
+	}
+}
 
+func checkForFile(inboundFolder, attachmentFolder, attachmentInboundFolder string) {
 	for {
-		select {
-		case <-timeout:
-			fmt.Println("Timed out!")
+		files, err := os.ReadDir(inboundFolder)
+		if err != nil {
+			fmt.Println(err)
 			os.Exit(1)
-			return
-		case <-ticker.C:
-			files, err := os.ReadDir(inboundPath)
+		}
+		if len(files) > 0 {
+			attachments, err := os.ReadDir(attachmentFolder)
 			if err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-			if len(files) > 0 {
-				attachments, err := os.ReadDir(attachmentPath)
-				if err != nil {
-					fmt.Println(err)
-					os.Exit(1)
-				}
-				if len(attachments) > 0 {
-					fmt.Println("Attachment file still present in the directory; expected it to be removed after processing.")
-					os.Exit(1)
-				}
-
-				for _, file := range files {
-					log.Println(file.Name())
-				}
-				return
+			if len(attachments) > 0 {
+				fmt.Println("Attachment file still present in the directory; expected it to be removed after processing.")
+				os.Exit(1)
 			}
+
+			for _, file := range files {
+				log.Println(file.Name())
+			}
+
+			attachments, err = os.ReadDir(attachmentInboundFolder)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			if len(attachments) == 0 {
+				fmt.Println("Missing attachment in download folder; expected one to be there.")
+				os.Exit(1)
+			}
+			return
 		}
+		time.Sleep(time.Second)
 	}
 }

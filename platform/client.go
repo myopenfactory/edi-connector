@@ -181,7 +181,7 @@ func (c *Client) AddTransmission(ctx context.Context, configId, authName string,
 	return nil
 }
 
-func (c *Client) ConfirmTransmission(ctx context.Context, id, status, authName string) error {
+func (c *Client) ConfirmTransmission(ctx context.Context, id, authName, status string) error {
 	var confirmRequest struct {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`
