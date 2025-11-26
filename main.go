@@ -14,7 +14,7 @@ import (
 )
 
 func execute(configFile string, logLevel string) error {
-	cfg, configFile, err := config.ReadConfig(configFile)
+	cfg, configFile, err := config.ReadConfigFromFile(configFile)
 	if err != nil {
 		return err
 	}

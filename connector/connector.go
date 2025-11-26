@@ -40,9 +40,13 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 		return nil, fmt.Errorf("failed to create platform client: %w", err)
 	}
 
+	d, err := time.ParseDuration(cfg.RunWaitTime)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse runWaitTime duration: %w", err)
+	}
 	c := &Connector{
 		logger:         logger,
-		runWaitTime:    cfg.RunWaitTime,
+		runWaitTime:    d,
 		platformClient: platformClient,
 	}
 

@@ -4,7 +4,6 @@ go 1.25.3
 
 require (
 	github.com/danieljoos/wincred v1.2.3
-	github.com/mitchellh/mapstructure v1.5.0
 	golang.org/x/sys v0.37.0
 	gopkg.in/yaml.v3 v3.0.1
 )
