@@ -43,7 +43,7 @@ inbounds:
         - "https://myopenfactory.net/"
   - id: e8eioo
     type: FILE
-    authname: special
+    authName: special
     settings:
       path: /tmp/myof/inbound_special
       attachmentPath: /tmp/myof/attachment_inbound_special
