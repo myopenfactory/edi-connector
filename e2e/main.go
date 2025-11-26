@@ -19,7 +19,7 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <Name>myOpenFactory Client Test</Name>
             </Company>
             <Company>
-                <CompanyID>myopenfactory.test</CompanyID>
+                <CompanyID>autoresponder.myopenfactory.com</CompanyID>
                 <Name>myOpenFactory DevOp Test</Name>
             </Company>
         </Companies>

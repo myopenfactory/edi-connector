@@ -1,6 +1,7 @@
 runWaitTime: 10s
 log:
   type: STDOUT_TEXT
+  level: DEBUG
 outbounds:
   - id: nBjCkM
     type: FILE
