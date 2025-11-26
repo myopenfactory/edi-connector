@@ -27,7 +27,7 @@ archives:
     files:
       - LICENSE
       - README.md
-      - THIRD_PARTY/*
+      - dist/THIRD_PARTY/*
 checksum:
   name_template: 'checksums.txt'
 changelog:
