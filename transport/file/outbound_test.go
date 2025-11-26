@@ -38,7 +38,7 @@ func TestListMessages(t *testing.T) {
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt", "csv"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"errorPath": errorDir,
 	})
@@ -91,12 +91,12 @@ func TestListAttachments(t *testing.T) {
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"attachment": map[string]any{
 			"path":       attachmentDir,
 			"extensions": []string{"pdf", "step"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"errorPath": errorDir,
 	})
@@ -140,12 +140,12 @@ func TestFinalizeOnSuccess(t *testing.T) {
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"attachment": map[string]any{
 			"path":       attachmentDir,
 			"extensions": []string{"pdf", "step"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"errorPath":   errorDir,
 		"successPath": successDir,
@@ -189,12 +189,12 @@ func TestFinalizeOnSuccessWithoutDirectory(t *testing.T) {
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"attachment": map[string]any{
 			"path":       attachmentDir,
 			"extensions": []string{"pdf", "step"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"errorPath": errorDir,
 	})
@@ -234,12 +234,12 @@ func TestFinalizeOnError(t *testing.T) {
 		"message": map[string]any{
 			"path":       outboundDir,
 			"extensions": []string{"txt"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"attachment": map[string]any{
 			"path":       attachmentDir,
 			"extensions": []string{"pdf", "step"},
-			"waitTime":   waitTime,
+			"waitTime":   waitTime.String(),
 		},
 		"errorPath":   errorDir,
 		"successPath": successDir,
