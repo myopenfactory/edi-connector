@@ -1,6 +1,6 @@
 runWaitTime: 10s
 log:
-  type: STDOUT
+  type: STDOUT_TEXT
 outbounds:
   - id: nBjCkM
     type: FILE
