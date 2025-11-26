@@ -23,10 +23,6 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
-      - name: Prepare THIRD_PARTY folder
-        run: |
-          go install github.com/google/go-licenses@v1.0.0
-          make third_party
       - name: Release
         uses: goreleaser/goreleaser-action@v6
         with:
@@ -34,14 +30,14 @@ jobs:
           args: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Prepare THIRD_PARTY folder
+        run: |
+          go install github.com/google/go-licenses@v1.0.0
+          make third_party
       - uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
-      - uses: actions/upload-artifact@v4
-        with:
-          name: third_party
-          path: THIRD_PARTY
 
   windows_installer:
     runs-on: windows-latest
@@ -52,10 +48,6 @@ jobs:
         with:
           name: dist
           path: dist
-      - uses: actions/download-artifact@v4
-        with:
-          name: third_party
-          path: THIRD_PARTY
       - name: Extract tag name
         id: tag
         uses: actions/github-script@v8

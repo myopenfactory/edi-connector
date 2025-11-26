@@ -92,10 +92,10 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="updater.exe" Component_="updater.exe" FileName="updater.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="&lt;AI_STUBS&gt;updater.exe" SelfReg="false" DigSign="true"/>
     <ROW File="ediconnector.exe" Component_="ediconnector.exe" FileName="EDI-CO~1.EXE|edi-connector.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\edi-connector_windows_amd64_v1\edi-connector.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="LICENSE" Component_="LICENSE" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\gopkg.in\yaml.v3\LICENSE" SelfReg="false"/>
-    <ROW File="NOTICE" Component_="LICENSE" FileName="NOTICE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\gopkg.in\yaml.v3\NOTICE" SelfReg="false"/>
-    <ROW File="LICENSE_1" Component_="LICENSE_1" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\github.com\mitchellh\mapstructure\LICENSE" SelfReg="false"/>
-    <ROW File="LICENSE_2" Component_="LICENSE_2" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\THIRD_PARTY\github.com\myopenfactory\edi-connector\v2\LICENSE" SelfReg="false"/>
+    <ROW File="LICENSE" Component_="LICENSE" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\gopkg.in\yaml.v3\LICENSE" SelfReg="false"/>
+    <ROW File="NOTICE" Component_="LICENSE" FileName="NOTICE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\gopkg.in\yaml.v3\NOTICE" SelfReg="false"/>
+    <ROW File="LICENSE_1" Component_="LICENSE_1" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\github.com\mitchellh\mapstructure\LICENSE" SelfReg="false"/>
+    <ROW File="LICENSE_2" Component_="LICENSE_2" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\THIRD_PARTY\github.com\myopenfactory\edi-connector\v2\LICENSE" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
     <ROW MsiShortcutProperty="Verknpfungzu0" Shortcut_="Verknpfungzu" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
