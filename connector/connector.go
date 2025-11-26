@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/myopenfactory/edi-connector/v2/config"
+	"github.com/myopenfactory/edi-connector/v2/credentials"
 	"github.com/myopenfactory/edi-connector/v2/platform"
 	"github.com/myopenfactory/edi-connector/v2/transport"
 	"github.com/myopenfactory/edi-connector/v2/transport/file"
@@ -34,7 +35,7 @@ type Connector struct {
 
 // New creates client with given options
 func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
-	platformClient, err := platform.NewClient(cfg.Url, cfg.CAFile, cfg.Proxy)
+	platformClient, err := platform.NewClient(cfg.Url, cfg.CAFile, credentials.NewDefaultCredManager(), cfg.Proxy)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create platform client: %w", err)
 	}

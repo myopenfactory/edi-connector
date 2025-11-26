@@ -6,11 +6,15 @@ import (
 	"github.com/danieljoos/wincred"
 )
 
+func NewDefaultCredManager() CredManager {
+	return NewWindosCredManager()
+}
+
 type windowsCredManager struct {
 	serviceName string
 }
 
-func NewCredManager() *windowsCredManager {
+func NewWindosCredManager() *windowsCredManager {
 	return &windowsCredManager{serviceName: "EDI-Connector"}
 }
 

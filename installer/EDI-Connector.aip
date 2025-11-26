@@ -73,9 +73,9 @@
     <ROW Component="EDIConnector" ComponentId="{6C8CCAC0-AAEB-4F12-858B-664496C0F29C}" Directory_="EDIConnector_Dir" Attributes="0"/>
     <ROW Component="INBOUND_PATH_PROP" ComponentId="{27A4AD48-C05E-4170-9F37-1CE61D078C54}" Directory_="INBOUND_PATH_PROP" Attributes="0"/>
     <ROW Component="INBOUND_TEST_PATH_PROP" ComponentId="{A9375D4D-918F-4AAF-A3B1-CF25A9F274AA}" Directory_="INBOUND_TEST_PATH_PROP" Attributes="0"/>
-    <ROW Component="LICENSE" ComponentId="{C715E731-1E0B-41CC-8603-E0A83ED745F8}" Directory_="yaml.v3_Dir" Attributes="0" KeyPath="LICENSE" Type="0"/>
-    <ROW Component="LICENSE_1" ComponentId="{E0B15864-E362-43F8-9807-E2AEFE457B40}" Directory_="mapstructure_Dir" Attributes="0" KeyPath="LICENSE_1" Type="0"/>
-    <ROW Component="LICENSE_2" ComponentId="{70CC9A44-2A19-4A8D-B776-9B55C8AA257A}" Directory_="v2_Dir" Attributes="0" KeyPath="LICENSE_2" Type="0"/>
+    <ROW Component="LICENSE" ComponentId="{54EB0B1B-CDA5-4A1E-9A7D-B2A35645D19A}" Directory_="yaml.v3_Dir" Attributes="0" KeyPath="LICENSE" Type="0"/>
+    <ROW Component="LICENSE_1" ComponentId="{B4912A22-498D-4616-A53F-6E06A0D4FDAD}" Directory_="mapstructure_Dir" Attributes="0" KeyPath="LICENSE_1" Type="0"/>
+    <ROW Component="LICENSE_2" ComponentId="{8588B410-4F9D-4DD9-8377-76734C8E15E9}" Directory_="v2_Dir" Attributes="0" KeyPath="LICENSE_2" Type="0"/>
     <ROW Component="OUTBOUND_ERROR_PATH_PROP" ComponentId="{C708E094-491B-48EF-900C-169B632265C1}" Directory_="OUTBOUND_ERROR_PATH_PROP" Attributes="0"/>
     <ROW Component="OUTBOUND_PATH_PROP" ComponentId="{299A8D84-DC9E-48E0-932B-F75544995A37}" Directory_="OUTBOUND_PATH_PROP" Attributes="0"/>
     <ROW Component="OUTBOUND_TEST_ERROR_PATH_PROP" ComponentId="{4E2137BC-37E4-4AE2-B574-D5D2960FD783}" Directory_="OUTBOUND_TEST_ERROR_PATH_PROP" Attributes="0"/>
