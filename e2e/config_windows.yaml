@@ -1,4 +1,4 @@
-runwaittime: 10s
+runWaitTime: 10s
 log:
   type: STDOUT_TEXT
 outbounds:
@@ -19,7 +19,7 @@ outbounds:
         waitTime: 1s
   - id: jB0nsg
     type: FILE
-    authname: special
+    authName: special
     settings:
       message:
         path: "C:/myof/outbound_special/"
@@ -43,7 +43,7 @@ inbounds:
         - "https://myopenfactory.net/"
   - id: kTD1YQ
     type: FILE
-    authname: special
+    authName: special
     settings:
       path: "C:/myof/inbound_special/"
       attachmentPath: "C:/myof/attachment_inbound_special"

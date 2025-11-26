@@ -1,4 +1,4 @@
-runwaittime: 10s
+runWaitTime: 10s
 log:
   type: STDOUT_TEXT
 outbounds:
@@ -19,7 +19,7 @@ outbounds:
         waitTime: 1s
   - id: Gw7fon
     type: FILE
-    authname: special
+    authName: special
     settings:
       message:
         path: /tmp/myof/outbound_special
