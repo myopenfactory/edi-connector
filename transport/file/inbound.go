@@ -8,15 +8,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/myopenfactory/edi-connector/v2/config"
 	"github.com/myopenfactory/edi-connector/v2/transport"
 )
 
 type inboundFileSettings struct {
-	transport.InboundSettings `mapstructure:",squash"`
-	Path                      string
-	AttachmentPath            string
-	Mode                      string
+	transport.InboundSettings
+	Path           string `json:"path" yaml:"path"`
+	AttachmentPath string `json:"attachmentPath" yaml:"attachmentPath"`
+	Mode           string `json:"mode" yaml:"mode"`
 }
 
 // InboundFileTransport type
@@ -30,7 +30,7 @@ type inboundFileTransport struct {
 // NewInboundFileTransport returns new InTransport and checks for basefolder and exist parameter.
 func NewInboundTransport(logger *slog.Logger, configId, authName string, cfg map[string]any) (transport.InboundTransport, error) {
 	var settings inboundFileSettings
-	err := mapstructure.Decode(cfg, &settings)
+	err := config.Decode(cfg, &settings)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode inbound file settings: %w", err)
 	}
@@ -50,7 +50,7 @@ func NewInboundTransport(logger *slog.Logger, configId, authName string, cfg map
 		settings.Mode = "create"
 	}
 
-	logger.Info("configured inbound process", "configId", configId, "folder", settings.Path, "mode", settings.Mode)
+	logger.Info("configured inbound process", "configId", configId, "authName", authName, "folder", settings.Path, "mode", settings.Mode)
 	return &inboundFileTransport{
 		configId: configId,
 		authName: authName,

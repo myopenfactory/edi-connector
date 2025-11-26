@@ -73,9 +73,9 @@
     <ROW Component="EDIConnector" ComponentId="{6C8CCAC0-AAEB-4F12-858B-664496C0F29C}" Directory_="EDIConnector_Dir" Attributes="0"/>
     <ROW Component="INBOUND_PATH_PROP" ComponentId="{27A4AD48-C05E-4170-9F37-1CE61D078C54}" Directory_="INBOUND_PATH_PROP" Attributes="0"/>
     <ROW Component="INBOUND_TEST_PATH_PROP" ComponentId="{A9375D4D-918F-4AAF-A3B1-CF25A9F274AA}" Directory_="INBOUND_TEST_PATH_PROP" Attributes="0"/>
-    <ROW Component="LICENSE" ComponentId="{C715E731-1E0B-41CC-8603-E0A83ED745F8}" Directory_="yaml.v3_Dir" Attributes="0" KeyPath="LICENSE" Type="0"/>
-    <ROW Component="LICENSE_1" ComponentId="{E0B15864-E362-43F8-9807-E2AEFE457B40}" Directory_="mapstructure_Dir" Attributes="0" KeyPath="LICENSE_1" Type="0"/>
-    <ROW Component="LICENSE_2" ComponentId="{70CC9A44-2A19-4A8D-B776-9B55C8AA257A}" Directory_="v2_Dir" Attributes="0" KeyPath="LICENSE_2" Type="0"/>
+    <ROW Component="LICENSE" ComponentId="{54EB0B1B-CDA5-4A1E-9A7D-B2A35645D19A}" Directory_="yaml.v3_Dir" Attributes="0" KeyPath="LICENSE" Type="0"/>
+    <ROW Component="LICENSE_1" ComponentId="{B4912A22-498D-4616-A53F-6E06A0D4FDAD}" Directory_="mapstructure_Dir" Attributes="0" KeyPath="LICENSE_1" Type="0"/>
+    <ROW Component="LICENSE_2" ComponentId="{8588B410-4F9D-4DD9-8377-76734C8E15E9}" Directory_="v2_Dir" Attributes="0" KeyPath="LICENSE_2" Type="0"/>
     <ROW Component="OUTBOUND_ERROR_PATH_PROP" ComponentId="{C708E094-491B-48EF-900C-169B632265C1}" Directory_="OUTBOUND_ERROR_PATH_PROP" Attributes="0"/>
     <ROW Component="OUTBOUND_PATH_PROP" ComponentId="{299A8D84-DC9E-48E0-932B-F75544995A37}" Directory_="OUTBOUND_PATH_PROP" Attributes="0"/>
     <ROW Component="OUTBOUND_TEST_ERROR_PATH_PROP" ComponentId="{4E2137BC-37E4-4AE2-B574-D5D2960FD783}" Directory_="OUTBOUND_TEST_ERROR_PATH_PROP" Attributes="0"/>
@@ -92,10 +92,10 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="updater.exe" Component_="updater.exe" FileName="updater.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="&lt;AI_STUBS&gt;updater.exe" SelfReg="false" DigSign="true"/>
     <ROW File="ediconnector.exe" Component_="ediconnector.exe" FileName="EDI-CO~1.EXE|edi-connector.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\edi-connector_windows_amd64_v1\edi-connector.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="LICENSE" Component_="LICENSE" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\gopkg.in\yaml.v3\LICENSE" SelfReg="false"/>
-    <ROW File="NOTICE" Component_="LICENSE" FileName="NOTICE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\gopkg.in\yaml.v3\NOTICE" SelfReg="false"/>
-    <ROW File="LICENSE_1" Component_="LICENSE_1" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\THIRD_PARTY\github.com\mitchellh\mapstructure\LICENSE" SelfReg="false"/>
-    <ROW File="LICENSE_2" Component_="LICENSE_2" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\THIRD_PARTY\github.com\myopenfactory\edi-connector\v2\LICENSE" SelfReg="false"/>
+    <ROW File="LICENSE" Component_="LICENSE" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\gopkg.in\yaml.v3\LICENSE" SelfReg="false"/>
+    <ROW File="NOTICE" Component_="LICENSE" FileName="NOTICE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\gopkg.in\yaml.v3\NOTICE" SelfReg="false"/>
+    <ROW File="LICENSE_1" Component_="LICENSE_1" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\github.com\mitchellh\mapstructure\LICENSE" SelfReg="false"/>
+    <ROW File="LICENSE_2" Component_="LICENSE_2" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\THIRD_PARTY\github.com\myopenfactory\edi-connector\v2\LICENSE" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
     <ROW MsiShortcutProperty="Verknpfungzu0" Shortcut_="Verknpfungzu" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
@@ -146,13 +146,13 @@
     <ROW JsonProperty="_" Parent="inbounds" Name="0" Condition="INBOUND_ID_PROP &lt;&gt; &quot;&quot;" Order="0" Flags="12"/>
     <ROW JsonProperty="__1" Parent="inbounds" Name="1" Condition="INBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;" Order="1" Flags="12"/>
     <ROW JsonProperty="__2" Parent="outbounds" Name="0" Condition="OUTBOUND_ID_PROP &lt;&gt; &quot;&quot;" Order="0" Flags="12"/>
-    <ROW JsonProperty="__3" Parent="extension" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__3" Parent="extensions" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_EXTENSION_PROP]"/>
     <ROW JsonProperty="__4" Parent="outbounds" Name="1" Condition="OUTBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;" Order="1" Flags="28"/>
-    <ROW JsonProperty="__5" Parent="extension_1" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__5" Parent="extensions_1" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_EXTENSION_PROP]"/>
     <ROW JsonProperty="errorPath" Parent="settings_2" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_ERROR_PATH_PROP]"/>
     <ROW JsonProperty="errorPath_1" Parent="settings_3" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_TEST_ERROR_PATH_PROP]"/>
-    <ROW JsonProperty="extension" Parent="message" Name="extension" Condition="1" Order="1" Flags="13"/>
-    <ROW JsonProperty="extension_1" Parent="message_1" Name="extension" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="extensions" Parent="message" Name="extensions" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="extensions_1" Parent="message_1" Name="extensions" Condition="1" Order="1" Flags="13"/>
     <ROW JsonProperty="id" Parent="_" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_ID_PROP]"/>
     <ROW JsonProperty="id_1" Parent="__1" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_TEST_ID_PROP]"/>
     <ROW JsonProperty="id_2" Parent="__2" Name="id" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_ID_PROP]"/>
@@ -336,6 +336,7 @@
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAE4AZQB3AC0ARQB2AGUAbgB0AEwAbwBnACAALQBMAG8AZwBOAGEAbQBlACAAQQBwAHAAbABpAGMAYQB0AGkAbwBuACAALQBTAG8AdQByAGMAZQAgACIARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAi"/>
     <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAE4AQQBNAEUAXwBQAFIATwBQAA0ACgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIAA9ACAAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAUABBAFMAUwBXAE8AUgBEAF8AUABSAE8AUAANAAoADQAKAGMAbQBkAGsAZQB5ACAALwBkAGUAbABlAHQAZQA6AEUARABJAC0AQwBvAG4AbgBlAGMAdABvAHIADQAKAGMAbQBkAGsAZQB5ACAALwBnAGUAbgBlAHIAaQBjADoARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAgAC8AdQBzAGUAcgA6ACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAC8AcABhAHMAcwB3AG8AcgBkADoAJABwAGEAcwBzAHcAbwByAGQAVgBhAGwAdQBl"/>
     <ROW Action="AI_DATA_SETTER_4" Type="51" Source="CustomActionData" Target="[~]"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
@@ -372,6 +373,7 @@
     <ROW Action="AI_UPDATER_UNINSTALL" Type="82" Source="updater.exe" Target="/clean silent"/>
     <ROW Action="AI_UninstallTasks2" Type="1" Source="aischeduler2.dll" Target="UninstallTasks"/>
     <ROW Action="AddCredentialsToWindows" Type="65" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_3"/>
+    <ROW Action="RegisterEventLogSource" Type="1" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
@@ -467,13 +469,15 @@
     <ROW Action="AI_UPDATER_UNINSTALL" Condition="($updater.exe = 2) AND (?updater.exe = 3) AND NOT (UPGRADINGPRODUCTCODE)" Sequence="1551"/>
     <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4001"/>
     <ROW Action="AI_UninstallTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE=&quot;ALL&quot;)" Sequence="1699"/>
-    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed )" Sequence="6402"/>
-    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed )" Sequence="6401"/>
+    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed )" Sequence="6404"/>
+    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed )" Sequence="6403"/>
     <ROW Action="AI_JsonInstall" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5102"/>
     <ROW Action="AI_DATA_SETTER_1" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5101"/>
     <ROW Action="AI_JsonUninstall" Condition="(REMOVE)" Sequence="3102"/>
     <ROW Action="AI_DATA_SETTER_4" Condition="(REMOVE)" Sequence="3101"/>
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
+    <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6402"/>
+    <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6401"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>

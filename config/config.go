@@ -3,43 +3,53 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
-	"time"
 
 	"gopkg.in/yaml.v3"
 )
 
 type ProcessConfig struct {
-	Id       string
-	Type     string
-	AuthName string
-	Settings map[string]any
+	Id       string         `json:"id" yaml:"id"`
+	Type     string         `json:"type" yaml:"type"`
+	AuthName string         `json:"authName" yaml:"authName"`
+	Settings map[string]any `json:"settings" yaml:"settings"`
 }
 
 type LogOptions struct {
-	Level  string
-	Folder string
+	Level  string `json:"level" yaml:"level"`
+	Folder string `json:"folder" yaml:"folder"`
+	Type   string `json:"type" yaml:"type"`
 }
 
 type Config struct {
-	Proxy       string
-	RunWaitTime time.Duration
-	Inbounds    []ProcessConfig
-	Outbounds   []ProcessConfig
-	Log         LogOptions
-	Url         string
-	CAFile      string `mapstructure:"cafile"`
+	Proxy       string          `json:"proxy" yaml:"proxy"`
+	RunWaitTime string          `json:"runWaitTime" yaml:"runWaitTime"`
+	Inbounds    []ProcessConfig `json:"inbounds" yaml:"inbounds"`
+	Outbounds   []ProcessConfig `json:"outbounds" yaml:"outbounds"`
+	Log         LogOptions      `json:"log" yaml:"log"`
+	Url         string          `json:"url" yaml:"url"`
+	CAFile      string          `json:"caFile" yaml:"caFile"`
 }
 
-type Decoder interface {
+type Format int
+
+type decoder interface {
 	Decode(v any) error
 }
 
-func ReadConfig(configFile string) (Config, string, error) {
-	if configFile == "" {
+const (
+	Error Format = iota
+	Json
+	Yaml
+)
+
+func ReadConfigFromFile(configFile string) (Config, string, error) {
+	format := formatFromFileName(configFile)
+	if format == Error {
 		workdir, err := os.Getwd()
 		if err != nil {
 			return Config{}, "", fmt.Errorf("failed to get working directory: %w", err)
@@ -64,13 +74,14 @@ func ReadConfig(configFile string) (Config, string, error) {
 				if entry.IsDir() {
 					continue
 				}
-				if entry.Name() == "config.yaml" || entry.Name() == "config.json" {
+				format = formatFromFileName(entry.Name())
+				if format != Error {
 					configFile = filepath.Join(searchLocation, entry.Name())
 					break
 				}
 			}
 		}
-		if configFile == "" {
+		if format == Error {
 			return Config{}, "", fmt.Errorf("no config file found")
 		}
 	}
@@ -79,9 +90,23 @@ func ReadConfig(configFile string) (Config, string, error) {
 		return Config{}, "", fmt.Errorf("failed to read config file: %w", err)
 	}
 	defer file.Close()
+	config, err := ReadConfig(file, format)
+	return config, configFile, err
+}
 
+func formatFromFileName(fileName string) Format {
+	if strings.HasSuffix(fileName, ".json") {
+		return Json
+	}
+	if strings.HasSuffix(fileName, ".yaml") {
+		return Yaml
+	}
+	return Error
+}
+
+func ReadConfig(configReader io.Reader, format Format) (Config, error) {
 	var cfg Config
-	cfg.RunWaitTime = time.Minute
+	cfg.RunWaitTime = "1m"
 	cfg.Url = "https://rest.ediplatform.services"
 	if proxy := os.Getenv("HTTP_PROXY"); proxy != "" {
 		cfg.Proxy = proxy
@@ -89,15 +114,30 @@ func ReadConfig(configFile string) (Config, string, error) {
 	if proxy := os.Getenv("HTTPS_PROXY"); proxy != "" {
 		cfg.Proxy = proxy
 	}
-	var decoder Decoder
-	if strings.HasSuffix(configFile, ".json") {
-		decoder = json.NewDecoder(file)
-	} else if strings.HasSuffix(configFile, ".yaml") {
-		decoder = yaml.NewDecoder(file)
+	cfg.Log.Type = "STDOUT_TEXT"
+	if runtime.GOOS == "windows" {
+		cfg.Log.Type = "EVENT"
 	}
-	if err := decoder.Decode(&cfg); err != nil {
-		return Config{}, "", fmt.Errorf("failed to decode configuration file: %w", err)
+	if configReader != nil && format != Error {
+		var decoder decoder
+		switch format {
+		case Json:
+			decoder = json.NewDecoder(configReader)
+		case Yaml:
+			decoder = yaml.NewDecoder(configReader)
+		}
+		if err := decoder.Decode(&cfg); err != nil {
+			return Config{}, fmt.Errorf("failed to decode configuration file: %w", err)
+		}
 	}
 
-	return cfg, configFile, nil
+	return cfg, nil
+}
+
+func Decode(source map[string]any, target any) error {
+	bytes, err := json.Marshal(source)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(bytes, target)
 }

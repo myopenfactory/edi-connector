@@ -14,15 +14,17 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/myopenfactory/edi-connector/v2/credentials"
 	"github.com/myopenfactory/edi-connector/v2/platform"
 	"github.com/myopenfactory/edi-connector/v2/version"
 )
 
+const (
+	testUsername = "user"
+	testPassword = "password"
+)
+
 func TestUsernamePassword(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
-	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
 		if !ok {
@@ -43,8 +45,9 @@ func TestUsernamePassword(t *testing.T) {
 		}
 	}))
 	defer server.Close()
-
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -56,9 +59,6 @@ func TestUsernamePassword(t *testing.T) {
 }
 
 func TestUserAgent(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
 	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userAgentEntries := strings.Split(r.Header.Get("User-Agent"), " ")
@@ -82,7 +82,9 @@ func TestUserAgent(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -94,9 +96,6 @@ func TestUserAgent(t *testing.T) {
 }
 
 func TestAccept(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
 	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Accept") != "application/json" {
@@ -109,7 +108,9 @@ func TestAccept(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -121,17 +122,15 @@ func TestAccept(t *testing.T) {
 }
 
 func TestDownloadTransmission(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
-	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("data"))
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient("", "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -151,9 +150,6 @@ func TestDownloadTransmission(t *testing.T) {
 }
 
 func TestListTransmissions(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
 	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	configId := "xaz43I"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -175,7 +171,9 @@ func TestListTransmissions(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -198,10 +196,6 @@ func TestListTransmissions(t *testing.T) {
 }
 
 func TestAddTransmission(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
-	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	configId := "xaz43I"
 	testData := []byte("test1235")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -233,7 +227,9 @@ func TestAddTransmission(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -245,10 +241,6 @@ func TestAddTransmission(t *testing.T) {
 }
 
 func TestConfirmTransmission(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
-	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	transmissionId := "123515"
 	testData := fmt.Appendf([]byte{}, `{"error":false,"message":"Created file: test.txt"}`)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -276,22 +268,20 @@ func TestConfirmTransmission(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
 
-	err = cl.ConfirmTransmission(t.Context(), transmissionId, "Created file: test.txt", "")
+	err = cl.ConfirmTransmission(t.Context(), transmissionId, "", "Created file: test.txt")
 	if err != nil {
 		t.Errorf("failed to confirm transmission: %v", err)
 	}
 }
 
 func TestAddAttachment(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
-	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	testData := []byte("testdata")
 	testFilename := "attachment.txt"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -339,7 +329,9 @@ func TestAddAttachment(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}
@@ -351,10 +343,6 @@ func TestAddAttachment(t *testing.T) {
 }
 
 func TestListMessageAttachments(t *testing.T) {
-	testUsername := "user"
-	testPassword := "password"
-	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
-	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
 	testId := "1239785"
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		expectedPath := fmt.Sprintf("/v2/messages/%s/attachments", testId)
@@ -376,7 +364,9 @@ func TestListMessageAttachments(t *testing.T) {
 	}))
 	defer server.Close()
 
-	cl, err := platform.NewClient(server.URL, "", "")
+	os.Setenv("EDI_CONNECTOR", fmt.Sprintf("%s:%s", testUsername, testPassword))
+	t.Cleanup(func() { os.Unsetenv("EDI_CONNECTOR") })
+	cl, err := platform.NewClient(server.URL, "", credentials.NewEnvCredManager(), "")
 	if err != nil {
 		t.Errorf("failed to create edi client: %v", err)
 	}

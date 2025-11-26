@@ -40,7 +40,7 @@ type Client struct {
 	credentialManager credentials.CredManager
 }
 
-func NewClient(baseUrl string, caFile string, proxy string) (*Client, error) {
+func NewClient(baseUrl string, caFile string, credManager credentials.CredManager, proxy string) (*Client, error) {
 	httpTransport := http.DefaultTransport
 	if proxy != "" {
 		url, err := url.Parse(proxy)
@@ -66,7 +66,7 @@ func NewClient(baseUrl string, caFile string, proxy string) (*Client, error) {
 		http:              httpClient,
 		baseUrl:           baseUrl,
 		authCache:         make(map[string]*credentials.PasswordAuth),
-		credentialManager: credentials.NewCredManager(),
+		credentialManager: credManager,
 	}
 
 	if caFile != "" {
@@ -181,7 +181,7 @@ func (c *Client) AddTransmission(ctx context.Context, configId, authName string,
 	return nil
 }
 
-func (c *Client) ConfirmTransmission(ctx context.Context, id, status, authName string) error {
+func (c *Client) ConfirmTransmission(ctx context.Context, id, authName, status string) error {
 	var confirmRequest struct {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`

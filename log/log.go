@@ -32,8 +32,11 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 	}
 
 	var logHandler slog.Handler
-
-	if cfg.Folder != "" {
+	switch cfg.Type {
+	case "FILE":
+		if cfg.Folder == "" {
+			return nil, fmt.Errorf("need log folder to use file logging")
+		}
 		fileHandler, err := filesystem.NewHandler(cfg.Folder, "edi.log", 7, &slog.HandlerOptions{
 			Level: parsedLogLevel,
 		})
@@ -51,23 +54,28 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 			}
 		}()
 		logHandler = fileHandler
+	case "EVENT":
+		if runtime.GOOS != "windows" {
+			return nil, fmt.Errorf("event log is only available on Windows")
+		}
+		var err error
+		logHandler, err = eventlog.NewHandler("EDI-Connector", &slog.HandlerOptions{
+			Level: parsedLogLevel,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to setup eventlog: %w", err)
+		}
+	case "STDOUT_TEXT":
+		logHandler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: parsedLogLevel,
+		})
+	case "STDOUT_JSON":
+		logHandler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: parsedLogLevel,
+		})
+	default:
+		return nil, fmt.Errorf("unknown log type: %s", cfg.Type)
 	}
 
-	if logHandler == nil {
-		// on windows fallback to eventlog in case file logging is not enabled
-		if runtime.GOOS == "windows" {
-			var err error
-			logHandler, err = eventlog.NewHandler("EDI-Connector", &slog.HandlerOptions{
-				Level: parsedLogLevel,
-			})
-			if err != nil {
-				return nil, fmt.Errorf("failed to setup eventlog: %w", err)
-			}
-		} else {
-			logHandler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-				Level: parsedLogLevel,
-			})
-		}
-	}
 	return slog.New(logHandler), nil
 }

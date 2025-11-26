@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/myopenfactory/edi-connector/v2/config"
+	"github.com/myopenfactory/edi-connector/v2/credentials"
 	"github.com/myopenfactory/edi-connector/v2/platform"
 	"github.com/myopenfactory/edi-connector/v2/transport"
 	"github.com/myopenfactory/edi-connector/v2/transport/file"
@@ -34,14 +35,18 @@ type Connector struct {
 
 // New creates client with given options
 func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
-	platformClient, err := platform.NewClient(cfg.Url, cfg.CAFile, cfg.Proxy)
+	platformClient, err := platform.NewClient(cfg.Url, cfg.CAFile, credentials.NewDefaultCredManager(), cfg.Proxy)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create platform client: %w", err)
 	}
 
+	d, err := time.ParseDuration(cfg.RunWaitTime)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse runWaitTime duration: %w", err)
+	}
 	c := &Connector{
 		logger:         logger,
-		runWaitTime:    cfg.RunWaitTime,
+		runWaitTime:    d,
 		platformClient: platformClient,
 	}
 
@@ -100,7 +105,7 @@ func (c *Connector) Run(ctx context.Context) error {
 			for _, transport := range c.inbounds {
 				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 				if err := c.inboundMessages(ctx, transport); err != nil {
-					c.logger.Error("error processing inbound transmissions", "configId", transport.ConfigId(), "error", err)
+					c.logger.Error("error processing inbound transmissions", "configId", transport.ConfigId(), "authName", transport.AuthName(), "error", err)
 					cancel()
 					os.Exit(1)
 				}
