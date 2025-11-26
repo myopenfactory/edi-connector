@@ -3,64 +3,102 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
-	"os"
 	"runtime/debug"
 	"time"
 
 	"github.com/myopenfactory/edi-connector/v2/config"
 	"github.com/myopenfactory/edi-connector/v2/connector"
+	"github.com/myopenfactory/edi-connector/v2/log"
+	"github.com/myopenfactory/edi-connector/v2/version"
 	"golang.org/x/sys/windows/svc"
 )
 
-func init() {
-	run := windowsRun
-	serviceRun = &run
-}
-
-func windowsRun(ctx context.Context, logger *slog.Logger, cfg config.Config) error {
-	cl, err := connector.New(logger, cfg)
+func serviceRun(configFile string, logLevel string) error {
+	err := svc.Run("EDI-Connector", &service{
+		configFile: configFile,
+		logLevel:   logLevel,
+	})
 	if err != nil {
-		return fmt.Errorf("failed to create edi-connector: %w", err)
-	}
-
-	if err := svc.Run("EDI-Connector", &service{connector: cl}); err != nil {
-		return fmt.Errorf("service EDI-Connector failed to run: %w", err)
+		return err
 	}
 	return nil
 }
 
-type service struct {
-	logger    *slog.Logger
-	connector *connector.Connector
+func isWindowsService() bool {
+	ok, err := svc.IsWindowsService()
+	if err != nil {
+		panic(fmt.Sprintf("failed to check for windows service: %w", err))
+	}
+	return ok
 }
 
-func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, changes chan<- svc.Status) (bool, uint32) {
+type service struct {
+	configFile string
+	logLevel   string
+}
+
+func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (bool, uint32) {
+	status <- svc.Status{State: svc.StartPending}
+
+	cfg, configFile, err := config.ReadConfig(s.configFile)
+	if err != nil {
+		status <- svc.Status{State: svc.StopPending}
+		fmt.Printf("failed to load configfile: %w\n", err)
+		return false, 1
+	}
+
+	if s.logLevel != "" {
+		cfg.Log.Level = s.logLevel
+	}
+
+	logger, err := log.NewFromConfig(cfg.Log)
+	if err != nil {
+		status <- svc.Status{State: svc.StopPending}
+		fmt.Printf("failed to load log config: %w\n", err)
+		return false, 1
+	}
+
+	logger.Info("client", "version", version.Version)
+	logger.Info("Loaded config from", "path", configFile)
+
+	connector, err := connector.New(logger, cfg)
+	if err != nil {
+		status <- svc.Status{State: svc.StopPending}
+		logger.Error("failed to init connector: %w", err)
+		return false, 1
+	}
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				s.logger.Error("client panic", "value", r, "stack", debug.Stack())
+				logger.Error("client panic", "value", r, "stack", debug.Stack())
 			}
 		}()
-		if err := s.connector.Run(ctx); err != nil {
-			s.logger.Error("error while running client", "error", err)
-			os.Exit(1)
+		if err := connector.Run(ctx); err != nil {
+			logger.Error("error while running client", "error", err)
 		}
+		cancel()
 	}()
-
-	deadline := 5 * time.Second
 	const cmdsAccepted = svc.AcceptStop | svc.AcceptShutdown
-	changes <- svc.Status{State: svc.Running, Accepts: cmdsAccepted, WaitHint: uint32(deadline.Seconds()) * 1000}
+	deadline := 5 * time.Second
+	status <- svc.Status{State: svc.Running, Accepts: cmdsAccepted, WaitHint: uint32(deadline.Seconds()) * 1000}
 	for {
 		select {
+		case <-ctx.Done():
+			if ctx.Err() != nil {
+				logger.Error("context with error closed: %w", ctx.Err())
+				return false, 1
+			}
+			return false, 0
 		case c := <-r:
 			switch c.Cmd {
+			case svc.Interrogate:
+				status <- c.CurrentStatus
 			case svc.Stop, svc.Shutdown:
-				changes <- svc.Status{State: svc.StopPending}
+				status <- svc.Status{State: svc.StopPending}
 				cancel()
-				return false, 0
+			default:
+				logger.Error("Unexpected service control request #%d", c)
 			}
 		}
 	}

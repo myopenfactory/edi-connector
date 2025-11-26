@@ -4,20 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log/slog"
 	"os"
 	"os/signal"
 
 	"github.com/myopenfactory/edi-connector/v2/config"
 	"github.com/myopenfactory/edi-connector/v2/connector"
-	serviceCmd "github.com/myopenfactory/edi-connector/v2/internal/cmd/service"
-	versionCmd "github.com/myopenfactory/edi-connector/v2/internal/cmd/version"
 	"github.com/myopenfactory/edi-connector/v2/log"
 	"github.com/myopenfactory/edi-connector/v2/version"
-)
-
-var (
-	serviceRun *func(context.Context, *slog.Logger, config.Config) error
 )
 
 func execute(configFile string, logLevel string) error {
@@ -56,14 +49,6 @@ func execute(configFile string, logLevel string) error {
 		}
 	}()
 
-	if serviceRun != nil && os.Getenv("E2E") == "" {
-		if err := (*serviceRun)(ctx, logger, cfg); err != nil {
-			logger.With("error", err).Error("unable to run edi-connector")
-			os.Exit(1)
-		}
-		return nil
-	}
-
 	cl, err := connector.New(logger, cfg)
 	if err != nil {
 		return fmt.Errorf("failed to create edi-connector: %w", err)
@@ -82,21 +67,24 @@ func main() {
 
 	flag.Parse()
 
-	if len(flag.Args()) > 1 {
-		var err error
-		switch os.Args[1] {
+	if len(flag.Args()) > 0 {
+		switch flag.Arg(0) {
 		case "version":
-			err = versionCmd.Run()
-		case "service":
-			err = serviceCmd.Run(os.Args[2:])
-		}
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			fmt.Printf("Version: %s\n", version.Version)
+			fmt.Printf("Date: %s\n", version.Date)
+			fmt.Printf("Commit: %s\n", version.Commit)
+		default:
+			fmt.Printf("Unknown parameter: %s\n", flag.Arg(0))
 		}
 		return
 	}
-
+	if isWindowsService() {
+		err := serviceRun(*configFile, *logLevel)
+		if err != nil {
+			fmt.Println()
+			os.Exit(1)
+		}
+	}
 	if err := execute(*configFile, *logLevel); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
