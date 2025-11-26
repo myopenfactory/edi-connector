@@ -31,13 +31,6 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 		parsedLogLevel = slog.LevelInfo
 	}
 
-	if cfg.Type == "" {
-		cfg.Type = "STDOUT_TEXT"
-		if runtime.GOOS == "windows" {
-			cfg.Type = "EVENT"
-		}
-	}
-
 	var logHandler slog.Handler
 	switch cfg.Type {
 	case "FILE":

@@ -5,7 +5,7 @@ import (
 )
 
 type InboundSettings struct {
-	AttachmentWhitelist []string
+	AttachmentWhitelist []string `json:"attachmentWhitelist" yaml:"attachmentWhitelist"`
 }
 
 type Object struct {

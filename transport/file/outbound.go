@@ -10,21 +10,21 @@ import (
 	"slices"
 	"time"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/myopenfactory/edi-connector/v2/config"
 	"github.com/myopenfactory/edi-connector/v2/transport"
 )
 
 type watchSetting struct {
-	Path       string
-	Extensions []string
-	WaitTime   time.Duration
+	Path       string   `json:"path" yaml:"path"`
+	Extensions []string `json:"extensions" yaml:"extensions"`
+	WaitTime   string   `json:"waitTime" yaml:"waitTime"`
 }
 
 type outboundFileSettings struct {
-	Message     watchSetting
-	Attachment  watchSetting
-	ErrorPath   string
-	SuccessPath string
+	Message     watchSetting `json:"message" yaml:"message"`
+	Attachment  watchSetting `json:"attachment" yaml:"attachment"`
+	ErrorPath   string       `json:"errorPath" yaml:"errorPath"`
+	SuccessPath string       `json:"successPath" yaml:"successPath"`
 }
 
 type outboundFileTransport struct {
@@ -45,9 +45,9 @@ func (p *outboundFileTransport) isAttachmentEnabled() bool {
 // NewOutboundFileTransport returns new OutTransport and checks for success, error, messagewaittime and attachmentwaittime parameter.
 func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg map[string]any) (transport.OutboundTransport, error) {
 	var settings outboundFileSettings
-	err := mapstructure.Decode(cfg, &settings)
+	err := config.Decode(cfg, &settings)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode outbounf file settings: %w", err)
+		return nil, fmt.Errorf("failed to decode outbound file settings: %w", err)
 	}
 
 	p := &outboundFileTransport{
@@ -75,8 +75,8 @@ func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg ma
 			return nil, fmt.Errorf("could not verify existence of outbound folder: %w", err)
 		}
 
-		if message.WaitTime == time.Duration(0) {
-			message.WaitTime = 15 * time.Second
+		if message.WaitTime == "" {
+			message.WaitTime = "15s"
 		}
 		p.logger.Info("watching folder for messages", "folder", message.Path, "extensions", message.Extensions, "waitTime", message.WaitTime)
 	} else {
@@ -89,8 +89,8 @@ func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg ma
 			return nil, fmt.Errorf("error attachment folder does not exist: %v", attachment.Path)
 		}
 
-		if attachment.WaitTime == time.Duration(0) {
-			attachment.WaitTime = 15 * time.Second
+		if attachment.WaitTime == "" {
+			attachment.WaitTime = "15s"
 		}
 
 		p.logger.Info("watching folder for attachments", "folder", attachment.Path, "extensions", attachment.Extensions, "waitTime", attachment.WaitTime)
@@ -118,7 +118,11 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.O
 	}
 
 	message := p.settings.Message
-	fileInfos, err := p.listFilesLastModifiedBefore(message.Path, time.Now().Add(-message.WaitTime))
+	duration, err := time.ParseDuration(message.WaitTime)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse duration: %w", err)
+	}
+	fileInfos, err := p.listFilesLastModifiedBefore(message.Path, time.Now().Add(-duration))
 	if err != nil {
 		return nil, fmt.Errorf("failed to list files within %s: %w", message.Path, err)
 	}
@@ -152,7 +156,11 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 	}
 	attachment := p.settings.Attachment
 
-	fileInfos, err := p.listFilesLastModifiedBefore(attachment.Path, time.Now().Add(-attachment.WaitTime))
+	duration, err := time.ParseDuration(attachment.WaitTime)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse duration: %w", err)
+	}
+	fileInfos, err := p.listFilesLastModifiedBefore(attachment.Path, time.Now().Add(-duration))
 	if err != nil {
 		return nil, fmt.Errorf("failed to list files within %s: %w", attachment.Path, err)
 	}
