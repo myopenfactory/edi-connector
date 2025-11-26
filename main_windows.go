@@ -27,7 +27,7 @@ func serviceRun(configFile string, logLevel string) error {
 func isWindowsService() bool {
 	ok, err := svc.IsWindowsService()
 	if err != nil {
-		panic(fmt.Sprintf("failed to check for windows service: %w", err))
+		panic(fmt.Sprintf("failed to check for windows service: %v", err))
 	}
 	return ok
 }
@@ -43,7 +43,7 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	cfg, configFile, err := config.ReadConfig(s.configFile)
 	if err != nil {
 		status <- svc.Status{State: svc.StopPending}
-		fmt.Printf("failed to load configfile: %w\n", err)
+		fmt.Printf("failed to load configfile: %v\n", err)
 		return false, 1
 	}
 
@@ -54,7 +54,7 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	logger, err := log.NewFromConfig(cfg.Log)
 	if err != nil {
 		status <- svc.Status{State: svc.StopPending}
-		fmt.Printf("failed to load log config: %w\n", err)
+		fmt.Printf("failed to load log config: %v\n", err)
 		return false, 1
 	}
 
@@ -64,7 +64,7 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	connector, err := connector.New(logger, cfg)
 	if err != nil {
 		status <- svc.Status{State: svc.StopPending}
-		logger.Error("failed to init connector: %w", err)
+		logger.Error("failed to init connector: %w", "error", err)
 		return false, 1
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -86,7 +86,7 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 		select {
 		case <-ctx.Done():
 			if ctx.Err() != nil {
-				logger.Error("context with error closed: %w", ctx.Err())
+				logger.Error("context with error closed: %w", "error", ctx.Err())
 				return false, 1
 			}
 			return false, 0
@@ -98,7 +98,7 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 				status <- svc.Status{State: svc.StopPending}
 				cancel()
 			default:
-				logger.Error("Unexpected service control request #%d", c)
+				logger.Error("Unexpected service control request", "request", c)
 			}
 		}
 	}
