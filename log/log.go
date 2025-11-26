@@ -32,7 +32,7 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 	}
 
 	if cfg.Type == "" {
-		cfg.Type = "STDOUT"
+		cfg.Type = "STDOUT_TEXT"
 		if runtime.GOOS == "windows" {
 			cfg.Type = "EVENT"
 		}
@@ -72,8 +72,12 @@ func NewFromConfig(cfg config.LogOptions) (*slog.Logger, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to setup eventlog: %w", err)
 		}
-	case "STDOUT":
+	case "STDOUT_TEXT":
 		logHandler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: parsedLogLevel,
+		})
+	case "STDOUT_JSON":
+		logHandler = slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: parsedLogLevel,
 		})
 	default:
