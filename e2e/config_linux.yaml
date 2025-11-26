@@ -1,4 +1,4 @@
-runWaitTime: 10s
+runwaittime: 10s
 log:
   type: STDOUT_TEXT
 outbounds:
@@ -8,13 +8,15 @@ outbounds:
       message:
         path: /tmp/myof/outbound
         extensions:
-        - xml
+          - xml
+        waitTime: 1s
       errorPath: "/tmp/myof/error"
       successPath: "/tmp/myof/success"
       attachment:
         path: /tmp/myof/attachment
         extensions:
-        - sample
+          - sample
+        waitTime: 1s
   - id: Gw7fon
     type: FILE
     authname: special
@@ -22,13 +24,15 @@ outbounds:
       message:
         path: /tmp/myof/outbound_special
         extensions:
-        - xml
+          - xml
+        waitTime: 1s
       errorPath: "/tmp/myof/error"
       successPath: "/tmp/myof/success"
       attachment:
         path: /tmp/myof/attachment_special
         extensions:
-        - sample
+          - sample
+        waitTime: 1s
 inbounds:
   - id: 0T6Qgn
     type: FILE
@@ -36,7 +40,7 @@ inbounds:
       path: /tmp/myof/inbound
       attachmentPath: /tmp/myof/attachment_inbound
       attachmentWhitelist:
-        - "https://myopenfactory.net"
+        - "https://myopenfactory.net/"
   - id: e8eioo
     type: FILE
     authname: special
@@ -44,4 +48,4 @@ inbounds:
       path: /tmp/myof/inbound_special
       attachmentPath: /tmp/myof/attachment_inbound_special
       attachmentWhitelist:
-        - "https://myopenfactory.net"
+        - "https://myopenfactory.net/"

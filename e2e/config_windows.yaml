@@ -1,4 +1,4 @@
-runWaitTime: 10s
+runwaittime: 10s
 log:
   type: STDOUT_TEXT
 outbounds:
