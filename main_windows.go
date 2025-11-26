@@ -40,7 +40,7 @@ type service struct {
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (bool, uint32) {
 	status <- svc.Status{State: svc.StartPending}
 
-	cfg, configFile, err := config.ReadConfig(s.configFile)
+	cfg, configFile, err := config.ReadConfigFromFile(s.configFile)
 	if err != nil {
 		status <- svc.Status{State: svc.StopPending}
 		fmt.Printf("failed to load configfile: %v\n", err)
