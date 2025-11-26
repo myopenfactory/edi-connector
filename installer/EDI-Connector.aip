@@ -146,13 +146,13 @@
     <ROW JsonProperty="_" Parent="inbounds" Name="0" Condition="INBOUND_ID_PROP &lt;&gt; &quot;&quot;" Order="0" Flags="12"/>
     <ROW JsonProperty="__1" Parent="inbounds" Name="1" Condition="INBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;" Order="1" Flags="12"/>
     <ROW JsonProperty="__2" Parent="outbounds" Name="0" Condition="OUTBOUND_ID_PROP &lt;&gt; &quot;&quot;" Order="0" Flags="12"/>
-    <ROW JsonProperty="__3" Parent="extension" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__3" Parent="extensions" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_EXTENSION_PROP]"/>
     <ROW JsonProperty="__4" Parent="outbounds" Name="1" Condition="OUTBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;" Order="1" Flags="28"/>
-    <ROW JsonProperty="__5" Parent="extension_1" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__5" Parent="extensions_1" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_EXTENSION_PROP]"/>
     <ROW JsonProperty="errorPath" Parent="settings_2" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_ERROR_PATH_PROP]"/>
     <ROW JsonProperty="errorPath_1" Parent="settings_3" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_TEST_ERROR_PATH_PROP]"/>
-    <ROW JsonProperty="extension" Parent="message" Name="extension" Condition="1" Order="1" Flags="13"/>
-    <ROW JsonProperty="extension_1" Parent="message_1" Name="extension" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="extensions" Parent="message" Name="extensions" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="extensions_1" Parent="message_1" Name="extensions" Condition="1" Order="1" Flags="13"/>
     <ROW JsonProperty="id" Parent="_" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_ID_PROP]"/>
     <ROW JsonProperty="id_1" Parent="__1" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_TEST_ID_PROP]"/>
     <ROW JsonProperty="id_2" Parent="__2" Name="id" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_ID_PROP]"/>
