@@ -219,38 +219,40 @@ func (c *Connector) inboundMessages(ctx context.Context, inbound transport.Inbou
 }
 
 func (c *Connector) inboundAttachments(ctx context.Context, inbound transport.InboundTransport, transmission platform.Transmission) error {
-	messageId, ok := transmission.Metadata["TID"]
-	if !ok {
+	if len(transmission.MessageIds) == 0 {
 		return nil
 	}
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-
-	attachments, err := c.platformClient.ListMessageAttachments(ctx, messageId, inbound.AuthName())
-	if err != nil {
-		return fmt.Errorf("failed to list message attachments for %s: %w", messageId, err)
-	}
-
-	for _, attachment := range attachments {
-		if !inbound.HandleAttachment(attachment.Url) {
-			return nil
-		}
-
-		data, filename, err := c.downloadAttachment(attachment.Url)
+	for _, messageId := range transmission.MessageIds {
+		c.logger.Debug("processing attachments for message", "messageId", messageId)
+		attachments, err := c.platformClient.ListMessageAttachments(ctx, messageId, inbound.AuthName())
 		if err != nil {
-			return fmt.Errorf("failed to download attachment for %s: %w", messageId, err)
+			return fmt.Errorf("failed to list message attachments for %s: %w", messageId, err)
 		}
 
-		ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
-		defer cancel()
-		if err := inbound.ProcessAttachment(ctx, transport.Object{
-			Id:      generateId(),
-			Content: data,
-			Metadata: map[string]string{
-				"filename": filename,
-			},
-		}); err != nil {
-			return fmt.Errorf("error processing attachment: %w", err)
+		for _, attachment := range attachments {
+			c.logger.Debug("found attachment to handle", "attachmentUrl", attachment.Url)
+			if !inbound.HandleAttachment(attachment.Url) {
+				return nil
+			}
+
+			data, filename, err := c.downloadAttachment(attachment.Url)
+			if err != nil {
+				return fmt.Errorf("failed to download attachment for %s: %w", messageId, err)
+			}
+
+			ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+			defer cancel()
+			if err := inbound.ProcessAttachment(ctx, transport.Object{
+				Id:      generateId(),
+				Content: data,
+				Metadata: map[string]string{
+					"filename": filename,
+				},
+			}); err != nil {
+				return fmt.Errorf("error processing attachment: %w", err)
+			}
 		}
 	}
 	return nil
