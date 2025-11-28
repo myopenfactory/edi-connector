@@ -56,8 +56,6 @@
     <ROW Directory="ediconnector_Dir" Directory_Parent="myopenfactory_Dir" DefaultDir="EDI-CO~1|edi-connector" DirectoryOptions="3"/>
     <ROW Directory="github.com_Dir" Directory_Parent="THIRD_PARTY_Dir" DefaultDir="github.com" DirectoryOptions="3"/>
     <ROW Directory="gopkg.in_Dir" Directory_Parent="THIRD_PARTY_Dir" DefaultDir="gopkg.in" DirectoryOptions="3"/>
-    <ROW Directory="mapstructure_Dir" Directory_Parent="mitchellh_Dir" DefaultDir="MAPSTR~1|mapstructure" DirectoryOptions="3"/>
-    <ROW Directory="mitchellh_Dir" Directory_Parent="github.com_Dir" DefaultDir="MITCHE~1|mitchellh" DirectoryOptions="3"/>
     <ROW Directory="myOpenFactory_Dir" Directory_Parent="CommonAppDataFolder" DefaultDir="MYOPEN~1|myOpenFactory Software GmbH"/>
     <ROW Directory="myopenfactory_Dir" Directory_Parent="github.com_Dir" DefaultDir="MYOPEN~1|myopenfactory" DirectoryOptions="3"/>
     <ROW Directory="v2_Dir" Directory_Parent="ediconnector_Dir" DefaultDir="v2" DirectoryOptions="3"/>
@@ -74,7 +72,6 @@
     <ROW Component="INBOUND_PATH_PROP" ComponentId="{27A4AD48-C05E-4170-9F37-1CE61D078C54}" Directory_="INBOUND_PATH_PROP" Attributes="0"/>
     <ROW Component="INBOUND_TEST_PATH_PROP" ComponentId="{A9375D4D-918F-4AAF-A3B1-CF25A9F274AA}" Directory_="INBOUND_TEST_PATH_PROP" Attributes="0"/>
     <ROW Component="LICENSE" ComponentId="{54EB0B1B-CDA5-4A1E-9A7D-B2A35645D19A}" Directory_="yaml.v3_Dir" Attributes="0" KeyPath="LICENSE" Type="0"/>
-    <ROW Component="LICENSE_1" ComponentId="{B4912A22-498D-4616-A53F-6E06A0D4FDAD}" Directory_="mapstructure_Dir" Attributes="0" KeyPath="LICENSE_1" Type="0"/>
     <ROW Component="LICENSE_2" ComponentId="{8588B410-4F9D-4DD9-8377-76734C8E15E9}" Directory_="v2_Dir" Attributes="0" KeyPath="LICENSE_2" Type="0"/>
     <ROW Component="OUTBOUND_ERROR_PATH_PROP" ComponentId="{C708E094-491B-48EF-900C-169B632265C1}" Directory_="OUTBOUND_ERROR_PATH_PROP" Attributes="0"/>
     <ROW Component="OUTBOUND_PATH_PROP" ComponentId="{299A8D84-DC9E-48E0-932B-F75544995A37}" Directory_="OUTBOUND_PATH_PROP" Attributes="0"/>
@@ -94,7 +91,6 @@
     <ROW File="ediconnector.exe" Component_="ediconnector.exe" FileName="EDI-CO~1.EXE|edi-connector.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\edi-connector_windows_amd64_v1\edi-connector.exe" SelfReg="false" DigSign="true"/>
     <ROW File="LICENSE" Component_="LICENSE" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\gopkg.in\yaml.v3\LICENSE" SelfReg="false"/>
     <ROW File="NOTICE" Component_="LICENSE" FileName="NOTICE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\gopkg.in\yaml.v3\NOTICE" SelfReg="false"/>
-    <ROW File="LICENSE_1" Component_="LICENSE_1" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="1" SourcePath="..\dist\THIRD_PARTY\github.com\mitchellh\mapstructure\LICENSE" SelfReg="false"/>
     <ROW File="LICENSE_2" Component_="LICENSE_2" FileName="LICENSE" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\THIRD_PARTY\github.com\myopenfactory\edi-connector\v2\LICENSE" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
@@ -429,7 +425,6 @@
     <ROW Feature_="Core" Component_="SHORTCUTDIR"/>
     <ROW Feature_="Core" Component_="updater.exe"/>
     <ROW Feature_="Core" Component_="LICENSE"/>
-    <ROW Feature_="Core" Component_="LICENSE_1"/>
     <ROW Feature_="Core" Component_="LICENSE_2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
