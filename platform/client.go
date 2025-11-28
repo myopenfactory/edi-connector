@@ -29,8 +29,9 @@ type Transmission struct {
 		Method string `json:"method"`
 		Sum    string `json:"sum"`
 	} `json:"hash"`
-	Test     bool `json:"test"`
-	Metadata map[string]string
+	Test       bool              `json:"test"`
+	Metadata   map[string]string `json:"metadata"`
+	MessageIds []string          `json:"messageids"`
 }
 
 type Client struct {
