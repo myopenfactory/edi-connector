@@ -3,20 +3,20 @@ name: Release project
   workflow_dispatch:
     inputs:
       level:
-        description: The release level
+        description: "The semver release level, see: https://github.com/npm/node-semver?tab=readme-ov-file#functions"
         required: true
         type: choice
         default: minor
         options:
           - major
+          - premajor
           - minor
+          - preminor
           - patch
-      prerelease:
-        description: Is this a pre release
-        required: true
-        type: boolean
-        default: false
-      draftrelease:
+          - prepatch
+          - release
+          - prerelease
+      draft_release:
         description: Draft the release
         required: true
         type: boolean
@@ -33,38 +33,38 @@ jobs:
     runs-on: ubuntu-latest
     needs: tests
     steps:
-      - name: Checkout
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
-          fetch-tags: true
-      - name: Get current version
-        id: next-version
-        run: |-
-          lastVersion=$(git tag -l --sort=-version:refname | head -1 | cut -dv -f2)
-          IFS=. read -r major minor patch <<EOF
-          $lastVersion
-          EOF
-          case "${{ inputs.level }}" in
-          patch) tag="$major.$minor.$((patch+1))"; ;;
-          major) tag="$((major+1)).0.0"; ;;
-          minor) tag="$major.$((minor+1)).0"; ;;
-          *) echo "failed"; exit 1; ;;
-          esac
-          echo "found release with level ${{ inputs.level }} has version $lastVersion and new version $tag"
-          echo "version=$tag" >> "$GITHUB_OUTPUT"
+          node-version: '20.x'
+      - run: npm install semver
       - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |-
-            const tag_name = "v${{ steps.next-version.outputs.version }}";
+            const semver = require('semver')
+            releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            var nextVersion = "";
+            for ( release of releases.data ) {
+              if( release.draft === false ) {
+                nextVersion = semver.inc(release.tag_name, '${{ inputs.level }}', 'rc');
+                break;
+              }
+            }
+            if(nextVersion === "") {
+              core.setFailed('Could not find any releases');
+              return;
+            }
+            pre = semver.prerelease(nextVersion);
             await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name,
+              tag_name: "v"+nextVersion,
               target_commitish: 'main',
-              name: tag_name,
+              name: nextVersion,
               generate_release_notes: true,
-              draft: ${{ inputs.draftrelease }},
-              prerelease: ${{ inputs.prerelease }}
+              draft: ${{ inputs.draft_release }},
+              prerelease: pre == null
             });
