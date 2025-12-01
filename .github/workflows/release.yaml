@@ -49,7 +49,12 @@ jobs:
             var nextVersion = "";
             for ( release of releases.data ) {
               if( release.draft === false ) {
-                nextVersion = semver.inc(release.tag_name, '${{ inputs.level }}', 'rc');
+                const prereleaseLevels = ['premajor', 'preminor', 'prepatch', 'prerelease'];
+                if (prereleaseLevels.includes('${{ inputs.level }}')) {
+                  nextVersion = semver.inc(release.tag_name, '${{ inputs.level }}', 'rc');
+                } else {
+                  nextVersion = semver.inc(release.tag_name, '${{ inputs.level }}');
+                }
                 break;
               }
             }
