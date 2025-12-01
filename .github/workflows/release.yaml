@@ -47,7 +47,7 @@ jobs:
               repo: context.repo.repo,
             });
             var nextVersion = "";
-            for ( release of releases.data ) {
+            for (const release of releases.data ) {
               if( release.draft === false ) {
                 const prereleaseLevels = ['premajor', 'preminor', 'prepatch', 'prerelease'];
                 if (prereleaseLevels.includes('${{ inputs.level }}')) {
