@@ -66,5 +66,5 @@ jobs:
               name: nextVersion,
               generate_release_notes: true,
               draft: ${{ inputs.draft_release }},
-              prerelease: pre == null
+              prerelease: pre != null
             });
