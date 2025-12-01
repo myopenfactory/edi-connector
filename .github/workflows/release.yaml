@@ -62,7 +62,7 @@ jobs:
               core.setFailed('Could not find any non-draft releases');
               return;
             }
-            pre = semver.prerelease(nextVersion);
+            const pre = semver.prerelease(nextVersion);
             await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
