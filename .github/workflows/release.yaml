@@ -68,7 +68,7 @@ jobs:
               repo: context.repo.repo,
               tag_name: "v"+nextVersion,
               target_commitish: 'main',
-              name: nextVersion,
+              name: "Release " + nextVersion,
               generate_release_notes: true,
               draft: ${{ inputs.draft_release }},
               prerelease: pre != null
