@@ -55,7 +55,7 @@ jobs:
                 const prereleaseLevels = ['premajor', 'preminor', 'prepatch', 'prerelease'];
                 if (prereleaseLevels.includes('${{ inputs.level }}')) {
                   nextVersion = semver.inc(release.tag_name, '${{ inputs.level }}', 'rc');
-                  nextVersion = nextVersion.replace(/-rc\./g, '-rc')
+                  nextVersion = nextVersion.replace(/-rc\./g, '-rc');
                 } else {
                   nextVersion = semver.inc(release.tag_name, '${{ inputs.level }}');
                 }
