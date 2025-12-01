@@ -54,7 +54,7 @@ jobs:
               }
             }
             if(nextVersion === "") {
-              core.setFailed('Could not find any releases');
+              core.setFailed('Could not find any non-draft releases');
               return;
             }
             pre = semver.prerelease(nextVersion);
