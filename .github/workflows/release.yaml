@@ -11,6 +11,16 @@ name: Release project
           - major
           - minor
           - patch
+      prerelease:
+        description: Is this a pre release
+        required: true
+        type: boolean
+        default: false
+      draftrelease:
+        description: Draft the release
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -54,5 +64,7 @@ jobs:
               tag_name,
               target_commitish: 'main',
               name: tag_name,
-              generate_release_notes: true
+              generate_release_notes: true,
+              draft: ${{ inputs.draftrelease }},
+              prerelease: ${{ inputs.prerelease }}
             });

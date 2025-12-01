@@ -5,9 +5,6 @@ permissions:
   contents: write
 
 on:
-  push:
-    tags:
-      - "v*"
   release:
     types:
       - published
