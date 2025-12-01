@@ -55,7 +55,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            return "${{ github.ref_name }}".substring(1).replace(/-rc/g, '.000.');
+            return "${{ github.ref_name }}".substring(1).replace(/-rc/g, '.');
       - name: Create installer
         uses: caphyon/advinst-github-action@main
         with:
