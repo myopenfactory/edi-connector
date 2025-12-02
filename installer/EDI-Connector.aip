@@ -18,6 +18,8 @@
     <ROW Property="INBOUND_PATH_PROP" Value="C:\edi\inbound"/>
     <ROW Property="INBOUND_TEST_PATH_PROP" Value="C:\edi\inbound_test"/>
     <ROW Property="Manufacturer" Value="myOpenFactory Software GmbH"/>
+    <ROW Property="NEED_AUTH" Value="true" Options="1"/>
+    <ROW Property="NEED_CONFIG" Value="true" Options="1"/>
     <ROW Property="OUTBOUND_ERROR_PATH_PROP" Value="C:\edi\error"/>
     <ROW Property="OUTBOUND_EXTENSION_PROP" Value="xml" Type="4"/>
     <ROW Property="OUTBOUND_PATH_PROP" Value="C:\edi\outbound"/>
@@ -255,14 +257,14 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
     <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL" Ordering="201"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
     <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
     <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
     <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="203"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="204"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="501"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="601"/>
@@ -273,7 +275,7 @@
     <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode=&quot;Remove&quot;" Ordering="299" Options="1"/>
     <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="204"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="205"/>
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
     <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
@@ -287,10 +289,6 @@
     <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="InboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="1"/>
     <ROW Dialog_="OutboundTestCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
     <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="OutboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="3"/>
-    <ROW Dialog_="AuthDlg" Control_="Next" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL" Ordering="4"/>
-    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="4"/>
-    <ROW Dialog_="ConfigurationDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="AuthDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="OUTBOUND_PATH_PROP" Condition="1" Ordering="0"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="OUTBOUND_ERROR_PATH_PROP" Condition="1" Ordering="0"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
@@ -309,6 +307,14 @@
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_ERROR_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_ID_PROP )" Ordering="8"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_TEST_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_TEST_ID_PROP )" Ordering="9"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_TEST_ERROR_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_TEST_ID_PROP )" Ordering="10"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="203"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="202"/>
+    <ROW Dialog_="AuthDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="1"/>
+    <ROW Dialog_="AuthDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="203"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="202"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="11"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
@@ -327,8 +333,9 @@
     <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
     <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAE4AZQB3AC0ARQB2AGUAbgB0AEwAbwBnACAALQBMAG8AZwBOAGEAbQBlACAAQQBwAHAAbABpAGMAYQB0AGkAbwBuACAALQBTAG8AdQByAGMAZQAgACIARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAi"/>
-    <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAE4AQQBNAEUAXwBQAFIATwBQAA0ACgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIAA9ACAAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAUABBAFMAUwBXAE8AUgBEAF8AUABSAE8AUAANAAoADQAKAGMAbQBkAGsAZQB5ACAALwBkAGUAbABlAHQAZQA6AEUARABJAC0AQwBvAG4AbgBlAGMAdABvAHIADQAKAGMAbQBkAGsAZQB5ACAALwBnAGUAbgBlAHIAaQBjADoARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAgAC8AdQBzAGUAcgA6ACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAC8AcABhAHMAcwB3AG8AcgBkADoAJABwAGEAcwBzAHcAbwByAGQAVgBhAGwAdQBl"/>
+    <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAE4AQQBNAEUAXwBQAFIATwBQAA0ACgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIAA9ACAAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAUABBAFMAUwBXAE8AUgBEAF8AUABSAE8AUAANAAoADQAKAGMAbQBkAGsAZQB5ACAALwBnAGUAbgBlAHIAaQBjADoARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAgAC8AdQBzAGUAcgA6ACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAC8AcABhAHMAcwB3AG8AcgBkADoAJABwAGEAcwBzAHcAbwByAGQAVgBhAGwAdQBl"/>
     <ROW Action="AI_DATA_SETTER_4" Type="51" Source="CustomActionData" Target="[~]"/>
+    <ROW Action="AI_DATA_SETTER_5" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAA0ACgANAAoAJAB2AGEAbAB1AGUAIAA9ACAAJAAoAGMAbQBkAGsAZQB5ACAALwBsAGkAcwB0ADoARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAgAHwAIABTAGUAbABlAGMAdAAtAFMAdAByAGkAbgBnACAALQBQAGEAdAB0AGUAcgBuACAAIgBOAE8ATgBFACIAKQANAAoASQBmACAAKABbAFwAWwBdAHMAdAByAGkAbgBnAFsAXABdAF0AOgA6AEkAcwBOAHUAbABsAE8AcgBFAG0AcAB0AHkAKAAkAHYAYQBsAHUAZQApACkAIABbAFwAewBdAA0ACgAgACAAQQBJAF8AUwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAATgBFAEUARABfAEEAVQBUAEgAIABmAGEAbABzAGUADQAKAFsAXAB9AF0ADQAKAA0ACgAkAGMAbwBuAGYAaQBnAFAAYQB0AGgAIAA9ACAAIgAkAEUAbgB2ADoAUABSAE8ARwBSAEEATQBEAEEAVABBAFwAbQB5AE8AcABlAG4ARgBhAGMAdABvAHIAeQAgAFMAbwBmAHQAdwBhAHIAZQAgAEcAbQBiAEgAXABFAEQASQAtAEMAbwBuAG4AZQBjAHQAbwByAFwAYwBvAG4AZgBpAGcALgBqAHMAbwBuACIADQAKAEkAZgAgACgAWwBcAFsAXQBTAHkAcwB0AGUAbQAuAEkATwAuAEYAaQBsAGUAWwBcAF0AXQA6ADoARQB4AGkAcwB0AHMAKAAkAGMAbwBuAGYAaQBnAFAAYQB0AGgAKQApACAAWwBcAHsAXQAgACAADQAKACAAIABBAEkAXwBTAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABOAEUARQBEAF8AQwBPAE4ARgBJAEcAIABmAGEAbABzAGUADQAKAFsAXAB9AF0="/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DeleteCadLzma" Type="51" Source="AI_DeleteLzma" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
@@ -367,6 +374,7 @@
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
+    <ROW Action="SetConfigProperties" Type="1" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_5"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDialogComponent">
     <ROW Dialog="AdminBrowseDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="Cancel" TitleLocId="Dialog.AdminBrowseDlg" MsiKey="AdminBrowseDlg"/>
@@ -457,8 +465,6 @@
     <ROW Action="AI_UPDATER_UNINSTALL" Condition="($updater.exe = 2) AND (?updater.exe = 3) AND NOT (UPGRADINGPRODUCTCODE)" Sequence="1551"/>
     <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4001"/>
     <ROW Action="AI_UninstallTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE=&quot;ALL&quot;)" Sequence="1699"/>
-    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed )" Sequence="6404"/>
-    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed )" Sequence="6403"/>
     <ROW Action="AI_JsonInstall" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5102"/>
     <ROW Action="AI_DATA_SETTER_1" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5101"/>
     <ROW Action="AI_JsonUninstall" Condition="(REMOVE)" Sequence="3102"/>
@@ -466,16 +472,20 @@
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
     <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6402"/>
     <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6401"/>
+    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed )" Sequence="5202"/>
+    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed )" Sequence="5201"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
     <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="749"/>
-    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
-    <ROW Action="AI_DpiContentScale" Sequence="52"/>
-    <ROW Action="AI_EnableDebugLog" Sequence="51"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="55"/>
+    <ROW Action="AI_DpiContentScale" Sequence="54"/>
+    <ROW Action="AI_EnableDebugLog" Sequence="53"/>
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99"/>
     <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="102"/>
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
+    <ROW Action="AI_DATA_SETTER_5" Sequence="51"/>
+    <ROW Action="SetConfigProperties" Sequence="52"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
     <ROW Condition="( Version9X OR VersionNT64 )" Description="[ProductName] kann nicht auf [WindowsTypeNTDisplay] installiert werden." DescriptionLocId="AI.LaunchCondition.NoNT" IsPredefined="true" Builds="DefaultBuild"/>
