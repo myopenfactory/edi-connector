@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <DOCUMENT Type="Advanced Installer" CreateVersion="23.2" version="23.2" Modules="enterprise" RootPath="." Language="de" Id="{5D897E26-0AD9-452F-9084-6C3294322384}">
+  <COMPONENT cid="caphyon.advinst.msicomp.ProjectOptionsComponent">
+    <ROW Name="HiddenItems" Value="AppXAppDetailsComponent;FixupComponent;AppXCapabilitiesComponent;AppXDependenciesComponent;AppXProductDetailsComponent;AppXVisualAssetsComponent;AppXAppDeclarationsComponent;AppXUriRulesComponent;MsiXDiffComponent;MsixManifestEditorComponent"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
-    <ROW Property="AI_APP_FILE" Value="[#ediconnector.exe_1]"/>
+    <ROW Property="AI_APP_FILE" Value="[#ediconnector.exe]"/>
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_BackgroundColor" Value="lightblue" MultiBuildValue="DefaultBuild:powderblue" MsiKey="AI_BackgroundColor"/>
     <ROW Property="AI_FINDEXE_TITLE" Value="Wöhle das Installationspaket für [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
@@ -15,6 +18,7 @@
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPNOREPAIR" Value="1" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPPRODUCTICON" Value="logo_1.exe" Type="8"/>
+    <ROW Property="CTRLS" Value="2"/>
     <ROW Property="INBOUND_PATH_PROP" Value="C:\edi\inbound"/>
     <ROW Property="INBOUND_TEST_PATH_PROP" Value="C:\edi\inbound_test"/>
     <ROW Property="Manufacturer" Value="myOpenFactory Software GmbH"/>
@@ -30,6 +34,8 @@
     <ROW Property="ProductLanguage" Value="1031"/>
     <ROW Property="ProductName" Value="EDI-Connector"/>
     <ROW Property="ProductVersion" Value="0.0.0.1" Options="32"/>
+    <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
+    <ROW Property="START_SERVICE" Value="true"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{FBD0C8E3-6F57-4B52-A73A-42D919029725}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -85,7 +91,7 @@
     <ATTRIBUTE name="CurrentFeature" value="Core"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="updater.exe" Component_="updater.exe" FileName="updater.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="&lt;AI_STUBS&gt;updater.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="updater.exe" Component_="updater.exe" FileName="EDIUPD~1.EXE|ediupdater.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="&lt;AI_STUBS&gt;updater.exe" SelfReg="false" DigSign="true"/>
     <ROW File="ediconnector.exe" Component_="ediconnector.exe" FileName="EDI-CO~1.EXE|edi-connector.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\goreleaser\edi-connector_windows_amd64_v1\edi-connector.exe" SelfReg="false" DigSign="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
@@ -355,6 +361,7 @@
     <ROW Action="AI_JsonRemove" Type="11265" Source="jsonCfg.dll" Target="OnJsonRemove" WithoutSeq="true"/>
     <ROW Action="AI_JsonRollback" Type="11521" Source="jsonCfg.dll" Target="OnJsonRollback" WithoutSeq="true"/>
     <ROW Action="AI_JsonUninstall" Type="1" Source="jsonCfg.dll" Target="OnJsonUninstall" AdditionalSeq="AI_DATA_SETTER_4"/>
+    <ROW Action="AI_LaunchApp" Type="1" Source="aicustact.dll" Target="LaunchApp"/>
     <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Type="65" Source="aicustact.dll" Target="PreserveInstallType"/>
     <ROW Action="AI_ProcessTasks2" Type="1" Source="aischeduler2.dll" Target="ProcessTasks"/>
@@ -410,7 +417,7 @@
     <ROW Dialog="WelcomeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.WelcomeDlg" MsiKey="WelcomeDlg"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiEnvComponent">
-    <ROW Environment="Path" Name="=-*Path" Value="[~];" Component_="APPDIR"/>
+    <ROW Environment="Path" Name="=-*Path" Value="[~];[APPDIR]" Component_="APPDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatCompsComponent">
     <ROW Feature_="Core" Component_="APPDIR"/>
@@ -433,16 +440,16 @@
     <ROW Name="updater.exe" SourcePath="logo_updater.ico" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIniFileComponent">
-    <ROW IniFile="AppDir" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="AppDir" Value="[APPDIR]" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="ApplicationName" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationName" Value="[ProductName]" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="ApplicationVersion" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationVersion" Value="[ProductVersion]" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="CheckFrequency" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="CheckFrequency" Value="2" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="CompanyName" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="CompanyName" Value="[Manufacturer]" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="DefaultCommandLine" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="DefaultCommandLine" Value="/silent" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="DownloadsFolder" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="DownloadsFolder" Value="[CommonAppDataFolder][Manufacturer]\[ProductName]\updates\" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="Flags" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="Flags" Value="PerMachine|ShowConfigOptionsButton|GitHubUpdates" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="ID" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="ID" Value="[UpgradeCode]" Action="0" Component_="updater.exe"/>
-    <ROW IniFile="URL" FileName="updater.ini" DirProperty="APPDIR" Section="General" Key="URL" Value="https://api.github.com/repos/myopenfactory/edi-connector/releases" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="AppDir" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="AppDir" Value="[APPDIR]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ApplicationName" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationName" Value="[ProductName]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ApplicationVersion" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="ApplicationVersion" Value="[ProductVersion]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="CheckFrequency" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="CheckFrequency" Value="2" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="CompanyName" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="CompanyName" Value="[Manufacturer]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="DefaultCommandLine" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="DefaultCommandLine" Value="/silent" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="DownloadsFolder" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="DownloadsFolder" Value="[CommonAppDataFolder][Manufacturer]\[ProductName]\updates\" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="Flags" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="Flags" Value="PerMachine|ShowConfigOptionsButton|GitHubUpdates" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="ID" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="ID" Value="[UpgradeCode]" Action="0" Component_="updater.exe"/>
+    <ROW IniFile="URL" FileName="EDIUPD~1.INI|ediupdater.ini" DirProperty="APPDIR" Section="General" Key="URL" Value="https://api.github.com/repos/myopenfactory/edi-connector/releases" Action="0" Component_="updater.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
@@ -472,8 +479,9 @@
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
     <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6402"/>
     <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6401"/>
-    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed )" Sequence="5202"/>
-    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed )" Sequence="5201"/>
+    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5202"/>
+    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5201"/>
+    <ROW Action="StartServices" Condition="VersionNT and START_SERVICE = &quot;true&quot;" Sequence="5850" SeqType="0" MsiKey="StartServices"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
@@ -509,7 +517,6 @@
     <ROW Registry="Caphyon" Root="-1" Key="Software\Caphyon" Name="\"/>
     <ROW Registry="LZMA" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA" Name="\"/>
     <ROW Registry="Manufacturer" Root="-1" Key="Software\[Manufacturer]" Name="\"/>
-    <ROW Registry="Path" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Path" Value="[APPDIR]" Component_="ProductInformation"/>
     <ROW Registry="ProductCode" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]" Name="\"/>
     <ROW Registry="ProductName" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="\"/>
     <ROW Registry="ProductVersion" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="\"/>
@@ -517,7 +524,7 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServCtrlComponent">
-    <ROW ServiceControl="ediconnector.exe" Name="EDI-Connector" Event="161" Wait="0" Component_="ediconnector.exe"/>
+    <ROW ServiceControl="ediconnector.exe" Name="EDI-Connector" Event="160" Wait="0" Component_="ediconnector.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServInstComponent">
     <ROW ServiceInstall="ediconnector.exe" Name="EDI-Connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="1" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
