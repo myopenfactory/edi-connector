@@ -60,6 +60,8 @@ jobs:
           aip-path: '${{ github.workspace }}\installer\EDI-Connector.aip'
           aip-build-name: 'DefaultBuild'
           aip-output-dir: '${{ github.workspace }}\dist\'
+          aip-commands: |
+            SetVersion 0.0.0.1
       - uses: actions/upload-artifact@v4
         with:
           name: edi-connector-install.exe
