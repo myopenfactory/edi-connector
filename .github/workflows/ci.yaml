@@ -30,8 +30,37 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+      - name: Prepare THIRD_PARTY folder
+        run: |
+          go install github.com/google/go-licenses@v1.0.0
+          make third_party
       - name: Build release
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: build --snapshot --single-target
+          args: build --snapshot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+  installer:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Create installer
+        uses: caphyon/advinst-github-action@main
+        with:
+          advinst-version: '23.2'
+          advinst-license: '${{ secrets.ADVANCED_INSTALLER_KEY }}'
+          aip-path: '${{ github.workspace }}\installer\EDI-Connector.aip'
+          aip-build-name: 'DefaultBuild'
+          aip-output-dir: '${{ github.workspace }}\dist\'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: edi-connector-install.exe
+          path: dist/edi-connector-install.exe
