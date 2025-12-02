@@ -27,7 +27,7 @@
     <ROW Property="ProductCode" Value="1031:{93E507D7-DB60-4982-A7B8-38194B7490F9} 1033:{93E507D7-DB60-4982-A7B8-38194B7490F9} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1031"/>
     <ROW Property="ProductName" Value="EDI-Connector"/>
-    <ROW Property="ProductVersion" Value="1.0.0" Options="32"/>
+    <ROW Property="ProductVersion" Value="0.0.0.1" Options="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{FBD0C8E3-6F57-4B52-A73A-42D919029725}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
