@@ -30,11 +30,15 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+      - name: Prepare THIRD_PARTY folder
+        run: |
+          go install github.com/google/go-licenses@v1.0.0
+          make third_party
       - name: Build release
         uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
-          args: build --snapshot --single-target
+          args: build --snapshot
       - uses: actions/upload-artifact@v4
         with:
           name: dist
