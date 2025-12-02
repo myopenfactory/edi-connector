@@ -4,6 +4,7 @@ gomod:
   env:
     - GOPROXY=https://proxy.golang.org,direct
     - GOSUMDB=sum.golang.org
+dist: "dist/goreleaser"
 builds:
   -
     id: "edi-connector"
