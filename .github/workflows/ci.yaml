@@ -35,3 +35,28 @@ jobs:
         with:
           version: latest
           args: build --snapshot --single-target
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+  installer:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Create installer
+        uses: caphyon/advinst-github-action@main
+        with:
+          advinst-version: '23.2'
+          advinst-license: '${{ secrets.ADVANCED_INSTALLER_KEY }}'
+          aip-path: '${{ github.workspace }}\installer\EDI-Connector.aip'
+          aip-build-name: 'DefaultBuild'
+          aip-output-dir: '${{ github.workspace }}\dist\'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: edi-connector-install.exe
+          path: dist/edi-connector-install.exe
