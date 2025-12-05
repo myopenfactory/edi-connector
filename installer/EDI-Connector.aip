@@ -7,7 +7,7 @@
     <ROW Property="AI_APP_FILE" Value="[#ediconnector.exe]"/>
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_BackgroundColor" Value="lightblue" MultiBuildValue="DefaultBuild:powderblue" MsiKey="AI_BackgroundColor"/>
-    <ROW Property="AI_FINDEXE_TITLE" Value="Wöhle das Installationspaket für [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
+    <ROW Property="AI_FINDEXE_TITLE" Value="Wähle das Installationspaket für [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
     <ROW Property="AI_PREDEF_LCONDS_PROPS" Value="AI_DETECTED_INTERNET_CONNECTION;AI_DETECTED_PHYSICAL_MEMORY;AI_DETECTED_WINDOWS_POWERSHELL_VERSION"/>
     <ROW Property="AI_REQUIRED_PHYSICAL_MEMORY" MultiBuildValue="DefaultBuild:512" ValueLocId="-"/>
     <ROW Property="AI_REQUIRED_WINDOWS_POWERSHELL_DISPLAY" MultiBuildValue="DefaultBuild:Windows PowerShell 5.1" ValueLocId="-"/>
