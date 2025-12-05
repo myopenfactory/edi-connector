@@ -9,11 +9,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
+  build:
+    uses: ./.github/workflows/build.yaml
+    secrets: inherit
+  tests_linux:
+    runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,13 +22,11 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - name: Build release
-        uses: goreleaser/goreleaser-action@v6
+      - uses: actions/download-artifact@v4
         with:
-          version: latest
-          args: build --snapshot --single-target
+          name: dist
+          path: dist
       - name: E2E Tests Linux
-        if: runner.os == 'Linux'
         working-directory: ./e2e
         run: |
           mkdir -p /tmp/myof/logs
@@ -41,29 +40,50 @@ jobs:
           mkdir -p /tmp/myof/error
           mkdir -p /tmp/myof/attachment
           mkdir -p /tmp/myof/attachment_special
-          ../dist/edi-connector_linux_amd64_v1/edi-connector --config config_linux.yaml &
+          chmod +x ../dist/goreleaser/edi-connector_linux_amd64_v1/edi-connector
+          ../dist/goreleaser/edi-connector_linux_amd64_v1/edi-connector --config config_linux.json &
           go run main.go
         env:
           EDI_CONNECTOR: "${{ vars.LINUX_USERNAME }}:${{ secrets.LINUX_PASSWORD }}"
           EDI_CONNECTOR_SPECIAL: "${{ vars.LINUX_SPECIAL_USERNAME }}:${{ secrets.LINUX_SPECIAL_PASSWORD }}"
-
-      - name: E2E Tests Windows
-        shell: bash
-        if: runner.os == 'Windows'
+  tests_windows:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+      - uses: actions/download-artifact@v4
+        with:
+          name: edi-connector-install.exe
+          path: e2e
+      - name: Setup Edi-Connector
         working-directory: ./e2e
+        shell: cmd
         run: |
           cmdkey /generic:EDI-Connector /user:${{ vars.WINDOWS_USERNAME }} /pass:${{ secrets.WINDOWS_PASSWORD }}
           cmdkey /generic:EDI-Connector/special /user:${{ vars.WINDOWS_SPECIAL_USERNAME }} /pass:${{ secrets.WINDOWS_SPECIAL_PASSWORD }}
-          mkdir -p "C:/myof/logs"
-          mkdir -p "C:/myof/inbound/"
-          mkdir -p "C:/myof/inbound_special/"
-          mkdir -p "C:/myof/attachment_inbound/"
-          mkdir -p "C:/myof/attachment_inbound_special/"
-          mkdir -p "C:/myof/outbound/"
-          mkdir -p "C:/myof/outbound_special/"
-          mkdir -p "C:/myof/success/"
-          mkdir -p "C:/myof/error/"
-          mkdir -p "C:/myof/attachment/"
-          mkdir -p "C:/myof/attachment_special/"
-          ../dist/edi-connector_windows_amd64_v1/edi-connector.exe --config config_windows.yaml &
+          mkdir "C:/ProgramData/myOpenFactory Software GmbH/EDI-Connector/"
+          copy config_windows.json "C:/ProgramData/myOpenFactory Software GmbH/EDI-Connector/config.json"
+          mkdir "C:/myof/inbound/"
+          mkdir "C:/myof/inbound_special/"
+          mkdir "C:/myof/attachment_inbound/"
+          mkdir "C:/myof/attachment_inbound_special/"
+          mkdir "C:/myof/outbound/"
+          mkdir "C:/myof/outbound_special/"
+          mkdir "C:/myof/success/"
+          mkdir "C:/myof/error/"
+          mkdir "C:/myof/attachment/"
+          mkdir "C:/myof/attachment_special/"
+          echo "Running installer"
+          start /w edi-connector-install.exe /qn START_SERVICE="false"
+      - name: E2E Tests Windows
+        working-directory: ./e2e
+        shell: bash
+        run: |
+          echo "Running connector"
+          "/c/Program Files/myOpenFactory Software GmbH/EDI-Connector/edi-connector" &
           go run main.go
