@@ -84,7 +84,6 @@ jobs:
         working-directory: ./e2e
         shell: bash
         run: |
-          pwd
           echo "Running connector"
           "/c/Program Files/myOpenFactory Software GmbH/EDI-Connector/edi-connector" &
           go run main.go
