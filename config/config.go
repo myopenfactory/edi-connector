@@ -26,13 +26,14 @@ type LogOptions struct {
 }
 
 type Config struct {
-	Proxy       string          `json:"proxy" yaml:"proxy"`
-	RunWaitTime string          `json:"runWaitTime" yaml:"runWaitTime"`
-	Inbounds    []ProcessConfig `json:"inbounds" yaml:"inbounds"`
-	Outbounds   []ProcessConfig `json:"outbounds" yaml:"outbounds"`
-	Log         LogOptions      `json:"log" yaml:"log"`
-	Url         string          `json:"url" yaml:"url"`
-	CAFile      string          `json:"caFile" yaml:"caFile"`
+	InstancePort int             `json:"instancePort" yaml:"instancePort"`
+	Proxy        string          `json:"proxy" yaml:"proxy"`
+	RunWaitTime  string          `json:"runWaitTime" yaml:"runWaitTime"`
+	Inbounds     []ProcessConfig `json:"inbounds" yaml:"inbounds"`
+	Outbounds    []ProcessConfig `json:"outbounds" yaml:"outbounds"`
+	Log          LogOptions      `json:"log" yaml:"log"`
+	Url          string          `json:"url" yaml:"url"`
+	CAFile       string          `json:"caFile" yaml:"caFile"`
 }
 
 type Format int
