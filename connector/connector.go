@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"mime"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -21,6 +22,8 @@ import (
 	"github.com/myopenfactory/edi-connector/v2/transport/file"
 )
 
+const INSTANCE_PORT = 9643
+
 // Config configures variables for the client
 type Connector struct {
 	logger      *slog.Logger
@@ -31,10 +34,22 @@ type Connector struct {
 	outbounds []transport.OutboundTransport
 
 	platformClient *platform.Client
+	listener       net.Listener
 }
 
 // New creates client with given options
 func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
+	port := cfg.InstancePort
+	if port == 0 {
+		port = INSTANCE_PORT
+	}
+	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	if err != nil {
+		if strings.Index(err.Error(), "Only one usage of each socket address") != -1 {
+			return nil, fmt.Errorf("only one instance of edi-connector can run at a time. Please stop the other instance and try again")
+		}
+		return nil, fmt.Errorf("failed to listen on port %d: %w", port, err)
+	}
 	platformClient, err := platform.NewClient(cfg.Url, cfg.CAFile, credentials.NewDefaultCredManager(), cfg.Proxy)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create platform client: %w", err)
@@ -48,6 +63,7 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 		logger:         logger,
 		runWaitTime:    d,
 		platformClient: platformClient,
+		listener:       listener,
 	}
 
 	logger.Info("Configured connector", "runWaitTime", c.runWaitTime)
@@ -80,6 +96,7 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 
 // Runs client until context is closed
 func (c *Connector) Run(ctx context.Context) error {
+	defer c.listener.Close()
 	ticker := time.NewTicker(c.runWaitTime)
 	for {
 		select {
