@@ -22,7 +22,7 @@ import (
 	"github.com/myopenfactory/edi-connector/v2/transport/file"
 )
 
-const INSTANCE_PORT = 9643
+const defaultInstancePort = 9643
 
 // Config configures variables for the client
 type Connector struct {
@@ -41,13 +41,10 @@ type Connector struct {
 func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 	port := cfg.InstancePort
 	if port == 0 {
-		port = INSTANCE_PORT
+		port = defaultInstancePort
 	}
 	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
-		if strings.Index(err.Error(), "Only one usage of each socket address") != -1 {
-			return nil, fmt.Errorf("only one instance of edi-connector can run at a time. Please stop the other instance and try again")
-		}
 		return nil, fmt.Errorf("failed to listen on port %d: %w", port, err)
 	}
 	platformClient, err := platform.NewClient(cfg.Url, cfg.CAFile, credentials.NewDefaultCredManager(), cfg.Proxy)
