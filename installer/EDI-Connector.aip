@@ -545,7 +545,7 @@
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="255.255.6555.6555" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.ScheduledTasksComponent">
-    <ROW TaskId="AI_ediupdater" TaskName="ediupdater" Run="[#updater.exe]" WorkDir="[APPDIR]" UserProp="[%UserDomain]\[LogonUser]" Flags="25600" Trigger="1|1|1|1|0|0|0||0|0|0" Settings="2|259200" Condition="1" TaskVersion="2.4"/>
+    <ROW TaskId="AI_ediupdater" TaskName="edi-connector-updater" Run="[#updater.exe]" WorkDir="[APPDIR]" UserProp="[%UserDomain]\[LogonUser]" Flags="25600" Trigger="1|1|1|1|0|0|0||0|0|0" Settings="2|259200" Condition="1" TaskVersion="2.4"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.SynchronizedFolderComponent">
     <ROW Directory_="THIRD_PARTY_Dir" SourcePath="..\dist\THIRD_PARTY" Feature="Core" ExcludePattern="*~|#*#|%*%|._|CVS|.cvsignore|SCCS|vssver.scc|mssccprj.scc|vssver2.scc|.svn|.DS_Store" ExcludeFlags="6" FileAddOptions="8"/>
