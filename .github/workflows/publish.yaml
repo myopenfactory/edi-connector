@@ -44,7 +44,10 @@ jobs:
         with:
           script: |-
             const semver = require('semver')
-            return semver.parse('${{ github.ref_name }}')
+            const parsed = semver.parse('${{ github.ref_name }}')
+            core.setOutput('major', parsed.major)
+            core.setOutput('minor', parsed.minor)
+            core.setOutput('patch', parsed.patch)
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -57,9 +60,9 @@ jobs:
           push: true
           tags: |-
             ghcr.io/myopenfactory/edi-connector:latest
-            ghcr.io/myopenfactory/edi-connector:${{ steps.version.outputs.result.major }}
-            ghcr.io/myopenfactory/edi-connector:${{ steps.version.outputs.result.major }}.${{ steps.version.outputs.result.minor }}
-            ghcr.io/myopenfactory/edi-connector:${{ steps.version.outputs.result.major }}.${{ steps.version.outputs.result.minor }}.${{ steps.version.outputs.result.patch }}
+            ghcr.io/myopenfactory/edi-connector:${{ steps.version.outputs.major }}
+            ghcr.io/myopenfactory/edi-connector:${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}
+            ghcr.io/myopenfactory/edi-connector:${{ steps.version.outputs.major }}.${{ steps.version.outputs.minor }}.${{ steps.version.outputs.patch }}
       - uses: actions/upload-artifact@v4
         with:
           name: dist
