@@ -33,7 +33,7 @@
     <STRING lang="en" value="Username"/>
   </ENTRY>
   <ENTRY id="Control.Text.AuthDlg#Title">
-    <STRING lang="en" value="Authentification"/>
+    <STRING lang="en" value="Authentication"/>
   </ENTRY>
   <ENTRY id="Control.Text.ConfigurationDlg#TabHost_1">
     <STRING lang="en" value="TabHost"/>
