@@ -33,7 +33,7 @@
     <ROW Property="OUTBOUND_ERROR_PATH_PROP" Value="C:\edi\error"/>
     <ROW Property="OUTBOUND_EXTENSION_PROP" Value="xml" Type="4"/>
     <ROW Property="OUTBOUND_PATH_PROP" Value="C:\edi\outbound"/>
-    <ROW Property="OUTBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Value="pdf"/>
+    <ROW Property="OUTBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
     <ROW Property="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" Value="C:\edi\outbound_attachments_test" Type="4"/>
     <ROW Property="OUTBOUND_TEST_ERROR_PATH_PROP" Value="C:\edi\error"/>
     <ROW Property="OUTBOUND_TEST_EXTENSION_PROP" Value="xml" Type="4"/>
