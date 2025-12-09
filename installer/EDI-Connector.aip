@@ -190,8 +190,8 @@
     <ROW JsonProperty="path_1" Parent="settings_1" Name="path" Condition="1" Order="0" Flags="9" Value="[INBOUND_TEST_PATH_PROP]"/>
     <ROW JsonProperty="path_2" Parent="message" Name="path" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_PATH_PROP]"/>
     <ROW JsonProperty="path_3" Parent="message_1" Name="path" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_PATH_PROP]"/>
-    <ROW JsonProperty="path_4" Parent="attachment" Name="path" Condition="1" Order="0" Flags="57" Value="[[OUTBOUND_ATTACHMENT_PATH_PROP]"/>
-    <ROW JsonProperty="path_5" Parent="attachment_1" Name="path" Condition="1" Order="0" Flags="57" Value="[[OUTBOUND_TEST_ATTACHMENT_PATH_PROP]"/>
+    <ROW JsonProperty="path_4" Parent="attachment" Name="path" Condition="1" Order="0" Flags="57" Value="[OUTBOUND_ATTACHMENT_PATH_PROP]"/>
+    <ROW JsonProperty="path_5" Parent="attachment_1" Name="path" Condition="1" Order="0" Flags="57" Value="[OUTBOUND_TEST_ATTACHMENT_PATH_PROP]"/>
     <ROW JsonProperty="settings" Parent="_" Name="settings" Condition="1" Order="2" Flags="12"/>
     <ROW JsonProperty="settings_1" Parent="__1" Name="settings" Condition="1" Order="2" Flags="12"/>
     <ROW JsonProperty="settings_2" Parent="__2" Name="settings" Condition="1" Order="2" Flags="12"/>
