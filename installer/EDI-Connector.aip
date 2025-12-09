@@ -19,14 +19,22 @@
     <ROW Property="ARPNOREPAIR" Value="1" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPPRODUCTICON" Value="logo_1.exe" Type="8"/>
     <ROW Property="CTRLS" Value="2"/>
+    <ROW Property="INBOUND_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
+    <ROW Property="INBOUND_ATTACHMENT_PATH_PROP" Value="C:\edi\inbound_attachments" Type="4"/>
     <ROW Property="INBOUND_PATH_PROP" Value="C:\edi\inbound"/>
+    <ROW Property="INBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
+    <ROW Property="INBOUND_TEST_ATTACHMENT_PATH_PROP" Value="C:\edi\inbound_attachments_test" Type="4"/>
     <ROW Property="INBOUND_TEST_PATH_PROP" Value="C:\edi\inbound_test"/>
     <ROW Property="Manufacturer" Value="myOpenFactory Software GmbH"/>
     <ROW Property="NEED_AUTH" Value="true" Options="1"/>
     <ROW Property="NEED_CONFIG" Value="true" Options="1"/>
+    <ROW Property="OUTBOUND_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
+    <ROW Property="OUTBOUND_ATTACHMENT_PATH_PROP" Value="C:\edi\outbound_attachments" Type="4"/>
     <ROW Property="OUTBOUND_ERROR_PATH_PROP" Value="C:\edi\error"/>
     <ROW Property="OUTBOUND_EXTENSION_PROP" Value="xml" Type="4"/>
     <ROW Property="OUTBOUND_PATH_PROP" Value="C:\edi\outbound"/>
+    <ROW Property="OUTBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
+    <ROW Property="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" Value="C:\edi\outbound_attachments_test" Type="4"/>
     <ROW Property="OUTBOUND_TEST_ERROR_PATH_PROP" Value="C:\edi\error"/>
     <ROW Property="OUTBOUND_TEST_EXTENSION_PROP" Value="xml" Type="4"/>
     <ROW Property="OUTBOUND_TEST_PATH_PROP" Value="C:\edi\outbound_test"/>
@@ -55,10 +63,14 @@
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1" DirectoryOptions="3"/>
     <ROW Directory="CommonAppDataFolder" Directory_Parent="TARGETDIR" DefaultDir="COMMON~1|CommonAppDataFolder" IsPseudoRoot="1"/>
     <ROW Directory="EDIConnector_Dir" Directory_Parent="myOpenFactory_Dir" DefaultDir="EDI-CO~1|EDI-Connector"/>
+    <ROW Directory="INBOUND_ATTACHMENT_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="INBOUN~3|INBOUND_ATTACHMENT_PATH_PROP" IsPseudoRoot="1"/>
     <ROW Directory="INBOUND_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="INBOUN~1|INBOUND_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="INBOUND_TEST_ATTACHMENT_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="INBOUN~4|INBOUND_TEST_ATTACHMENT_PATH_PROP" IsPseudoRoot="1"/>
     <ROW Directory="INBOUND_TEST_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="INBOUN~2|INBOUND_TEST_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="OUTBOUND_ATTACHMENT_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~5|OUTBOUND_ATTACHMENT_PATH_PROP" IsPseudoRoot="1"/>
     <ROW Directory="OUTBOUND_ERROR_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~1|OUTBOUND_ERROR_PATH_PROP" IsPseudoRoot="1"/>
     <ROW Directory="OUTBOUND_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~2|OUTBOUND_PATH_PROP" IsPseudoRoot="1"/>
+    <ROW Directory="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~6|OUTBOUND_TEST_ATTACHMENT_PATH_PROP" IsPseudoRoot="1"/>
     <ROW Directory="OUTBOUND_TEST_ERROR_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~3|OUTBOUND_TEST_ERROR_PATH_PROP" IsPseudoRoot="1"/>
     <ROW Directory="OUTBOUND_TEST_PATH_PROP" Directory_Parent="TARGETDIR" DefaultDir="OUTBOU~4|OUTBOUND_TEST_PATH_PROP" IsPseudoRoot="1"/>
     <ROW Directory="SHORTCUTDIR" Directory_Parent="TARGETDIR" DefaultDir="SHORTC~1|SHORTCUTDIR" IsPseudoRoot="1"/>
@@ -74,12 +86,16 @@
     <ROW Component="AI_ExePath" ComponentId="{2F28255D-EE9F-472F-B39D-A772F8C7EC66}" Directory_="APPDIR" Attributes="260" KeyPath="AI_ExePath"/>
     <ROW Component="APPDIR" ComponentId="{90A45367-88AA-4486-91FD-D30E3E3C1F8D}" Directory_="APPDIR" Attributes="0"/>
     <ROW Component="EDIConnector" ComponentId="{6C8CCAC0-AAEB-4F12-858B-664496C0F29C}" Directory_="EDIConnector_Dir" Attributes="0"/>
-    <ROW Component="INBOUND_PATH_PROP" ComponentId="{27A4AD48-C05E-4170-9F37-1CE61D078C54}" Directory_="INBOUND_PATH_PROP" Attributes="0"/>
-    <ROW Component="INBOUND_TEST_PATH_PROP" ComponentId="{A9375D4D-918F-4AAF-A3B1-CF25A9F274AA}" Directory_="INBOUND_TEST_PATH_PROP" Attributes="0"/>
-    <ROW Component="OUTBOUND_ERROR_PATH_PROP" ComponentId="{C708E094-491B-48EF-900C-169B632265C1}" Directory_="OUTBOUND_ERROR_PATH_PROP" Attributes="0"/>
-    <ROW Component="OUTBOUND_PATH_PROP" ComponentId="{299A8D84-DC9E-48E0-932B-F75544995A37}" Directory_="OUTBOUND_PATH_PROP" Attributes="0"/>
-    <ROW Component="OUTBOUND_TEST_ERROR_PATH_PROP" ComponentId="{4E2137BC-37E4-4AE2-B574-D5D2960FD783}" Directory_="OUTBOUND_TEST_ERROR_PATH_PROP" Attributes="0"/>
-    <ROW Component="OUTBOUND_TEST_PATH_PROP" ComponentId="{24B6B346-12C2-4879-A5AC-3DD375447C8C}" Directory_="OUTBOUND_TEST_PATH_PROP" Attributes="0"/>
+    <ROW Component="INBOUND_ATTACHMENT_PATH_PROP" ComponentId="{25A02432-A2B4-449B-B7C9-A32A6676125C}" Directory_="INBOUND_ATTACHMENT_PATH_PROP" Attributes="0" Condition="INBOUND_ATTACHMENT_ENABLED AND INBOUND_ID_PROP"/>
+    <ROW Component="INBOUND_PATH_PROP" ComponentId="{FEF62408-0FDF-4861-95B0-4C98568EEBEA}" Directory_="INBOUND_PATH_PROP" Attributes="0" Condition="INBOUND_ID_PROP"/>
+    <ROW Component="INBOUND_TEST_ATTACHMENT_PATH_PROP" ComponentId="{7AD7BB9C-9882-4E70-BD99-935CC8422B2B}" Directory_="INBOUND_TEST_ATTACHMENT_PATH_PROP" Attributes="0" Condition="INBOUND_TEST_ATTACHMENT_ENABLED AND INBOUND_TEST_ID_PROP"/>
+    <ROW Component="INBOUND_TEST_PATH_PROP" ComponentId="{A9375D4D-918F-4AAF-A3B1-CF25A9F274AA}" Directory_="INBOUND_TEST_PATH_PROP" Attributes="0" Condition="INBOUND_TEST_ID_PROP"/>
+    <ROW Component="OUTBOUND_ATTACHMENT_PATH_PROP" ComponentId="{FE8899B1-78B1-4980-BFCB-E9234544A666}" Directory_="OUTBOUND_ATTACHMENT_PATH_PROP" Attributes="0" Condition="OUTBOUND_ATTACHMENT_ENABLED AND OUTBOUND_ID_PROP"/>
+    <ROW Component="OUTBOUND_ERROR_PATH_PROP" ComponentId="{C708E094-491B-48EF-900C-169B632265C1}" Directory_="OUTBOUND_ERROR_PATH_PROP" Attributes="0" Condition="OUTBOUND_ID_PROP"/>
+    <ROW Component="OUTBOUND_PATH_PROP" ComponentId="{299A8D84-DC9E-48E0-932B-F75544995A37}" Directory_="OUTBOUND_PATH_PROP" Attributes="0" Condition="OUTBOUND_ID_PROP"/>
+    <ROW Component="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" ComponentId="{49E95BAB-E427-4A1B-820C-AFA70B747D6F}" Directory_="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" Attributes="0" Condition="OUTBOUND_TEST_ATTACHMENT_ENABLED AND OUTBOUND_TEST_ID_PROP"/>
+    <ROW Component="OUTBOUND_TEST_ERROR_PATH_PROP" ComponentId="{4E2137BC-37E4-4AE2-B574-D5D2960FD783}" Directory_="OUTBOUND_TEST_ERROR_PATH_PROP" Attributes="0" Condition="OUTBOUND_TEST_ID_PROP"/>
+    <ROW Component="OUTBOUND_TEST_PATH_PROP" ComponentId="{24B6B346-12C2-4879-A5AC-3DD375447C8C}" Directory_="OUTBOUND_TEST_PATH_PROP" Attributes="0" Condition="OUTBOUND_TEST_ID_PROP"/>
     <ROW Component="ProductInformation" ComponentId="{3DBFAA70-23C1-4E24-A8FC-E056722DE690}" Directory_="APPDIR" Attributes="4" KeyPath="Version"/>
     <ROW Component="SHORTCUTDIR" ComponentId="{DBADF297-1E25-444B-8690-EC889283D2E0}" Directory_="SHORTCUTDIR" Attributes="0"/>
     <ROW Component="THIRD_PARTY" ComponentId="{DC93E3BC-E2C3-4AA6-A62F-C738126CD60F}" Directory_="THIRD_PARTY_Dir" Attributes="0"/>
@@ -146,10 +162,22 @@
     <ROW JsonProperty="__3" Parent="extensions" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_EXTENSION_PROP]"/>
     <ROW JsonProperty="__4" Parent="outbounds" Name="1" Condition="OUTBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;" Order="1" Flags="28"/>
     <ROW JsonProperty="__5" Parent="extensions_1" Name="0" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__6" Parent="extensions_2" Name="0" Condition="1" Order="0" Flags="57" Value="[OUTBOUND_ATTACHMENT_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__7" Parent="extensions_3" Name="0" Condition="1" Order="0" Flags="57" Value="[OUTBOUND_TEST_ATTACHMENT_EXTENSION_PROP]"/>
+    <ROW JsonProperty="__8" Parent="attachmentWhitelist" Name="0" Condition="1" Order="0" Flags="9" Value="https://myopenfactory.net/"/>
+    <ROW JsonProperty="__9" Parent="attachmentWhitelist_1" Name="0" Condition="1" Order="0" Flags="9" Value="https://myopenfactory.net/"/>
+    <ROW JsonProperty="attachment" Parent="settings_2" Name="attachment" Condition="OUTBOUND_ATTACHMENT_ENABLED" Order="2" Flags="60"/>
+    <ROW JsonProperty="attachmentPath" Parent="settings" Name="attachmentPath" Condition="INBOUND_ATTACHMENT_ENABLED" Order="1" Flags="9" Value="[INBOUND_ATTACHMENT_PATH_PROP]"/>
+    <ROW JsonProperty="attachmentPath_1" Parent="settings_1" Name="attachmentPath" Condition="INBOUND_TEST_ATTACHMENT_ENABLED" Order="1" Flags="9" Value="[INBOUND_TEST_ATTACHMENT_PATH_PROP]"/>
+    <ROW JsonProperty="attachmentWhitelist" Parent="settings" Name="attachmentWhitelist" Condition="INBOUND_ATTACHMENT_ENABLED" Order="2" Flags="13"/>
+    <ROW JsonProperty="attachmentWhitelist_1" Parent="settings_1" Name="attachmentWhitelist" Condition="INBOUND_TEST_ATTACHMENT_ENABLED" Order="2" Flags="13"/>
+    <ROW JsonProperty="attachment_1" Parent="settings_3" Name="attachment" Condition="OUTBOUND_TEST_ATTACHMENT_ENABLED" Order="2" Flags="60"/>
     <ROW JsonProperty="errorPath" Parent="settings_2" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_ERROR_PATH_PROP]"/>
     <ROW JsonProperty="errorPath_1" Parent="settings_3" Name="errorPath" Condition="1" Order="1" Flags="9" Value="[OUTBOUND_TEST_ERROR_PATH_PROP]"/>
     <ROW JsonProperty="extensions" Parent="message" Name="extensions" Condition="1" Order="1" Flags="13"/>
     <ROW JsonProperty="extensions_1" Parent="message_1" Name="extensions" Condition="1" Order="1" Flags="13"/>
+    <ROW JsonProperty="extensions_2" Parent="attachment" Name="extensions" Condition="1" Order="1" Flags="61"/>
+    <ROW JsonProperty="extensions_3" Parent="attachment_1" Name="extensions" Condition="1" Order="1" Flags="61"/>
     <ROW JsonProperty="id" Parent="_" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_ID_PROP]"/>
     <ROW JsonProperty="id_1" Parent="__1" Name="id" Condition="1" Order="0" Flags="9" Value="[INBOUND_TEST_ID_PROP]"/>
     <ROW JsonProperty="id_2" Parent="__2" Name="id" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_ID_PROP]"/>
@@ -162,6 +190,8 @@
     <ROW JsonProperty="path_1" Parent="settings_1" Name="path" Condition="1" Order="0" Flags="9" Value="[INBOUND_TEST_PATH_PROP]"/>
     <ROW JsonProperty="path_2" Parent="message" Name="path" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_PATH_PROP]"/>
     <ROW JsonProperty="path_3" Parent="message_1" Name="path" Condition="1" Order="0" Flags="9" Value="[OUTBOUND_TEST_PATH_PROP]"/>
+    <ROW JsonProperty="path_4" Parent="attachment" Name="path" Condition="1" Order="0" Flags="57" Value="[OUTBOUND_ATTACHMENT_PATH_PROP]"/>
+    <ROW JsonProperty="path_5" Parent="attachment_1" Name="path" Condition="1" Order="0" Flags="57" Value="[OUTBOUND_TEST_ATTACHMENT_PATH_PROP]"/>
     <ROW JsonProperty="settings" Parent="_" Name="settings" Condition="1" Order="2" Flags="12"/>
     <ROW JsonProperty="settings_1" Parent="__1" Name="settings" Condition="1" Order="2" Flags="12"/>
     <ROW JsonProperty="settings_2" Parent="__2" Name="settings" Condition="1" Order="2" Flags="12"/>
@@ -201,6 +231,12 @@
     <ROW Name="jsonCfg.dll" SourcePath="&lt;AI_CUSTACTS&gt;jsonCfg.dll"/>
     <ROW Name="lzmaextractor.dll" SourcePath="&lt;AI_CUSTACTS&gt;lzmaextractor.dll"/>
   </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.MsiCheckBoxComponent">
+    <ROW Property="OUTBOUND_ATTACHMENT_ENABLED" Value="CheckBox"/>
+    <ROW Property="OUTBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
+    <ROW Property="INBOUND_ATTACHMENT_ENABLED" Value="CheckBox"/>
+    <ROW Property="INBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
+  </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AuthDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="450" Height="360" Attributes="1048577" Text="[Background]" Order="100"/>
     <ROW Dialog_="AuthDlg" Control="Next" Type="PushButton" X="380" Y="330" Width="56" Height="17" Attributes="3" Text="[ButtonText_Next]" Order="200" TextLocId="-"/>
@@ -220,46 +256,90 @@
     <ROW Dialog_="ExitDialog" Control="LaunchProdCheckBox" Type="PushButton" X="178" Y="218" Width="95" Height="26" Attributes="2" Property="RUNAPPLICATION" Text="[ProductName] starten" Order="200" TextLocId="Azure.Control.Text.ExitDialog#LaunchProdCheckBox" MsiKey="ExitDialog#LaunchProdCheckBox" Options="1"/>
     <ROW Dialog_="ExitDialog" Control="ViewReadmeCheckBox" Type="PushButton" X="178" Y="185" Width="95" Height="26" Attributes="2" Property="VIEWREADME" Text="Readme-Datei ansehen" Order="300" TextLocId="Azure.Control.Text.ExitDialog#ViewReadmeCheckBox" MsiKey="ExitDialog#ViewReadmeCheckBox" Options="1"/>
     <ROW Dialog_="InboundCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
-    <ROW Dialog_="InboundCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="INBOUND_ID_PROP" Text="{260}" Order="200"/>
-    <ROW Dialog_="InboundCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP" Text="Konfigurationsid:" Order="300"/>
-    <ROW Dialog_="InboundCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP" Text="Ordner:" Order="400"/>
-    <ROW Dialog_="InboundCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="67" Width="220" Height="18" Attributes="7" Property="INBOUND_PATH_PROP" Order="500"/>
-    <ROW Dialog_="InboundCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="67" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="600"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="INBOUND_TEST_ID_PROP" Text="{260}" Order="200"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_3" Text="Konfigurationsid:" Order="300"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_3" Text="Ordner:" Order="400"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="67" Width="220" Height="18" Attributes="7" Property="INBOUND_TEST_PATH_PROP" Order="500"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="67" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="600"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="20" Width="220" Height="18" Attributes="7" Property="INBOUND_ID_PROP" Text="{260}" Order="200"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Text_1" Type="Text" X="24" Y="10" Width="75" Height="10" Attributes="65539" Property="TEXT_1_PROP" Text="Konfigurationsid" Order="300"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Text_2" Type="Text" X="24" Y="45" Width="75" Height="10" Attributes="65539" Property="TEXT_2_PROP" Text="Ordner" Order="400"/>
+    <ROW Dialog_="InboundCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="55" Width="220" Height="18" Attributes="7" Property="INBOUND_PATH_PROP" Order="500"/>
+    <ROW Dialog_="InboundCfgDlg" Control="PushButton_2" Type="PushButton" X="252" Y="55" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="600"/>
+    <ROW Dialog_="InboundCfgDlg" Control="PathEdit_2" Type="PathEdit" X="24" Y="90" Width="220" Height="18" Attributes="7" Property="INBOUND_ATTACHMENT_PATH_PROP" Order="700"/>
+    <ROW Dialog_="InboundCfgDlg" Control="PushButton_1" Type="PushButton" X="252" Y="90" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="800"/>
+    <ROW Dialog_="InboundCfgDlg" Control="CheckBox_1" Type="CheckBox" X="12" Y="77" Width="98" Height="13" Attributes="3" Property="INBOUND_ATTACHMENT_ENABLED" Text="Anhänge" Order="900"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Edit_2" Type="Edit" X="24" Y="125" Width="220" Height="18" Attributes="3" Property="INBOUND_ATTACHMENT_EXTENSION_PROP" Text="{260}" Order="1000"/>
+    <ROW Dialog_="InboundCfgDlg" Control="Text_3" Type="Text" X="24" Y="115" Width="150" Height="10" Attributes="65539" Property="TEXT_3_PROP" Text="Anhänge Dateiendung" Order="1100"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-" HelpLocId="Control.Help.InboundCfgDlg#DefBut" ExtDataLocId="Control.ExtData.InboundCfgDlg#DefBut"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="20" Width="220" Height="18" Attributes="7" Property="INBOUND_TEST_ID_PROP" Text="{260}" Order="200" TextLocId="Control.Text.InboundCfgDlg#Edit_1" HelpLocId="Control.Help.InboundCfgDlg#Edit_1" ExtDataLocId="Control.ExtData.InboundCfgDlg#Edit_1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Text_1" Type="Text" X="24" Y="10" Width="75" Height="10" Attributes="65539" Property="TEXT_1_PROP_3" Text="Konfigurationsid:" Order="300" TextLocId="Control.Text.InboundCfgDlg#Text_1" HelpLocId="Control.Help.InboundCfgDlg#Text_1" ExtDataLocId="Control.ExtData.InboundCfgDlg#Text_1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Text_2" Type="Text" X="24" Y="45" Width="75" Height="10" Attributes="65539" Property="TEXT_2_PROP_3" Text="Ordner:" Order="400" TextLocId="Control.Text.InboundCfgDlg#Text_2" HelpLocId="Control.Help.InboundCfgDlg#Text_2" ExtDataLocId="Control.ExtData.InboundCfgDlg#Text_2"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="55" Width="220" Height="18" Attributes="7" Property="INBOUND_TEST_PATH_PROP" Order="500" TextLocId="Control.Text.InboundCfgDlg#PathEdit_1" HelpLocId="Control.Help.InboundCfgDlg#PathEdit_1" ExtDataLocId="Control.ExtData.InboundCfgDlg#PathEdit_1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="PushButton_2" Type="PushButton" X="252" Y="55" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="600" TextLocId="Control.Text.InboundCfgDlg#PushButton_2" HelpLocId="Control.Help.InboundCfgDlg#PushButton_2" ExtDataLocId="Control.ExtData.InboundCfgDlg#PushButton_2"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="PathEdit_2" Type="PathEdit" X="24" Y="90" Width="220" Height="18" Attributes="7" Property="INBOUND_TEST_ATTACHMENT_PATH_PROP" Order="700" TextLocId="Control.Text.InboundCfgDlg#PathEdit_2" HelpLocId="Control.Help.InboundCfgDlg#PathEdit_2" ExtDataLocId="Control.ExtData.InboundCfgDlg#PathEdit_2"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="PushButton_1" Type="PushButton" X="252" Y="90" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="800" TextLocId="Control.Text.InboundCfgDlg#PushButton_1" HelpLocId="Control.Help.InboundCfgDlg#PushButton_1" ExtDataLocId="Control.ExtData.InboundCfgDlg#PushButton_1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="CheckBox_1" Type="CheckBox" X="12" Y="77" Width="98" Height="13" Attributes="3" Property="INBOUND_TEST_ATTACHMENT_ENABLED" Text="Anhänge" Order="900" TextLocId="Control.Text.InboundCfgDlg#CheckBox_1" HelpLocId="Control.Help.InboundCfgDlg#CheckBox_1" ExtDataLocId="Control.ExtData.InboundCfgDlg#CheckBox_1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Edit_2" Type="Edit" X="24" Y="125" Width="220" Height="18" Attributes="3" Property="INBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Text="{260}" Order="1000"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control="Text_3" Type="Text" X="24" Y="115" Width="150" Height="10" Attributes="65539" Property="TEXT_3_PROP_1" Text="Anhänge Dateiendung" Order="1100"/>
     <ROW Dialog_="LicenseAgreementDlg" Control="AgreementText" Type="ScrollableText" X="55" Y="110" Width="372" Height="180" Attributes="3" Property="EulaRead" Text="..\LICENSE.rtf" Order="800" TextLocId="-" MsiKey="LicenseAgreementDlg#AgreementText"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="OUTBOUND_ID_PROP" Text="{260}" Order="200"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2" Text="Konfigurationsid:" Order="300"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2" Text="Ordner:" Order="400"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="Text_3" Type="Text" X="24" Y="149" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2_1" Text="Fehlerordner:" Order="500"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="Edit_2" Type="Edit" X="24" Y="118" Width="220" Height="18" Attributes="7" Property="OUTBOUND_EXTENSION_PROP" Text="{260}" Order="600"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="Text_4" Type="Text" X="24" Y="103" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2_1" Text="Dateiendung:" Order="700"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="OUTBOUND_PATH_PROP" Type="PathEdit" X="24" Y="70" Width="220" Height="18" Attributes="7" Property="OUTBOUND_PATH_PROP" Order="800"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="OUTBOUND_ERROR_PATH_PROP" Type="PathEdit" X="24" Y="167" Width="220" Height="18" Attributes="3" Property="OUTBOUND_ERROR_PATH_PROP" Text="{260}" Order="900"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="PushButton_1" Type="PushButton" X="253" Y="70" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1000"/>
-    <ROW Dialog_="OutboundCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="167" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1100"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="DefBut" Type="PushButton" X="0" Y="0" Width="0" Height="0" Attributes="2" Order="100" TextLocId="-"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="Edit_1" Type="Edit" X="24" Y="27" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_ID_PROP" Text="{260}" Order="200"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_1" Type="Text" X="24" Y="9" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2_2" Text="Konfigurationsid:" Order="300"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_2" Type="Text" X="24" Y="52" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2_2" Text="Ordner:" Order="400"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_3" Type="Text" X="24" Y="149" Width="75" Height="18" Attributes="65539" Property="TEXT_2_PROP_2_1_1" Text="Fehlerordner:" Order="500"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="Edit_2" Type="Edit" X="24" Y="118" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_EXTENSION_PROP" Text="{260}" Order="600"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_4" Type="Text" X="24" Y="103" Width="75" Height="18" Attributes="65539" Property="TEXT_1_PROP_2_1_1" Text="Dateiendung:" Order="700"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="OUTBOUND_PATH_PROP" Type="PathEdit" X="24" Y="70" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_PATH_PROP" Order="800"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="PushButton_1" Type="PushButton" X="253" Y="70" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="900"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="PathEdit_1" Type="PathEdit" X="24" Y="162" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_ERROR_PATH_PROP" Order="1000"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control="PushButton_2" Type="PushButton" X="253" Y="162" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1100"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_5" Type="Text" X="25" Y="185" Width="125" Height="10" Attributes="65539" Property="TEXT_1_PROP_2_1_2" Text="Anhänge Dateiendung" Order="100"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="CheckBox_1" Type="CheckBox" X="15" Y="148" Width="98" Height="13" Attributes="3" Property="OUTBOUND_ATTACHMENT_ENABLED" Text="Anhänge" Order="200"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_3" Type="Text" X="25" Y="115" Width="75" Height="10" Attributes="65539" Property="TEXT_2_PROP_2_1" Text="Fehlerordner" Order="300"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_4" Type="Text" X="25" Y="80" Width="75" Height="10" Attributes="65539" Property="TEXT_1_PROP_2_1" Text="Dateiendung" Order="400"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_2" Type="Text" X="25" Y="45" Width="75" Height="10" Attributes="65539" Property="TEXT_2_PROP_2" Text="Ordner" Order="500"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Text_1" Type="Text" X="25" Y="10" Width="75" Height="10" Attributes="65539" Property="TEXT_1_PROP_2" Text="Konfigurationsid" Order="600"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="DefBut" Type="PushButton" X="1" Y="10" Width="2" Height="2" Attributes="2" Order="700" TextLocId="-"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="PushButton_1" Type="PushButton" X="254" Y="55" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="800"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="PushButton_2" Type="PushButton" X="254" Y="125" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="900"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="PushButton_3" Type="PushButton" X="254" Y="161" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1000"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Edit_1" Type="Edit" X="25" Y="20" Width="220" Height="18" Attributes="7" Property="OUTBOUND_ID_PROP" Text="{260}" Order="1100"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="OUTBOUND_PATH_PROP" Type="PathEdit" X="25" Y="55" Width="220" Height="18" Attributes="7" Property="OUTBOUND_PATH_PROP" Order="1200"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Edit_2" Type="Edit" X="25" Y="90" Width="220" Height="18" Attributes="7" Property="OUTBOUND_EXTENSION_PROP" Text="{260}" Order="1300"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="OUTBOUND_ERROR_PATH_PROP" Type="PathEdit" X="25" Y="125" Width="220" Height="18" Attributes="3" Property="OUTBOUND_ERROR_PATH_PROP" Text="{260}" Order="1400"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="PathEdit_1" Type="PathEdit" X="25" Y="160" Width="220" Height="18" Attributes="3" Property="OUTBOUND_ATTACHMENT_PATH_PROP" Text="{260}" Order="1500"/>
+    <ROW Dialog_="OutboundCfgDlg" Control="Edit_3" Type="Edit" X="25" Y="195" Width="220" Height="18" Attributes="7" Property="OUTBOUND_ATTACHMENT_EXTENSION_PROP" Text="{260}" Order="1600"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_5" Type="Text" X="25" Y="185" Width="125" Height="10" Attributes="65539" Property="TEXT_1_PROP_2_1_2_1" Text="Anhänge Dateiendung:" Order="100" TextLocId="Control.Text.OutboundCfgDlg#Text_5" HelpLocId="Control.Help.OutboundCfgDlg#Text_5" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Text_5"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="CheckBox_1" Type="CheckBox" X="15" Y="148" Width="98" Height="13" Attributes="3" Property="OUTBOUND_TEST_ATTACHMENT_ENABLED" Text="Anhänge" Order="200" TextLocId="Control.Text.OutboundCfgDlg#CheckBox_1" HelpLocId="Control.Help.OutboundCfgDlg#CheckBox_1" ExtDataLocId="Control.ExtData.OutboundCfgDlg#CheckBox_1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_3" Type="Text" X="25" Y="115" Width="75" Height="10" Attributes="65539" Property="TEXT_2_PROP_2_1_1" Text="Fehlerordner" Order="300" TextLocId="Control.Text.OutboundCfgDlg#Text_3" HelpLocId="Control.Help.OutboundCfgDlg#Text_3" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Text_3"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_4" Type="Text" X="25" Y="80" Width="75" Height="10" Attributes="65539" Property="TEXT_1_PROP_2_1_1" Text="Dateiendung" Order="400" TextLocId="Control.Text.OutboundCfgDlg#Text_4" HelpLocId="Control.Help.OutboundCfgDlg#Text_4" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Text_4"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_2" Type="Text" X="25" Y="45" Width="75" Height="10" Attributes="65539" Property="TEXT_2_PROP_2_2" Text="Ordner" Order="500" TextLocId="Control.Text.OutboundCfgDlg#Text_2" HelpLocId="Control.Help.OutboundCfgDlg#Text_2" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Text_2"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Text_1" Type="Text" X="25" Y="10" Width="75" Height="10" Attributes="65539" Property="TEXT_1_PROP_2_2" Text="Konfigurationsid" Order="600" TextLocId="Control.Text.OutboundCfgDlg#Text_1" HelpLocId="Control.Help.OutboundCfgDlg#Text_1" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Text_1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="DefBut" Type="PushButton" X="1" Y="10" Width="2" Height="2" Attributes="2" Order="700" TextLocId="-" HelpLocId="Control.Help.OutboundCfgDlg#DefBut" ExtDataLocId="Control.ExtData.OutboundCfgDlg#DefBut"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="PushButton_1" Type="PushButton" X="254" Y="55" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="800" TextLocId="Control.Text.OutboundCfgDlg#PushButton_1" HelpLocId="Control.Help.OutboundCfgDlg#PushButton_1" ExtDataLocId="Control.ExtData.OutboundCfgDlg#PushButton_1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="PushButton_2" Type="PushButton" X="254" Y="125" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="900" TextLocId="Control.Text.OutboundCfgDlg#PushButton_2" HelpLocId="Control.Help.OutboundCfgDlg#PushButton_2" ExtDataLocId="Control.ExtData.OutboundCfgDlg#PushButton_2"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="PushButton_3" Type="PushButton" X="254" Y="161" Width="66" Height="18" Attributes="3" Text="[ButtonText_Browse]" Order="1000" TextLocId="Control.Text.OutboundCfgDlg#PushButton_3" HelpLocId="Control.Help.OutboundCfgDlg#PushButton_3" ExtDataLocId="Control.ExtData.OutboundCfgDlg#PushButton_3"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Edit_1" Type="Edit" X="25" Y="20" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_ID_PROP" Text="{260}" Order="1100" TextLocId="Control.Text.OutboundCfgDlg#Edit_1" HelpLocId="Control.Help.OutboundCfgDlg#Edit_1" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Edit_1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="OUTBOUND_PATH_PROP" Type="PathEdit" X="25" Y="55" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_PATH_PROP" Order="1200" TextLocId="Control.Text.OutboundCfgDlg#OUTBOUND_PATH_PROP" HelpLocId="Control.Help.OutboundCfgDlg#OUTBOUND_PATH_PROP" ExtDataLocId="Control.ExtData.OutboundCfgDlg#OUTBOUND_PATH_PROP"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Edit_2" Type="Edit" X="25" Y="90" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_EXTENSION_PROP" Text="{260}" Order="1300" TextLocId="Control.Text.OutboundCfgDlg#Edit_2" HelpLocId="Control.Help.OutboundCfgDlg#Edit_2" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Edit_2"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="OUTBOUND_ERROR_PATH_PROP" Type="PathEdit" X="25" Y="125" Width="220" Height="18" Attributes="3" Property="OUTBOUND_TEST_ERROR_PATH_PROP" Text="{260}" Order="1400" TextLocId="Control.Text.OutboundCfgDlg#OUTBOUND_ERROR_PATH_PROP" HelpLocId="Control.Help.OutboundCfgDlg#OUTBOUND_ERROR_PATH_PROP" ExtDataLocId="Control.ExtData.OutboundCfgDlg#OUTBOUND_ERROR_PATH_PROP"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="PathEdit_1" Type="PathEdit" X="25" Y="160" Width="220" Height="18" Attributes="3" Property="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" Text="{260}" Order="1500" TextLocId="Control.Text.OutboundCfgDlg#PathEdit_1" HelpLocId="Control.Help.OutboundCfgDlg#PathEdit_1" ExtDataLocId="Control.ExtData.OutboundCfgDlg#PathEdit_1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control="Edit_3" Type="Edit" X="25" Y="195" Width="220" Height="18" Attributes="7" Property="OUTBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Text="{260}" Order="1600" TextLocId="Control.Text.OutboundCfgDlg#Edit_3" HelpLocId="Control.Help.OutboundCfgDlg#Edit_3" ExtDataLocId="Control.ExtData.OutboundCfgDlg#Edit_3"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
     <ROW Dialog_="AuthDlg" Control_="Next" Action="Disable" Condition="USERNAME_PROP = &quot;&quot; OR PASSWORD_PROP = &quot;&quot;"/>
     <ROW Dialog_="AuthDlg" Control_="Next" Action="Enable" Condition="USERNAME_PROP &lt;&gt; &quot;&quot; AND PASSWORD_PROP &lt;&gt; &quot;&quot;"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Action="Enable" Condition="INBOUND_ID_PROP &lt;&gt; &quot;&quot; OR INBOUND_TEST_ID &lt;&gt; &quot;&quot; OR OUTBOUND_ID_PROP &lt;&gt; &quot;&quot; OR OUTBOUND_TEST_ID_PROP &lt;&gt; &quot;&quot;"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Action="Disable" Condition="INBOUND_ID_PROP = &quot;&quot; AND INBOUND_TEST_ID = &quot;&quot; AND OUTBOUND_ID_PROP = &quot;&quot; AND OUTBOUND_TEST_ID_PROP = &quot;&quot;"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PathEdit_1" Action="Enable" Condition="OUTBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PathEdit_1" Action="Disable" Condition="NOT OUTBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_3" Action="Enable" Condition="OUTBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_3" Action="Disable" Condition="NOT OUTBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="Edit_3" Action="Enable" Condition="OUTBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="Edit_3" Action="Disable" Condition="NOT OUTBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_3" Action="Enable" Condition="OUTBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_3" Action="Disable" Condition="NOT OUTBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PathEdit_1" Action="Disable" Condition="NOT OUTBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PathEdit_1" Action="Enable" Condition="OUTBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="Edit_3" Action="Enable" Condition="OUTBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="Edit_3" Action="Disable" Condition="NOT OUTBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PathEdit_2" Action="Enable" Condition="INBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PathEdit_2" Action="Disable" Condition="NOT INBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PushButton_1" Action="Enable" Condition="INBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PushButton_1" Action="Disable" Condition="NOT INBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PathEdit_2" Action="Enable" Condition="INBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PathEdit_2" Action="Disable" Condition="NOT INBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_1" Action="Enable" Condition="INBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_1" Action="Disable" Condition="NOT INBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="Edit_2" Action="Enable" Condition="INBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="Edit_2" Action="Disable" Condition="NOT INBOUND_TEST_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="Edit_2" Action="Enable" Condition="INBOUND_ATTACHMENT_ENABLED"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="Edit_2" Action="Disable" Condition="NOT INBOUND_ATTACHMENT_ENABLED"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
     <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
@@ -292,22 +372,12 @@
     <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="InboundCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="0"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
     <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="OutboundCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="2"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
-    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="InboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="1"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="100"/>
-    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="OutboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="3"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="OUTBOUND_PATH_PROP" Condition="1" Ordering="0"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="OUTBOUND_ERROR_PATH_PROP" Condition="1" Ordering="0"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="OUTBOUND_TEST_PATH_PROP" Condition="1" Ordering="0"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="OUTBOUND_TEST_ERROR_PATH_PROP" Condition="1" Ordering="0"/>
-    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
     <ROW Dialog_="InboundCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="INBOUND_PATH_PROP" Condition="1" Ordering="0"/>
     <ROW Dialog_="InboundCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="INBOUND_TEST_PATH_PROP" Condition="1" Ordering="0"/>
-    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[INBOUND_PATH_PROP]" Condition="AI_INSTALL AND ( INBOUND_ID_PROP )" Ordering="5"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[INBOUND_TEST_PATH_PROP]" Condition="AI_INSTALL AND ( INBOUND_TEST_ID_PROP )" Ordering="6"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_ID_PROP )" Ordering="7"/>
@@ -316,17 +386,40 @@
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_TEST_ERROR_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_TEST_ID_PROP )" Ordering="10"/>
     <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="203"/>
     <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="202"/>
-    <ROW Dialog_="AuthDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="1"/>
+    <ROW Dialog_="AuthDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot; AND ( NEED_CONFIG&lt;&gt;&quot;true&quot; )" Ordering="4"/>
     <ROW Dialog_="AuthDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="1"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="203"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="202"/>
-    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="11"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="19"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="1"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_3" Event="[_BrowseProperty]" Argument="OUTBOUND_ATTACHMENT_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_3" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="OUTBOUND_TEST_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="OUTBOUND_TEST_ERROR_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_3" Event="[_BrowseProperty]" Argument="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="OutboundTestCfgDlg" Control_="PushButton_3" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="OutboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="3"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="INBOUND_ATTACHMENT_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InboundCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="DefBut" Event="[AiStopPageChange]" Argument="{}" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_2" Event="[_BrowseProperty]" Argument="INBOUND_TEST_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_2" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_1" Event="[_BrowseProperty]" Argument="INBOUND_TEST_ATTACHMENT_PATH_PROP" Condition="1" Ordering="0"/>
+    <ROW Dialog_="InboundTestCfgDlg" Control_="PushButton_1" Event="SpawnDialog" Argument="BrowseDlg" Condition="1" Ordering="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="TabHost_1" Event="SpawnDialog" Argument="InboundTestCfgDlg" Condition="( AiTabPage ) AND ( 1 )" Ordering="1"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[INBOUND_ATTACHMENT_PATH_PROP]" Condition="AI_INSTALL AND ( INBOUND_ATTACHMENT_ENABLED AND INBOUND_ID_PROP )" Ordering="12"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[INBOUND_TEST_ATTACHMENT_PATH_PROP]" Condition="AI_INSTALL AND ( INBOUND_TEST_ATTACHMENT_ENABLED AND INBOUND_TEST_ID_PROP )" Ordering="14"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_ATTACHMENT_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_ATTACHMENT_ENABLED AND OUTBOUND_ID_PROP )" Ordering="16"/>
+    <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="CheckTargetPath" Argument="[OUTBOUND_TEST_ATTACHMENT_PATH_PROP]" Condition="AI_INSTALL AND ( OUTBOUND_TEST_ATTACHMENT_ENABLED AND OUTBOUND_TEST_ID_PROP)" Ordering="18"/>
+    <ROW Dialog_="AuthDlg" Control_="Next" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="3"/>
+    <ATTRIBUTE name="DeletedRows" value="BrowseDlg#OK#SetTargetPath#[_BrowseProperty]#1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
     <ROW Directory_="EDIConnector_Dir" Component_="EDIConnector" ManualDelete="false"/>
-    <ROW Directory_="INBOUND_PATH_PROP" Component_="INBOUND_PATH_PROP" ManualDelete="false"/>
     <ROW Directory_="INBOUND_TEST_PATH_PROP" Component_="INBOUND_TEST_PATH_PROP" ManualDelete="false"/>
     <ROW Directory_="OUTBOUND_ERROR_PATH_PROP" Component_="OUTBOUND_ERROR_PATH_PROP" ManualDelete="false"/>
     <ROW Directory_="OUTBOUND_PATH_PROP" Component_="OUTBOUND_PATH_PROP" ManualDelete="false"/>
@@ -334,6 +427,11 @@
     <ROW Directory_="OUTBOUND_TEST_PATH_PROP" Component_="OUTBOUND_TEST_PATH_PROP" ManualDelete="false"/>
     <ROW Directory_="SHORTCUTDIR" Component_="SHORTCUTDIR" ManualDelete="false"/>
     <ROW Directory_="THIRD_PARTY_Dir" Component_="THIRD_PARTY" ManualDelete="false"/>
+    <ROW Directory_="OUTBOUND_ATTACHMENT_PATH_PROP" Component_="OUTBOUND_ATTACHMENT_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" Component_="OUTBOUND_TEST_ATTACHMENT_PATH_PROP" ManualDelete="false"/>
+    <ROW Directory_="INBOUND_ATTACHMENT_PATH_PROP" Component_="INBOUND_ATTACHMENT_PATH_PROP" ManualDelete="true"/>
+    <ROW Directory_="INBOUND_PATH_PROP" Component_="INBOUND_PATH_PROP" ManualDelete="true"/>
+    <ROW Directory_="INBOUND_TEST_ATTACHMENT_PATH_PROP" Component_="INBOUND_TEST_ATTACHMENT_PATH_PROP" ManualDelete="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
@@ -397,16 +495,16 @@
     <ROW Dialog="FatalError" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Finish" Control_Cancel="Finish" TitleLocId="Dialog.FatalError" MsiKey="FatalError"/>
     <ROW Dialog="FilesInUse" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="19" Title="[ProductName] [Setup]" Control_Default="Retry" Control_Cancel="Retry" TitleLocId="Dialog.FilesInUse" MsiKey="FilesInUse"/>
     <ROW Dialog="FolderDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="39" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.FolderDlg" MsiKey="FolderDlg"/>
-    <ROW Dialog="InboundCfgDlg" HCentering="50" VCentering="50" Width="330" Height="150" Attributes="3" Title="Eingehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
-    <ROW Dialog="InboundTestCfgDlg" HCentering="50" VCentering="50" Width="330" Height="150" Attributes="3" Title="Eingehend Test" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="InboundCfgDlg" HCentering="50" VCentering="50" Width="330" Height="164" Attributes="3" Title="Eingehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="InboundTestCfgDlg" HCentering="50" VCentering="50" Width="330" Height="164" Attributes="3" Title="Test Eingehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
     <ROW Dialog="LicenseAgreementDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.LicenseAgreementDlg" MsiKey="LicenseAgreementDlg"/>
     <ROW Dialog="MaintenanceTypeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="ChangeButton" Control_Cancel="Cancel" TitleLocId="Dialog.MaintenanceTypeDlg" MsiKey="MaintenanceTypeDlg"/>
     <ROW Dialog="MaintenanceWelcomeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.MaintenanceWelcomeDlg" MsiKey="MaintenanceWelcomeDlg"/>
     <ROW Dialog="MsiRMFilesInUse" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="19" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="Cancel" TitleLocId="Dialog.MsiRMFilesInUse" MsiKey="MsiRMFilesInUse"/>
     <ROW Dialog="OutOfDiskDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OK" Control_Cancel="OK" TitleLocId="Dialog.OutOfDiskDlg" MsiKey="OutOfDiskDlg"/>
     <ROW Dialog="OutOfRbDiskDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="OkButton" Control_Cancel="OkButton" TitleLocId="Dialog.OutOfRbDiskDlg" MsiKey="OutOfRbDiskDlg"/>
-    <ROW Dialog="OutboundCfgDlg" HCentering="50" VCentering="50" Width="330" Height="216" Attributes="3" Title="Ausgehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
-    <ROW Dialog="OutboundTestCfgDlg" HCentering="50" VCentering="50" Width="330" Height="248" Attributes="3" Title="Ausgehend Test" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="OutboundCfgDlg" HCentering="50" VCentering="50" Width="330" Height="231" Attributes="3" Title="Ausgehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
+    <ROW Dialog="OutboundTestCfgDlg" HCentering="50" VCentering="50" Width="330" Height="231" Attributes="3" Title="Test Ausgehend" Control_Default="DefBut" Control_Cancel="DefBut"/>
     <ROW Dialog="PatchWelcomeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Next" Control_Cancel="Cancel" TitleLocId="Dialog.PatchWelcomeDlg" MsiKey="PatchWelcomeDlg"/>
     <ROW Dialog="PrepareDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="1" Title="[ProductName] [Setup]" Control_Default="Cancel" Control_Cancel="Cancel" TitleLocId="Dialog.PrepareDlg" MsiKey="PrepareDlg"/>
     <ROW Dialog="ProgressDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="1" Title="[ProductName] [Setup]" Control_Default="Cancel" Control_Cancel="Cancel" TitleLocId="Dialog.ProgressDlg" MsiKey="ProgressDlg"/>
@@ -426,7 +524,6 @@
     <ROW Feature_="Core" Component_="AI_ExePath"/>
     <ROW Feature_="Core" Component_="EDIConnector"/>
     <ROW Feature_="Core" Component_="ediconnector.exe"/>
-    <ROW Feature_="Core" Component_="INBOUND_PATH_PROP"/>
     <ROW Feature_="Core" Component_="INBOUND_TEST_PATH_PROP"/>
     <ROW Feature_="Core" Component_="OUTBOUND_ERROR_PATH_PROP"/>
     <ROW Feature_="Core" Component_="OUTBOUND_PATH_PROP"/>
@@ -435,6 +532,11 @@
     <ROW Feature_="Core" Component_="SHORTCUTDIR"/>
     <ROW Feature_="Core" Component_="updater.exe"/>
     <ROW Feature_="Core" Component_="THIRD_PARTY"/>
+    <ROW Feature_="Core" Component_="OUTBOUND_ATTACHMENT_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="OUTBOUND_TEST_ATTACHMENT_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="INBOUND_ATTACHMENT_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="INBOUND_PATH_PROP"/>
+    <ROW Feature_="Core" Component_="INBOUND_TEST_ATTACHMENT_PATH_PROP"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
     <ROW Name="logo_1.exe" SourcePath="logo.ico" Index="0"/>
