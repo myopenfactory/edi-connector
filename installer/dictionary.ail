@@ -126,7 +126,7 @@
     <STRING lang="en" value="Extension"/>
   </ENTRY>
   <ENTRY id="Control.Text.OutboundCfgDlg#Text_5">
-    <STRING lang="en" value="Attachment extension"/>
+    <STRING lang="en" value="Attachment Extension"/>
   </ENTRY>
   <ENTRY id="Control.Text.OutboundTestCfgDlg#Edit_1">
     <STRING lang="en" value="{260}"/>
