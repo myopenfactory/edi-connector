@@ -73,7 +73,7 @@ jobs:
           advinst-enable-automation: 'true'
       - name: Sign installer
         run: |
-          $aipPath = join-path $env:GITHUB_WORKSPACE "installer" "EDI-Connector.aip";
+          $aipPath = join-path $env:GITHUB_WORKSPACE "installer\EDI-Connector.aip";
           Write-Host "AIP: $aipPath";
           $advinst = new-object -com advancedinstaller;
           $project = $advinst.LoadProject($aipPath);
