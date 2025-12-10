@@ -55,7 +55,9 @@ jobs:
           name: dist
           path: dist
   installer:
-    runs-on: windows-latest
+    runs-on:
+      - Windows
+      - sign
     needs: build
     steps:
       - uses: actions/checkout@v4
