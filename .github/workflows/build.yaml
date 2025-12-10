@@ -72,7 +72,6 @@ jobs:
           advinst-license: '${{ secrets.ADVANCED_INSTALLER_KEY }}'
           advinst-enable-automation: 'true'
       - name: Sign installer
-        shell: pwsh
         run: |
           $aipPath = join-path $env:GITHUB_WORKSPACE "installer" "EDI-Connector.aip";
           Write-Host "AIP: $aipPath";
