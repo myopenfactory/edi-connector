@@ -16,11 +16,6 @@ name: Release project
           - prepatch
           - release
           - prerelease
-      draft_release:
-        description: Draft the release
-        required: true
-        type: boolean
-        default: false
 
 jobs:
   tests:
@@ -74,6 +69,6 @@ jobs:
               target_commitish: 'main',
               name: "Release " + nextVersion,
               generate_release_notes: true,
-              draft: ${{ inputs.draft_release }},
+              draft: true,
               prerelease: pre != null
             });

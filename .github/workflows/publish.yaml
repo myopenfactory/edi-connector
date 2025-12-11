@@ -69,7 +69,9 @@ jobs:
           path: dist
 
   windows_installer:
-    runs-on: windows-latest
+    runs-on:
+      - Windows
+      - sign
     needs: release
     steps:
       - uses: actions/checkout@v4
@@ -88,11 +90,19 @@ jobs:
         with:
           advinst-version: '23.3'
           advinst-license: '${{ secrets.ADVANCED_INSTALLER_KEY }}'
-          aip-path: '${{ github.workspace }}\installer\EDI-Connector.aip'
-          aip-build-name: 'DefaultBuild'
-          aip-output-dir: '${{ github.workspace }}\dist\'
-          aip-commands: |
-            SetVersion ${{ steps.tag.outputs.result }}
+          advinst-enable-automation: 'true'
+      - name: Sign installer
+        run: |
+          $aipPath = join-path $env:GITHUB_WORKSPACE "installer\EDI-Connector.aip";
+          Write-Host "AIP: $aipPath";
+          $advinst = new-object -com advancedinstaller;
+          $project = $advinst.LoadProject($aipPath);
+          $project.DigitalSignature.EnableSigning = $true;
+          $project.DigitalSignature.Description = "[|ProductName]";
+          $project.DigitalSignature.DescriptionURL = "https://github.com/myopenfactory/edi-connector";
+          $project.DigitalSignature.TimestampServiceURL = "http://timestamp.globalsign.com/tsa/r6advanced1";
+          $project.DigitalSignature.TimestampDelayMs = 0;
+          $project.Build();
       - uses: actions/upload-artifact@v4
         with:
           name: edi-connector-install.exe
@@ -114,10 +124,16 @@ jobs:
               }
             });
             
-            github.rest.repos.uploadReleaseAsset({
+            await github.rest.repos.uploadReleaseAsset({
               owner,
               repo,
               release_id: tag.id,
               name: 'edi-connector-install.exe',
               data,
             });
+            github.rest.releases.update({
+              owner,
+              repo,
+              release_id: tag.id,
+              draft: false,
+            })
