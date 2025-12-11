@@ -40,8 +40,8 @@ jobs:
           mkdir -p /tmp/myof/error
           mkdir -p /tmp/myof/attachment
           mkdir -p /tmp/myof/attachment_special
-          chmod +x ../dist/goreleaser/edi-connector_linux_amd64_v1/edi-connector
-          ../dist/goreleaser/edi-connector_linux_amd64_v1/edi-connector --config config_linux.json &
+          chmod +x ../dist/edi-connector_linux_amd64/edi-connector
+          ../dist/edi-connector_linux_amd64/edi-connector --config config_linux.json &
           go run main.go
         env:
           EDI_CONNECTOR: "${{ vars.LINUX_USERNAME }}:${{ secrets.LINUX_PASSWORD }}"

@@ -71,8 +71,6 @@ func main() {
 		switch flag.Arg(0) {
 		case "version":
 			fmt.Printf("Version: %s\n", version.Version)
-			fmt.Printf("Date: %s\n", version.Date)
-			fmt.Printf("Commit: %s\n", version.Commit)
 		default:
 			fmt.Printf("Unknown parameter: %s\n", flag.Arg(0))
 		}

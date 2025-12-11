@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -34,12 +36,12 @@ jobs:
       - name: Prepare THIRD_PARTY folder
         run: |
           go install github.com/google/go-licenses@v1.0.0
+          make build
           make third_party
-      - name: Build release
-        uses: goreleaser/goreleaser-action@v6
+      - uses: actions/upload-artifact@v4
         with:
-          version: latest
-          args: build --snapshot
+          name: dist
+          path: dist
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -50,10 +52,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: false
-      - uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
+
   installer:
     runs-on: windows-latest
     needs: build
