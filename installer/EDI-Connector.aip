@@ -108,7 +108,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="updater.exe" Component_="updater.exe" FileName="EDIUPD~1.EXE|ediupdater.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="&lt;AI_STUBS&gt;updater.exe" SelfReg="false" DigSign="true"/>
-    <ROW File="ediconnector.exe" Component_="ediconnector.exe" FileName="EDI-CO~1.EXE|edi-connector.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\goreleaser\edi-connector_windows_amd64_v1\edi-connector.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="ediconnector.exe" Component_="ediconnector.exe" FileName="EDI-CO~1.EXE|edi-connector.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\dist\goreleaser\edi-connector_windows_amd64\edi-connector.exe" SelfReg="false" DigSign="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.custcomp.MsiShortcutPropertyComponent">
     <ROW MsiShortcutProperty="Verknpfungzu0" Shortcut_="Verknpfungzu" PropertyKey="System.AppUserModel.PreventPinning" PropVariantValue="1"/>
