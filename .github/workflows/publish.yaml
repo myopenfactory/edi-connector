@@ -64,6 +64,8 @@ jobs:
           path: dist
       - name: Upload assets to release
         run: gh release upload ${{ github.ref_name }} dist/*.zip dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   windows_installer:
     runs-on:
