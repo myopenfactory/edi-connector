@@ -108,6 +108,8 @@ jobs:
           name: edi-connector-install.exe
           path: dist/edi-connector-install.exe
       - name: Upload assets to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |-
           gh release upload ${{ github.ref_name }} dist/edi-connector-install.exe
           gh release edit ${{ github.ref_name }} --draft=false
