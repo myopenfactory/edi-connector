@@ -93,6 +93,7 @@ jobs:
           advinst-enable-automation: 'true'
       - name: Sign installer
         run: |
+          $ErrorActionPreference = "Stop"
           $aipPath = join-path $env:GITHUB_WORKSPACE "installer\EDI-Connector.aip";
           Write-Host "AIP: $aipPath";
           $advinst = new-object -com advancedinstaller;
@@ -103,6 +104,7 @@ jobs:
           $project.DigitalSignature.DescriptionURL = "https://github.com/myopenfactory/edi-connector";
           $project.DigitalSignature.TimestampServiceURL = "https://timestamp.globalsign.com/tsa/r6advanced1";
           $project.DigitalSignature.TimestampDelayMs = 0;
+          $project.Save();
           $project.Build();
       - uses: actions/upload-artifact@v4
         with:
@@ -132,7 +134,8 @@ jobs:
               name: 'edi-connector-install.exe',
               data,
             });
-            github.rest.releases.update({
+            
+            await github.rest.releases.update({
               owner,
               repo,
               release_id: tag.id,
