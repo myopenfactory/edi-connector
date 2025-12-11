@@ -10,7 +10,7 @@ build-$(1)-$(2):
 	CGO_ENABLED=0 GOOS=$(1) GOARCH=$(2) go build -o dist/edi-connector_$(1)_$(2)/ -ldflags="-X github.com/myopenfactory/edi-connector/version.Version=$(VERSION)"
 
 dist-$(1)-$(2): third_party build-$(1)-$(2)
-	rm -f edi-connector_$(1)_$(2).zip
+	rm -f dist/edi-connector_$(1)_$(2).zip dist/edi-connector_$(1)_$(2).tar.gz
 	cp -R dist/THIRD_PARTY dist/edi-connector_$(1)_$(2)/
 	cp LICENSE dist/edi-connector_$(1)_$(2)/
 ifeq ($(1), windows)
