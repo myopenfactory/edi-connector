@@ -19,6 +19,9 @@
   <ENTRY id="Dialog.OutboundTestCfgDlg">
     <STRING lang="en" value="Outbound test"/>
   </ENTRY>
+  <ENTRY id="Dialog.PreDefinedConfig">
+    <STRING lang="en" value="[ProductName] [Setup]"/>
+  </ENTRY>
   <!-- Control table -->
   <ENTRY id="Control.Text.AuthDlg#Edit_1">
     <STRING lang="en" value="{260}"/>
@@ -151,5 +154,21 @@
   </ENTRY>
   <ENTRY id="Control.Text.OutboundTestCfgDlg#Text_4">
     <STRING lang="en" value="Extension:"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.PreDefinedConfig#PushButton_2">
+    <STRING lang="en" value="[ButtonText_Browse]"/>
+  </ENTRY>
+  <ENTRY id="Control.Text.PreDefinedConfig#Title">
+    <STRING lang="en" value="Configuration"/>
+  </ENTRY>
+  <!-- RadioButton table -->
+  <ENTRY id="RadioButton.Text.PREDEFINED_CONFIG#1">
+    <STRING lang="en" value="Generate configuration"/>
+  </ENTRY>
+  <ENTRY id="RadioButton.Text.PREDEFINED_CONFIG#2">
+    <STRING lang="en" value="Select configuration"/>
+  </ENTRY>
+  <ENTRY id="1">
+    <STRING lang="en" value="1"/>
   </ENTRY>
 </DICTIONARY>
