@@ -8,7 +8,6 @@ on:
   release:
     types:
       - published
-      - unpublished
 
 jobs:
   release:
@@ -23,6 +22,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-tags: true
+          ref: ${{ github.ref }}
       - uses: actions/setup-go@v5
         with:
           go-version-file: "go.mod"
@@ -67,7 +67,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  windows_installer:
+  windows_installer_sign:
+    if: "!github.event.release.prerelease"
     runs-on:
       - Windows
       - sign
@@ -84,13 +85,13 @@ jobs:
         with:
           script: |
             return "${{ github.ref_name }}".substring(1).replace(/-rc(\d+)/g, '.$1');
-      - name: Create installer
+      - name: Setup advanced installer
         uses: caphyon/advinst-github-action@main
         with:
           advinst-version: '23.3'
           advinst-license: '${{ secrets.ADVANCED_INSTALLER_KEY }}'
           advinst-enable-automation: 'true'
-      - name: Sign installer
+      - name: Build installer
         run: |
           $ErrorActionPreference = "Stop"
           $aipPath = join-path $env:GITHUB_WORKSPACE "installer\EDI-Connector.aip";
@@ -103,6 +104,48 @@ jobs:
           $project.DigitalSignature.DescriptionURL = "https://github.com/myopenfactory/edi-connector";
           $project.DigitalSignature.TimestampServiceURL = "https://timestamp.globalsign.com/tsa/r6advanced1";
           $project.DigitalSignature.TimestampDelayMs = 0;
+          $project.Save();
+          $project.Build();
+      - uses: actions/upload-artifact@v4
+        with:
+          name: edi-connector-install.exe
+          path: dist/edi-connector-install.exe
+      - name: Upload assets to release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |-
+          gh release upload ${{ github.ref_name }} dist/edi-connector-install.exe
+
+  windows_installer_unsign:
+    if: "github.event.release.prerelease"
+    runs-on: windows-latest
+    needs: release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Extract tag name
+        id: tag
+        uses: actions/github-script@v8
+        with:
+          script: |
+            return "${{ github.ref_name }}".substring(1).replace(/-rc(\d+)/g, '.$1');
+      - name: Setup installer
+        uses: caphyon/advinst-github-action@main
+        with:
+          advinst-version: '23.3'
+          advinst-license: '${{ secrets.ADVANCED_INSTALLER_KEY }}'
+          advinst-enable-automation: 'true'
+      - name: Build installer
+        run: |
+          $ErrorActionPreference = "Stop"
+          $aipPath = join-path $env:GITHUB_WORKSPACE "installer\EDI-Connector.aip";
+          Write-Host "AIP: $aipPath";
+          $advinst = new-object -com advancedinstaller;
+          $project = $advinst.LoadProject($aipPath);
+          $project.ProductDetails.Version = "${{ steps.tag.outputs.result }}";
           $project.Save();
           $project.Build();
       - uses: actions/upload-artifact@v4
