@@ -98,7 +98,7 @@ jobs:
           Write-Host "AIP: $aipPath";
           $advinst = new-object -com advancedinstaller;
           $project = $advinst.LoadProject($aipPath);
-          $project.ProductDetails.Version = "${{ steps.tag.outputs.result }}";
+          $project.ProductDetails.Version = ${{ steps.tag.outputs.result }};
           $project.DigitalSignature.EnableSigning = $true;
           $project.DigitalSignature.Description = "[|ProductName]";
           $project.DigitalSignature.DescriptionURL = "https://github.com/myopenfactory/edi-connector";
@@ -145,7 +145,7 @@ jobs:
           Write-Host "AIP: $aipPath";
           $advinst = new-object -com advancedinstaller;
           $project = $advinst.LoadProject($aipPath);
-          $project.ProductDetails.Version = "${{ steps.tag.outputs.result }}";
+          $project.ProductDetails.Version = ${{ steps.tag.outputs.result }};
           $project.Save();
           $project.Build();
       - uses: actions/upload-artifact@v4
