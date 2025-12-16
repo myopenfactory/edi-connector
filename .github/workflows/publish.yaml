@@ -102,7 +102,7 @@ jobs:
           $project.DigitalSignature.EnableSigning = $true;
           $project.DigitalSignature.Description = "[|ProductName]";
           $project.DigitalSignature.DescriptionURL = "https://github.com/myopenfactory/edi-connector";
-          $project.DigitalSignature.TimestampServiceURL = "https://timestamp.globalsign.com/tsa/r6advanced1";
+          $project.DigitalSignature.TimestampServiceURL = "http://timestamp.globalsign.com/tsa/r6advanced1";
           $project.DigitalSignature.TimestampDelayMs = 0;
           $project.Save();
           $project.Build();
