@@ -34,15 +34,15 @@ var messageTpl = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
                 <Unit>PCE</Unit>
             </Item>
         </Items>
-	<Features>
-		<Feature>
-			<ClassID>CLIENT</ClassID>
-			<FeatureID>User</FeatureID>
-			<Value>%s</Value>
-		</Feature>
-	</Features>
+		<Features>
+			<Feature>
+				<ClassID>CLIENT</ClassID>
+				<FeatureID>User</FeatureID>
+				<Value>%s</Value>
+			</Feature>
+		</Features>
 	</Body>
-	<Subject>MIRROR</Subject>
+	<Subject>#MIRROR</Subject>
     <MessageID>%s</MessageID>
     <ReceiverID>autoresponder.myopenfactory.com</ReceiverID>
     <SenderID>client.myopenfactory.test</SenderID>
