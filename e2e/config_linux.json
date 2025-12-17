@@ -37,7 +37,13 @@
           ]
         },
         "errorPath": "/tmp/myof/error",
-        "successPath": "/tmp/myof/success"
+        "successPath": "/tmp/myof/success",
+        "attachment": {
+          "path": "/tmp/myof/attachment_special",
+          "extensions": [
+            "sample"
+          ]
+        }
       }
     }
   ],

@@ -117,9 +117,6 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.O
 		return messages, nil
 	}
 	message := p.settings.Message
-	if message.WaitTime == "" {
-		message.WaitTime = "15s"
-	}
 	duration, err := time.ParseDuration(message.WaitTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse duration: %w", err)
@@ -157,9 +154,6 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 		return attachments, nil
 	}
 	attachment := p.settings.Attachment
-	if attachment.WaitTime == "" {
-		attachment.WaitTime = "15s"
-	}
 	duration, err := time.ParseDuration(attachment.WaitTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse duration: %w", err)
