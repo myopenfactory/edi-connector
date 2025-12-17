@@ -49,7 +49,12 @@ func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg ma
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode outbound file settings: %w", err)
 	}
-
+	if settings.Message.WaitTime == "" {
+		settings.Message.WaitTime = "15s"
+	}
+	if settings.Attachment.WaitTime == "" {
+		settings.Attachment.WaitTime = "15s"
+	}
 	p := &outboundFileTransport{
 		logger:   logger,
 		settings: settings,
@@ -108,9 +113,6 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.O
 		return messages, nil
 	}
 	message := p.settings.Message
-	if message.WaitTime == "" {
-		message.WaitTime = "15s"
-	}
 	duration, err := time.ParseDuration(message.WaitTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse duration: %w", err)
@@ -148,9 +150,6 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 		return attachments, nil
 	}
 	attachment := p.settings.Attachment
-	if attachment.WaitTime == "" {
-		attachment.WaitTime = "15s"
-	}
 	duration, err := time.ParseDuration(attachment.WaitTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse duration: %w", err)
