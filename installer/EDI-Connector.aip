@@ -8,10 +8,13 @@
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_BackgroundColor" Value="lightblue" MultiBuildValue="DefaultBuild:powderblue" MsiKey="AI_BackgroundColor"/>
     <ROW Property="AI_FINDEXE_TITLE" Value="Wähle das Installationspaket für [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
+    <ROW Property="AI_LOGON_AS_SERVICE_ACCOUNTS" Value="[DOMAIN_NAME]\[USER_NAME]"/>
     <ROW Property="AI_PREDEF_LCONDS_PROPS" Value="AI_DETECTED_INTERNET_CONNECTION;AI_DETECTED_PHYSICAL_MEMORY;AI_DETECTED_WINDOWS_POWERSHELL_VERSION"/>
     <ROW Property="AI_REQUIRED_PHYSICAL_MEMORY" MultiBuildValue="DefaultBuild:512" ValueLocId="-"/>
     <ROW Property="AI_REQUIRED_WINDOWS_POWERSHELL_DISPLAY" MultiBuildValue="DefaultBuild:Windows PowerShell 5.1" ValueLocId="-"/>
     <ROW Property="AI_REQUIRED_WINDOWS_POWERSHELL_VERSION" MultiBuildValue="DefaultBuild:5.1" ValueLocId="-"/>
+    <ROW Property="AI_USER_CHECK_PASSWORD" Value="1"/>
+    <ROW Property="AI_USER_IGNORE_MSI" Value="1"/>
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCONTACT" Value="support@myopenfactory.com"/>
     <ROW Property="ARPHELPTELEPHONE" Value="+4924199000300"/>
@@ -139,6 +142,7 @@
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
     <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\FolderDlg.aip"/>
     <ROW Fragment="LicenseAgreementDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\LicenseAgreementDlg.aip"/>
+    <ROW Fragment="LogonInformationDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\LogonInformationDlg.aip"/>
     <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\MaintenanceTypeDlg.aip"/>
     <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\MaintenanceWelcomeDlg.aip"/>
     <ROW Fragment="MessageDlg.aip" Path="&lt;AI_THEMES&gt;azure\fragments\MessageDlg.aip"/>
@@ -203,6 +207,8 @@
     <ROW JsonProperty="type_3" Parent="__4" Name="type" Condition="1" Order="1" Flags="9" Value="FILE"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
+    <ROW Action="AI_CommitAccounts" Description="Erzeugung von Benutzerkonten auf dem lokalen Computer" DescriptionLocId="ActionText.Description.AI_CommitAccounts"/>
+    <ROW Action="AI_CreateAccount" Description="Erstelle Benutzerkonto auf dem lokalen Computer" DescriptionLocId="ActionText.Description.AI_CreateAccount" Template="Konto: [1]" TemplateLocId="ActionText.Template.AI_CreateAccount"/>
     <ROW Action="AI_DeleteLzma" Description="Lösche die aus dem Archiv extrahierten Dateien" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
     <ROW Action="AI_DeleteRLzma" Description="Lösche die aus dem Archiv extrahierten Dateien" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
     <ROW Action="AI_ExtractFiles" Description="Extrahiere Dateien aus dem Archiv" DescriptionLocId="ActionText.Description.AI_ExtractLzma" TemplateLocId="-"/>
@@ -213,10 +219,14 @@
     <ROW Action="AI_JsonRemove" Description="Führe JSON Dateikonfiguration aus" DescriptionLocId="ActionText.Description.AI_JsonRemove" Template="Konfiguriere JSON Datei: &quot;[1]&quot;" TemplateLocId="ActionText.Template.AI_JsonRemove"/>
     <ROW Action="AI_JsonRollback" Description="Setze JSON Dateikonfiguration zurück" DescriptionLocId="ActionText.Description.AI_JsonRollback" Template="Setze JSON Dateikonfiguration zurück" TemplateLocId="ActionText.Template.AI_JsonRollback"/>
     <ROW Action="AI_JsonUninstall" Description="Erzeuge Konfigurationsaktionen für JSON Dateien" DescriptionLocId="ActionText.Description.AI_JsonUninstall"/>
+    <ROW Action="AI_ProcessAccounts" Description="Erzeuge Aktionen um Benutzerkonten auf dem lokalen Computer zu erstellen" DescriptionLocId="ActionText.Description.AI_ProcessAccounts" Template="Konto: [1], Eigenschaften: [2]" TemplateLocId="ActionText.Template.AI_ProcessAccounts"/>
     <ROW Action="AI_ProcessTasks2" Description="Erzeuge Aktionen um geplante Tasks auf dem lokalen Computer zu erstellen:" DescriptionLocId="ActionText.Description.AI_ProcessTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_ProcessTasks"/>
+    <ROW Action="AI_RemoveAccount" Description="Entferne Benutzerkonto vom lokalen Computer" DescriptionLocId="ActionText.Description.AI_RemoveAccount" Template="Konto: [1]" TemplateLocId="ActionText.Template.AI_RemoveAccount"/>
     <ROW Action="AI_RemoveTasks2" Description="Entferne geplante Task vom lokalen Computer" DescriptionLocId="ActionText.Description.AI_RemoveTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_RemoveTasks"/>
+    <ROW Action="AI_RollbackAccount" Description="Zurücksetzen der Erstellung von Benutzerkonten auf dem lokalen Computer" DescriptionLocId="ActionText.Description.AI_RollbackAccount" Template="Konto: [1]" TemplateLocId="ActionText.Template.AI_RollbackAccount"/>
     <ROW Action="AI_RollbackTasks2" Description="Zurücksetzen der geplanten Tasks auf dem lokalen Computer" DescriptionLocId="ActionText.Description.AI_RollbackTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_RollbackTasks"/>
     <ROW Action="AI_ScheduleTasks2" Description="Plane Task auf dem lokalen Computer" DescriptionLocId="ActionText.Description.AI_ScheduleTasks" Template="Task Name: [1]" TemplateLocId="ActionText.Template.AI_ScheduleTasks"/>
+    <ROW Action="AI_UninstallAccounts" Description="Erzeuge Aktionen um Benutzerkonten auf dem lokalen Computer zu erstellen" DescriptionLocId="ActionText.Description.AI_ProcessAccounts" Template="Konto: [1], Eigenschaften: [2]" TemplateLocId="ActionText.Template.AI_ProcessAccounts"/>
     <ROW Action="AI_UninstallTasks2" Description="Erzeuge Aktionen um geplante Tasks vom lokalen Computer zu entfernen" DescriptionLocId="ActionText.Description.AI_UninstallTasks"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiAppSearchComponent">
@@ -231,12 +241,14 @@
     <ROW Name="aischeduler2.dll" SourcePath="&lt;AI_CUSTACTS&gt;aischeduler2.dll"/>
     <ROW Name="jsonCfg.dll" SourcePath="&lt;AI_CUSTACTS&gt;jsonCfg.dll"/>
     <ROW Name="lzmaextractor.dll" SourcePath="&lt;AI_CUSTACTS&gt;lzmaextractor.dll"/>
+    <ROW Name="userAccounts.dll" SourcePath="&lt;AI_CUSTACTS&gt;userAccounts.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCheckBoxComponent">
     <ROW Property="OUTBOUND_ATTACHMENT_ENABLED" Value="CheckBox"/>
     <ROW Property="OUTBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
     <ROW Property="INBOUND_ATTACHMENT_ENABLED" Value="CheckBox"/>
     <ROW Property="INBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
+    <ROW Property="CREATE_USER" Value="CheckBox"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AuthDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="450" Height="360" Attributes="1048577" Text="[Background]" Order="100"/>
@@ -279,6 +291,7 @@
     <ROW Dialog_="InboundTestCfgDlg" Control="Edit_2" Type="Edit" X="24" Y="125" Width="220" Height="18" Attributes="3" Property="INBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Text="{260}" Order="1000"/>
     <ROW Dialog_="InboundTestCfgDlg" Control="Text_3" Type="Text" X="24" Y="115" Width="150" Height="10" Attributes="65539" Property="TEXT_3_PROP_1" Text="Anhänge Dateiendung" Order="1100"/>
     <ROW Dialog_="LicenseAgreementDlg" Control="AgreementText" Type="ScrollableText" X="55" Y="110" Width="372" Height="180" Attributes="3" Property="EulaRead" Text="..\LICENSE.rtf" Order="800" TextLocId="-" MsiKey="LicenseAgreementDlg#AgreementText"/>
+    <ROW Dialog_="LogonInformationDlg" Control="CheckBox_1" Type="CheckBox" X="216" Y="334" Width="98" Height="13" Attributes="3" Property="CREATE_USER" Text="Benutzer erstellen" Order="1300"/>
     <ROW Dialog_="OutboundCfgDlg" Control="Text_5" Type="Text" X="25" Y="185" Width="125" Height="10" Attributes="65539" Property="TEXT_1_PROP_2_1_2" Text="Anhänge Dateiendung" Order="100"/>
     <ROW Dialog_="OutboundCfgDlg" Control="CheckBox_1" Type="CheckBox" X="15" Y="148" Width="98" Height="13" Attributes="3" Property="OUTBOUND_ATTACHMENT_ENABLED" Text="Anhänge" Order="200"/>
     <ROW Dialog_="OutboundCfgDlg" Control="Text_3" Type="Text" X="25" Y="115" Width="75" Height="10" Attributes="65539" Property="TEXT_2_PROP_2_1" Text="Fehlerordner" Order="300"/>
@@ -319,6 +332,9 @@
     <ROW Dialog_="PreDefinedConfig" Control="RadioButtonGroup_1" Type="RadioButtonGroup" X="36" Y="109" Width="225" Height="47" Attributes="3" Property="PREDEFINED_CONFIG" Text="RadioButtonGroup" Order="600"/>
     <ROW Dialog_="PreDefinedConfig" Control="Edit_1" Type="Edit" X="36" Y="171" Width="329" Height="18" Attributes="3" Property="CONFIG_FILE" Text="{260}" Order="700" ExtAttributes="1"/>
     <ROW Dialog_="PreDefinedConfig" Control="PushButton_2" Type="PushButton" X="370" Y="171" Width="66" Height="18" Attributes="1" Text="[ButtonText_Browse]" Order="800"/>
+    <ROW Dialog_="SpawnDialog" Control="Icon" Type="Icon" X="18" Y="18" Width="36" Height="36" Attributes="1048577" Text="[ExclamationIcon]" Order="100"/>
+    <ROW Dialog_="SpawnDialog" Control="Text" Type="Text" X="60" Y="20" Width="230" Height="50" Attributes="3" Text="Der Benutzer existiert nicht oder das Passwort ist falsch" TextStyle="BlueText" Order="200"/>
+    <ROW Dialog_="SpawnDialog" Control="No" Type="PushButton" X="122" Y="87" Width="56" Height="17" Attributes="3" Text="OK" Order="300" TextLocId="-"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlConditionComponent">
     <ROW Dialog_="AuthDlg" Control_="Next" Action="Disable" Condition="USERNAME_PROP = &quot;&quot; OR PASSWORD_PROP = &quot;&quot;"/>
@@ -353,13 +369,19 @@
     <ROW Dialog_="PreDefinedConfig" Control_="Edit_1" Action="Disable" Condition="PREDEFINED_CONFIG &lt;&gt; &quot;MOVE&quot;"/>
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Action="Enable" Condition="PREDEFINED_CONFIG = &quot;MOVE&quot;"/>
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Action="Disable" Condition="PREDEFINED_CONFIG &lt;&gt; &quot;MOVE&quot;"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="NameEdit" Action="Enable" Condition="NOT CREATE_USER"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="NameEdit" Action="Disable" Condition="CREATE_USER"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="DomainEdit" Action="Enable" Condition="NOT CREATE_USER"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="DomainEdit" Action="Disable" Condition="CREATE_USER"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="PassworEdit" Action="Enable" Condition="NOT CREATE_USER"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="PassworEdit" Action="Disable" Condition="CREATE_USER"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
     <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND ( NEED_CONFIG = &quot;false&quot; AND NEED_AUTH = &quot;false&quot; )" Ordering="201"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
     <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
-    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
     <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
     <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
@@ -377,7 +399,7 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="206"/>
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
-    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
     <ROW Dialog_="AuthDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="1"/>
@@ -401,8 +423,6 @@
     <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="PreDefinedConfig" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="202"/>
     <ROW Dialog_="AuthDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot; AND ( NEED_CONFIG&lt;&gt;&quot;true&quot; )" Ordering="4"/>
     <ROW Dialog_="AuthDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="1"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="204"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="ConfigurationDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot; AND ( PREDEFINED_CONFIG = &quot;CREATE&quot; )" Ordering="203"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="19"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Back" Event="NewDialog" Argument="PreDefinedConfig" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="1"/>
     <ROW Dialog_="OutboundCfgDlg" Control_="PushButton_3" Event="[_BrowseProperty]" Argument="OUTBOUND_ATTACHMENT_PATH_PROP" Condition="1" Ordering="0"/>
@@ -436,7 +456,16 @@
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[AI_OFN_FILTERS]" Argument="Config (config.json)|config.json" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="2"/>
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[CONFIG_FILE]" Argument="[AI_OFN_FILEPATH]" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="5"/>
     <ROW Dialog_="PreDefinedConfig" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot; AND ( PREDEFINED_CONFIG = &quot;MOVE&quot; )" Ordering="1"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PreDefinedConfig" Condition="AI_INSTALL AND ( NEED_CONFIG = &quot;true&quot; AND PREDEFINED_CONFIG = &quot;MOVE&quot; )" Ordering="202"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND ( CREATE_USER OR (AI_USER_EXISTS = &quot;Yes&quot; AND AI_USER_VALID_PASSWORD = &quot;Yes&quot;) )" Ordering="8"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="GeneratePassword" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="1"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[USER_NAME]" Argument="edi-connector" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="2"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[DOMAIN_NAME]" Argument="." Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="4"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="202"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="CheckIfUserExists" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="6"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_8" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="5"/>
+    <ROW Dialog_="SpawnDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="SpawnDialog" Argument="SpawnDialog" Condition="AI_INSTALL AND ( NOT CREATE_USER AND (AI_USER_EXISTS &lt;&gt; &quot;Yes&quot; OR AI_USER_VALID_PASSWORD &lt;&gt; &quot;Yes&quot;) )" Ordering="7"/>
     <ATTRIBUTE name="DeletedRows" value="UI.aip"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
@@ -457,13 +486,17 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH_ORIGINAL" Target="[AI_SETUPEXEPATH]"/>
+    <ROW Action="AI_CommitAccounts" Type="11777" Source="userAccounts.dll" Target="CommitAccounts" WithoutSeq="true"/>
+    <ROW Action="AI_CreateAccount" Type="11265" Source="userAccounts.dll" Target="CreateAccount" WithoutSeq="true"/>
     <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
     <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAE4AZQB3AC0ARQB2AGUAbgB0AEwAbwBnACAALQBMAG8AZwBOAGEAbQBlACAAQQBwAHAAbABpAGMAYQB0AGkAbwBuACAALQBTAG8AdQByAGMAZQAgACIARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAi"/>
-    <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAE4AQQBNAEUAXwBQAFIATwBQAA0ACgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIAA9ACAAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAUABBAFMAUwBXAE8AUgBEAF8AUABSAE8AUAANAAoADQAKAGMAbQBkAGsAZQB5ACAALwBnAGUAbgBlAHIAaQBjADoARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAgAC8AdQBzAGUAcgA6ACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAC8AcABhAHMAcwB3AG8AcgBkADoAJABwAGEAcwBzAHcAbwByAGQAVgBhAGwAdQBl"/>
+    <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAE4AQQBNAEUAXwBQAFIATwBQAA0ACgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIAA9ACAAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAUABBAFMAUwBXAE8AUgBEAF8AUABSAE8AUAANAAoADQAKACQAdQBzAGUAcgAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAF8ATgBBAE0ARQANAAoAJABkAG8AbQBhAGkAbgAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABEAE8ATQBBAEkATgBfAE4AQQBNAEUADQAKACQAcABhAHMAcwB3AG8AcgBkACAAPQAgAEMAbwBuAHYAZQByAHQAVABvAC0AUwBlAGMAdQByAGUAUwB0AHIAaQBuAGcAIAAkACgAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAVQBTAEUAUgBfAFAAQQBTAFMAVwBPAFIARAApACAALQBBAHMAUABsAGEAaQBuAFQAZQB4AHQAIAAtAEYAbwByAGMAZQAgAA0ACgAkAEMAcgBlAGQAZQBuAHQAaQBhAGwAIAA9ACAATgBlAHcALQBPAGIAagBlAGMAdAAgAFMAeQBzAHQAZQBtAC4ATQBhAG4AYQBnAGUAbQBlAG4AdAAuAEEAdQB0AG8AbQBhAHQAaQBvAG4ALgBQAFMAQwByAGUAZABlAG4AdABpAGEAbAAgACIAJABkAG8AbQBhAGkAbgBcACQAdQBzAGUAcgAiACwAIAAkAHAAYQBzAHMAdwBvAHIAZAANAAoADQAKAFMAdABhAHIAdAAtAFAAcgBvAGMAZQBzAHMAIABjAG0AZABrAGUAeQAuAGUAeABlACAALQBXAGEAaQB0ACAALQBOAG8ATgBlAHcAVwBpAG4AZABvAHcAIAAtAEMAcgBlAGQAZQBuAHQAaQBhAGwAIAAkAEMAcgBlAGQAZQBuAHQAaQBhAGwAIAAtAEEAcgBnAHUAbQBlAG4AdABMAGkAcwB0ACAAIgAvAGcAZQBuAGUAcgBpAGMAOgBFAEQASQAtAEMAbwBuAG4AZQBjAHQAbwByACAALwB1AHMAZQByADoAJAB1AHMAZQByAG4AYQBtAGUAVgBhAGwAdQBlACAALwBwAGEAcwBzAHcAbwByAGQAOgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIg=="/>
     <ROW Action="AI_DATA_SETTER_4" Type="51" Source="CustomActionData" Target="[~]"/>
-    <ROW Action="AI_DATA_SETTER_5" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAA0ACgANAAoAJAB2AGEAbAB1AGUAIAA9ACAAJAAoAGMAbQBkAGsAZQB5ACAALwBsAGkAcwB0ADoARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAgAHwAIABTAGUAbABlAGMAdAAtAFMAdAByAGkAbgBnACAALQBQAGEAdAB0AGUAcgBuACAAIgA6ACAARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAiACkADQAKAEkAZgAgACgAIQBbAFwAWwBdAHMAdAByAGkAbgBnAFsAXABdAF0AOgA6AEkAcwBOAHUAbABsAE8AcgBFAG0AcAB0AHkAKAAkAHYAYQBsAHUAZQApACkAIABbAFwAewBdAA0ACgAgACAAQQBJAF8AUwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAATgBFAEUARABfAEEAVQBUAEgAIABmAGEAbABzAGUADQAKAFsAXAB9AF0ADQAKAA0ACgAkAGMAbwBuAGYAaQBnAFAAYQB0AGgAIAA9ACAAIgAkAEUAbgB2ADoAUABSAE8ARwBSAEEATQBEAEEAVABBAFwAbQB5AE8AcABlAG4ARgBhAGMAdABvAHIAeQAgAFMAbwBmAHQAdwBhAHIAZQAgAEcAbQBiAEgAXABFAEQASQAtAEMAbwBuAG4AZQBjAHQAbwByAFwAYwBvAG4AZgBpAGcALgBqAHMAbwBuACIADQAKAEkAZgAgACgAWwBcAFsAXQBTAHkAcwB0AGUAbQAuAEkATwAuAEYAaQBsAGUAWwBcAF0AXQA6ADoARQB4AGkAcwB0AHMAKAAkAGMAbwBuAGYAaQBnAFAAYQB0AGgAKQApACAAWwBcAHsAXQAgACAADQAKACAAIABBAEkAXwBTAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABOAEUARQBEAF8AQwBPAE4ARgBJAEcAIABmAGEAbABzAGUADQAKAFsAXAB9AF0="/>
+    <ROW Action="AI_DATA_SETTER_5" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAYwBvAG4AZgBpAGcAUABhAHQAaAAgAD0AIAAiACQARQBuAHYAOgBQAFIATwBHAFIAQQBNAEQAQQBUAEEAXABtAHkATwBwAGUAbgBGAGEAYwB0AG8AcgB5ACAAUwBvAGYAdAB3AGEAcgBlACAARwBtAGIASABcAEUARABJAC0AQwBvAG4AbgBlAGMAdABvAHIAXABjAG8AbgBmAGkAZwAuAGoAcwBvAG4AIgANAAoASQBmACAAKABbAFwAWwBdAFMAeQBzAHQAZQBtAC4ASQBPAC4ARgBpAGwAZQBbAFwAXQBdADoAOgBFAHgAaQBzAHQAcwAoACQAYwBvAG4AZgBpAGcAUABhAHQAaAApACkAIABbAFwAewBdACAAIAANAAoAIAAgAEEASQBfAFMAZQB0AE0AcwBpAFAAcgBvAHAAZQByAHQAeQAgAE4ARQBFAEQAXwBDAE8ATgBGAEkARwAgAGYAYQBsAHMAZQANAAoAWwBcAH0AXQ=="/>
     <ROW Action="AI_DATA_SETTER_6" Type="51" Source="MoveConfigFile" Target="CopyFileFolderDestination&#127;[EDIConnector_Dir]&#1;CopyFileFolderOverWrite&#127;1&#1;CopyFileFolderSource&#127;[CONFIG_FILE]&#1;CopyFileFolderUser64Bit&#127;&#1;FileFolderOperation&#127;1"/>
+    <ROW Action="AI_DATA_SETTER_7" Type="51" Source="AI_SetLogOnAsService" Target="[AI_LOGON_AS_SERVICE_ACCOUNTS]"/>
+    <ROW Action="AI_DATA_SETTER_8" Type="51" Source="CustomActionData" Target="AI_USER_CHECK_PASSWORD&#127;[AI_USER_CHECK_PASSWORD]&#1;AI_USER_IGNORE_FULLNAME&#127;[AI_USER_IGNORE_FULLNAME]&#1;AI_USER_IGNORE_MSI&#127;[AI_USER_IGNORE_MSI]&#1;AI_USER_IS_GROUP&#127;[AI_USER_IS_GROUP]&#1;DOMAIN_NAME&#127;[DOMAIN_NAME]&#1;USER_NAME&#127;[USER_NAME]&#1;USER_PASSWORD&#127;[USER_PASSWORD]"/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DeleteCadLzma" Type="51" Source="AI_DeleteLzma" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
@@ -486,20 +519,28 @@
     <ROW Action="AI_LaunchApp" Type="1" Source="aicustact.dll" Target="LaunchApp"/>
     <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Type="65" Source="aicustact.dll" Target="PreserveInstallType"/>
+    <ROW Action="AI_ProcessAccounts" Type="1" Source="userAccounts.dll" Target="ProcessAccounts"/>
     <ROW Action="AI_ProcessTasks2" Type="1" Source="aischeduler2.dll" Target="ProcessTasks"/>
     <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH" Target="[AI_SETUPEXEPATH_ORIGINAL]"/>
     <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
+    <ROW Action="AI_RemoveAccount" Type="11265" Source="userAccounts.dll" Target="RemoveAccount" WithoutSeq="true"/>
     <ROW Action="AI_RemoveTasks2" Type="11265" Source="aischeduler2.dll" Target="DeleteTasks" WithoutSeq="true"/>
     <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
+    <ROW Action="AI_ResolveLogOnAsService" Type="1" Source="aicustact.dll" Target="ResolveServiceProperties"/>
+    <ROW Action="AI_RollbackAccount" Type="11521" Source="userAccounts.dll" Target="RemoveAccount" WithoutSeq="true"/>
     <ROW Action="AI_RollbackTasks2" Type="11521" Source="aischeduler2.dll" Target="DeleteTasks" WithoutSeq="true"/>
     <ROW Action="AI_RunFinishActions" Type="1" Source="aicustact.dll" Target="RunFinishActions" WithoutSeq="true"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
     <ROW Action="AI_ScheduleTasks2" Type="11265" Source="aischeduler2.dll" Target="ScheduleTasks" WithoutSeq="true"/>
+    <ROW Action="AI_SetLogOnAsService" Type="3073" Source="aicustact.dll" Target="LogOnAsAService" AdditionalSeq="AI_DATA_SETTER_7"/>
     <ROW Action="AI_UPDATER_UNINSTALL" Type="82" Source="updater.exe" Target="/clean silent"/>
+    <ROW Action="AI_UninstallAccounts" Type="1" Source="userAccounts.dll" Target="UninstallAccounts"/>
     <ROW Action="AI_UninstallTasks2" Type="1" Source="aischeduler2.dll" Target="UninstallTasks"/>
     <ROW Action="AddCredentialsToWindows" Type="65" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_3"/>
     <ROW Action="BrowseForFile" Type="1" Source="aicustact.dll" Target="BrowseForFile" WithoutSeq="true" Options="1"/>
+    <ROW Action="CheckIfUserExists" Type="1" Source="aicustact.dll" Target="CheckIfUserExists" WithoutSeq="true" Options="1" AdditionalSeq="AI_DATA_SETTER_8"/>
+    <ROW Action="GeneratePassword" Type="37" Target="Script Text" TargetUnformatted="var length = 8,&#13;&#10;charset = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/?,./][{}!@#$%^&amp;*()_&quot;,&#13;&#10;retVal = &quot;&quot;;&#13;&#10;for (var i = 0, n = charset.length; i &lt; length; ++i) {&#13;&#10;&#9;&#9;retVal += charset.charAt(Math.floor(Math.random() * n));&#13;&#10;}&#13;&#10;Session.Property(&quot;USER_PASSWORD&quot;) = retVal;" WithoutSeq="true"/>
     <ROW Action="MoveConfigFile" Type="3073" Source="aicustact.dll" Target="CopyFileFolder" Options="1" AdditionalSeq="AI_DATA_SETTER_6"/>
     <ROW Action="RegisterEventLogSource" Type="1" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\[ProductName]"/>
@@ -535,6 +576,7 @@
     <ROW Dialog="PrepareDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="1" Title="[ProductName] [Setup]" Control_Default="Cancel" Control_Cancel="Cancel" TitleLocId="Dialog.PrepareDlg" MsiKey="PrepareDlg"/>
     <ROW Dialog="ProgressDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="1" Title="[ProductName] [Setup]" Control_Default="Cancel" Control_Cancel="Cancel" TitleLocId="Dialog.ProgressDlg" MsiKey="ProgressDlg"/>
     <ROW Dialog="ResumeDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Install" Control_Cancel="Cancel" TitleLocId="Dialog.ResumeDlg" MsiKey="ResumeDlg"/>
+    <ROW Dialog="SpawnDialog" HCentering="50" VCentering="50" Width="300" Height="115" Attributes="3" Title="[ProductName] [Setup]" Control_Default="No" Control_Cancel="No"/>
     <ROW Dialog="UserExit" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="3" Title="[ProductName] [Setup]" Control_Default="Finish" Control_Cancel="Finish" TitleLocId="Dialog.UserExit" MsiKey="UserExit"/>
     <ROW Dialog="VerifyReadyDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="35" Title="[ProductName] [Setup]" Control_Default="Install" Control_Cancel="Cancel" TitleLocId="Dialog.VerifyReadyDlg" MsiKey="VerifyReadyDlg"/>
     <ROW Dialog="VerifyRemoveDlg" HCentering="50" VCentering="50" Width="447" Height="360" Attributes="35" Title="[ProductName] [Setup]" Control_Default="Back" Control_Cancel="Cancel" TitleLocId="Dialog.VerifyRemoveDlg" MsiKey="VerifyRemoveDlg"/>
@@ -598,7 +640,7 @@
     <ROW Action="AI_DeleteLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="6599" Builds="DefaultBuild"/>
     <ROW Action="AI_ExtractFiles" Sequence="1399" Builds="DefaultBuild"/>
     <ROW Action="AI_DATA_SETTER" Sequence="1398"/>
-    <ROW Action="AI_UPDATER_UNINSTALL" Condition="($updater.exe = 2) AND (?updater.exe = 3) AND NOT (UPGRADINGPRODUCTCODE)" Sequence="1551"/>
+    <ROW Action="AI_UPDATER_UNINSTALL" Condition="($updater.exe = 2) AND (?updater.exe = 3) AND NOT (UPGRADINGPRODUCTCODE)" Sequence="1552"/>
     <ROW Action="AI_JsonInstall" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5102"/>
     <ROW Action="AI_DATA_SETTER_1" Condition="(REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="5101"/>
     <ROW Action="AI_JsonUninstall" Condition="(REMOVE)" Sequence="3102"/>
@@ -609,10 +651,15 @@
     <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5202"/>
     <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5201"/>
     <ROW Action="StartServices" Condition="VersionNT and START_SERVICE = &quot;true&quot;" Sequence="5850" SeqType="0" MsiKey="StartServices"/>
-    <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4001"/>
+    <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4003"/>
     <ROW Action="AI_UninstallTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE=&quot;ALL&quot;)" Sequence="1699"/>
     <ROW Action="MoveConfigFile" Condition="( NOT Installed ) AND ( PREDEFINED_CONFIG = &quot;MOVE&quot; )" Sequence="3802"/>
     <ROW Action="AI_DATA_SETTER_6" Condition="( NOT Installed ) AND ( PREDEFINED_CONFIG = &quot;MOVE&quot; )" Sequence="3801"/>
+    <ROW Action="AI_SetLogOnAsService" Condition="NOT Installed" Sequence="4002"/>
+    <ROW Action="AI_ProcessAccounts" Condition="(VersionNT &gt;= 500) AND (REMOVE &lt;&gt; &quot;ALL&quot;)" Sequence="1551"/>
+    <ROW Action="AI_UninstallAccounts" Condition="(VersionNT &gt;= 500) AND (REMOVE = &quot;ALL&quot;)" Sequence="1649"/>
+    <ROW Action="AI_DATA_SETTER_7" Condition="NOT Installed" Sequence="4001"/>
+    <ROW Action="AI_ResolveLogOnAsService" Condition="NOT Installed" Sequence="1001"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
@@ -623,8 +670,8 @@
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99"/>
     <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="102"/>
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
-    <ROW Action="AI_DATA_SETTER_5" Sequence="51"/>
     <ROW Action="SetConfigProperties" Sequence="52"/>
+    <ROW Action="AI_DATA_SETTER_5" Sequence="51"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
     <ROW Condition="( Version9X OR VersionNT64 )" Description="[ProductName] kann nicht auf [WindowsTypeNTDisplay] installiert werden." DescriptionLocId="AI.LaunchCondition.NoNT" IsPredefined="true" Builds="DefaultBuild"/>
@@ -648,13 +695,11 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="AI_ExePath" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Value="[AI_SETUPEXEPATH]" Component_="AI_ExePath"/>
-    <ROW Registry="AI_InstallLanguage" Root="-1" Key="Software\Caphyon\Advanced Installer\[ProductCode]" Name="AI_InstallLanguage" Value="[ProductLanguage]" Component_="ProductInformation"/>
     <ROW Registry="AdvancedInstaller" Root="-1" Key="Software\Caphyon\Advanced Installer" Name="\"/>
     <ROW Registry="Caphyon" Root="-1" Key="Software\Caphyon" Name="\"/>
     <ROW Registry="LZMA" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA" Name="\"/>
     <ROW Registry="Manufacturer" Root="-1" Key="Software\[Manufacturer]" Name="\"/>
     <ROW Registry="ProductCode" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]" Name="\"/>
-    <ROW Registry="ProductCode_1" Root="-1" Key="Software\Caphyon\Advanced Installer\[ProductCode]" Name="\"/>
     <ROW Registry="ProductName" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="\"/>
     <ROW Registry="ProductVersion" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="\"/>
     <ROW Registry="Software" Root="-1" Key="Software" Name="\"/>
@@ -664,7 +709,7 @@
     <ROW ServiceControl="ediconnector.exe" Name="EDI-Connector" Event="160" Wait="0" Component_="ediconnector.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServInstComponent">
-    <ROW ServiceInstall="ediconnector.exe" Name="EDI-Connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="1" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
+    <ROW ServiceInstall="ediconnector.exe" Name="EDI-Connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="32769" StartName="[DOMAIN_NAME]\[USER_NAME]" Password="63998AA4F793C703378093538F428611E8FB587A92802300A596BE070168" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
     <ROW Shortcut="Verknpfungzu" Directory_="SHORTCUTDIR" Name="EDI-CO~1|EDI-Connector" Component_="ediconnector.exe" Target="[#ediconnector.exe]" Hotkey="0" Icon_="logo_1.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
@@ -688,5 +733,8 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.UpdaterComponent">
     <ROW Updater="updater.exe" URL="URL" SearchFreq="CheckFrequency" DownloadsFolder="DownloadsFolder" ID="ID" TargetDir="AppDir" AppName="ApplicationName" AppVersion="ApplicationVersion" CompanyName="CompanyName" DefCommandLine="DefaultCommandLine" Flags="Flags" IconPath="logo_updater.ico" IconIndex="0" UnistallCASeq="AI_UPDATER_UNINSTALL" TaskId="AI_ediupdater" Description="[|UpdaterName] [|ProductVersion]" WinRTGUISettings="{&quot;WinRTGUI&quot;:true,&quot;Theme&quot;:{&quot;Enabled&quot;:true,&quot;ThemeListStatesAlways&quot;:false,&quot;Colors&quot;:{}}}"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.UserAccountsComponent">
+    <ROW UserName="edi-connector" Property="USER_PASSWORD" Comment="Edi-Connector Service User" Attributes="65600" ErrorControl="1" InstallCondition="CREATE_USER" Flags="1"/>
   </COMPONENT>
 </DOCUMENT>
