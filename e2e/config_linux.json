@@ -13,8 +13,7 @@
           "path": "/tmp/myof/outbound",
           "extensions": [
             "xml"
-          ],
-          "waitTime": "1s"
+          ]
         },
         "errorPath": "/tmp/myof/error",
         "successPath": "/tmp/myof/success",
@@ -22,8 +21,7 @@
           "path": "/tmp/myof/attachment",
           "extensions": [
             "sample"
-          ],
-          "waitTime": "1s"
+          ]
         }
       }
     },
@@ -36,8 +34,7 @@
           "path": "/tmp/myof/outbound_special",
           "extensions": [
             "xml"
-          ],
-          "waitTime": "1s"
+          ]
         },
         "errorPath": "/tmp/myof/error",
         "successPath": "/tmp/myof/success",
@@ -45,8 +42,7 @@
           "path": "/tmp/myof/attachment_special",
           "extensions": [
             "sample"
-          ],
-          "waitTime": "1s"
+          ]
         }
       }
     }

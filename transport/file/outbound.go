@@ -49,7 +49,12 @@ func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg ma
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode outbound file settings: %w", err)
 	}
-
+	if settings.Message.WaitTime == "" {
+		settings.Message.WaitTime = "15s"
+	}
+	if settings.Attachment.WaitTime == "" {
+		settings.Attachment.WaitTime = "15s"
+	}
 	p := &outboundFileTransport{
 		logger:   logger,
 		settings: settings,
@@ -74,10 +79,6 @@ func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg ma
 		} else if err != nil {
 			return nil, fmt.Errorf("could not verify existence of outbound folder: %w", err)
 		}
-
-		if message.WaitTime == "" {
-			message.WaitTime = "15s"
-		}
 		p.logger.Info("watching folder for messages", "folder", message.Path, "extensions", message.Extensions, "waitTime", message.WaitTime)
 	} else {
 		p.logger.Info("message polling disabled")
@@ -88,11 +89,6 @@ func NewOutboundTransport(logger *slog.Logger, configId, authName string, cfg ma
 		if _, err := os.Stat(attachment.Path); attachment.Path != "" && os.IsNotExist(err) {
 			return nil, fmt.Errorf("error attachment folder does not exist: %v", attachment.Path)
 		}
-
-		if attachment.WaitTime == "" {
-			attachment.WaitTime = "15s"
-		}
-
 		p.logger.Info("watching folder for attachments", "folder", attachment.Path, "extensions", attachment.Extensions, "waitTime", attachment.WaitTime)
 	} else {
 		p.logger.Info("attachment polling disabled")
@@ -116,7 +112,6 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.O
 	if !p.isMessageEnabled() {
 		return messages, nil
 	}
-
 	message := p.settings.Message
 	duration, err := time.ParseDuration(message.WaitTime)
 	if err != nil {
@@ -155,7 +150,6 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 		return attachments, nil
 	}
 	attachment := p.settings.Attachment
-
 	duration, err := time.ParseDuration(attachment.WaitTime)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse duration: %w", err)
