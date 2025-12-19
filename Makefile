@@ -7,7 +7,7 @@ dist: $(foreach sys, $(SYSTEMS), $(foreach arch, $(ARCHS),dist-$(sys)-$(arch)))
 
 define BUILD_rule
 build-$(1)-$(2):
-	CGO_ENABLED=0 GOOS=$(1) GOARCH=$(2) go build -o dist/edi-connector_$(1)_$(2)/ -ldflags="-X github.com/myopenfactory/edi-connector/version.Version=$(VERSION)"
+	CGO_ENABLED=0 GOOS=$(1) GOARCH=$(2) go build -o dist/edi-connector_$(1)_$(2)/ -ldflags="-X 'github.com/myopenfactory/edi-connector/v2/version.Version=$(VERSION)'"
 
 dist-$(1)-$(2): third_party build-$(1)-$(2)
 	rm -f dist/edi-connector_$(1)_$(2).zip dist/edi-connector_$(1)_$(2).tar.gz
