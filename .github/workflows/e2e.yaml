@@ -79,7 +79,7 @@ jobs:
           mkdir "C:/myof/attachment/"
           mkdir "C:/myof/attachment_special/"
           echo "Running installer"
-          start /w edi-connector-install.exe /qn START_SERVICE="false"
+          start /w edi-connector-install.exe /exenoupdates /qn START_SERVICE="false" NEED_AUTH="false" NEED_CONFIG="false" CREATE_USER="true"
       - name: E2E Tests Windows
         working-directory: ./e2e
         shell: bash
