@@ -79,11 +79,11 @@ jobs:
           mkdir "C:/myof/attachment/"
           mkdir "C:/myof/attachment_special/"
           echo "Running installer"
-          start /w edi-connector-install.exe /exenoupdates /L "C:\myof\install.log" /qn CREATE_USER="true" DOMAIN_NAME="." USER_NAME="edi-connector" USER_PASSWORD="abcdef123456" USERNAME_PROP="${{ secrets.WINDOWS_PASSWORD }}" PASSWORD_PROP="${{ vars.WINDOWS_USERNAME }}" START_SERVICE="false"
+          start /w edi-connector-install.exe /exenoupdates /L "C:\myof\install.log" /qn DOMAIN_NAME="." USER_NAME="edi-connector" USER_PASSWORD="aBcDeF123456-" USERNAME_PROP="${{ vars.WINDOWS_USERNAME }}" PASSWORD_PROP="${{ secrets.WINDOWS_PASSWORD }}" START_SERVICE="false"
       - name: Set special credentials
         shell: powershell
         run: |
-          $password = ConvertTo-SecureString "abcdef123456" -AsPlainText -Force 
+          $password = ConvertTo-SecureString "aBcDeF123456-" -AsPlainText -Force 
           $Credential = New-Object System.Management.Automation.PSCredential ".\edi-connector", $password
           Start-Process cmdkey.exe -Wait -NoNewWindow -Credential $Credential -ArgumentList "/generic:EDI-Connector/special /user:${{ vars.WINDOWS_SPECIAL_USERNAME }} /pass:${{ secrets.WINDOWS_SPECIAL_PASSWORD }}"
       - name: Install logs

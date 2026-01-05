@@ -649,8 +649,6 @@
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
     <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6402"/>
     <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6401"/>
-    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5202"/>
-    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5201"/>
     <ROW Action="StartServices" Condition="VersionNT and START_SERVICE = &quot;true&quot;" Sequence="5850" SeqType="0" MsiKey="StartServices"/>
     <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4003"/>
     <ROW Action="AI_UninstallTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE=&quot;ALL&quot;)" Sequence="1699"/>
@@ -662,6 +660,8 @@
     <ROW Action="AI_DATA_SETTER_7" Condition="NOT Installed" Sequence="4001"/>
     <ROW Action="AI_ResolveLogOnAsService" Condition="NOT Installed" Sequence="1001"/>
     <ROW Action="GeneratePassword" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="1601"/>
+    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6404"/>
+    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6403"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
