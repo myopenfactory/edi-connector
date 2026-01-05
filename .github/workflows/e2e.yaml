@@ -82,7 +82,7 @@ jobs:
           start /w edi-connector-install.exe /exenoupdates /L*V "C:\myof\install.log" /qn START_SERVICE="false" NEED_AUTH="false" NEED_CONFIG="false" CREATE_USER="true"
       - name: Echo install logs
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v6
         with:
           name: install-logs
           path: "C:/myof/install.log"
