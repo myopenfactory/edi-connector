@@ -499,6 +499,7 @@
     <ROW Action="AI_DATA_SETTER_6" Type="51" Source="MoveConfigFile" Target="CopyFileFolderDestination&#127;[EDIConnector_Dir]&#1;CopyFileFolderOverWrite&#127;1&#1;CopyFileFolderSource&#127;[CONFIG_FILE]&#1;CopyFileFolderUser64Bit&#127;&#1;FileFolderOperation&#127;1"/>
     <ROW Action="AI_DATA_SETTER_7" Type="51" Source="AI_SetLogOnAsService" Target="[AI_LOGON_AS_SERVICE_ACCOUNTS]"/>
     <ROW Action="AI_DATA_SETTER_8" Type="51" Source="CustomActionData" Target="AI_USER_CHECK_PASSWORD&#127;[AI_USER_CHECK_PASSWORD]&#1;AI_USER_IGNORE_FULLNAME&#127;[AI_USER_IGNORE_FULLNAME]&#1;AI_USER_IGNORE_MSI&#127;[AI_USER_IGNORE_MSI]&#1;AI_USER_IS_GROUP&#127;[AI_USER_IS_GROUP]&#1;DOMAIN_NAME&#127;[DOMAIN_NAME]&#1;USER_NAME&#127;[USER_NAME]&#1;USER_PASSWORD&#127;[USER_PASSWORD]"/>
+    <ROW Action="AI_DATA_SETTER_9" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAEEAZABkAC0AVAB5AHAAZQAgAC0AQQBzAHMAZQBtAGIAbAB5ACAAUwB5AHMAdABlAG0ALgBXAGUAYgANAAoAJABwAGEAcwBzAHcAbwByAGQAIAA9ACAAWwBcAFsAXQBXAGUAYgAuAFMAZQBjAHUAcgBpAHQAeQAuAE0AZQBtAGIAZQByAHMAaABpAHAAWwBcAF0AXQA6ADoARwBlAG4AZQByAGEAdABlAFAAYQBzAHMAdwBvAHIAZAAoADEAOAAsADQAKQANAAoAUwBlAHQALQBQAHIAbwBwAGUAcgB0AHkAIAAtAG4AYQBtAGUAIAAiAFUAUwBFAFIAXwBQAEEAUwBTAFcATwBSAEQAIgAgAC0AdgBhAGwAdQBlACAAJABwAGEAcwBzAHcAbwByAGQADQAKACAAIA=="/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DeleteCadLzma" Type="51" Source="AI_DeleteLzma" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
@@ -542,8 +543,8 @@
     <ROW Action="AddCredentialsToWindows" Type="65" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_3"/>
     <ROW Action="BrowseForFile" Type="1" Source="aicustact.dll" Target="BrowseForFile" WithoutSeq="true" Options="1"/>
     <ROW Action="CheckIfUserExists" Type="1" Source="aicustact.dll" Target="CheckIfUserExists" WithoutSeq="true" Options="1" AdditionalSeq="AI_DATA_SETTER_8"/>
-    <ROW Action="GeneratePassword" Type="37" Target="Script Text" TargetUnformatted="var length = 8,&#13;&#10;charset = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/?,./][{}!@#$%^&amp;*()_&quot;,&#13;&#10;retVal = &quot;&quot;;&#13;&#10;for (var i = 0, n = charset.length; i &lt; length; ++i) {&#13;&#10;&#9;&#9;retVal += charset.charAt(Math.floor(Math.random() * n));&#13;&#10;}&#13;&#10;Session.Property(&quot;USER_PASSWORD&quot;) = retVal;"/>
-    <ROW Action="MoveConfigFile" Type="3073" Source="aicustact.dll" Target="CopyFileFolder" Options="1" AdditionalSeq="AI_DATA_SETTER_6"/>
+    <ROW Action="GeneratePassword" Type="1" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_9"/>
+    <ROW Action="MoveConfigFile" Type="1025" Source="aicustact.dll" Target="CopyFileFolder" Options="1" AdditionalSeq="AI_DATA_SETTER_6"/>
     <ROW Action="RegisterEventLogSource" Type="1" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
@@ -648,8 +649,8 @@
     <ROW Action="AI_JsonUninstall" Condition="(REMOVE)" Sequence="3102"/>
     <ROW Action="AI_DATA_SETTER_4" Condition="(REMOVE)" Sequence="3101"/>
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
-    <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6402"/>
-    <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6401"/>
+    <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6404"/>
+    <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6403"/>
     <ROW Action="StartServices" Condition="VersionNT and START_SERVICE = &quot;true&quot;" Sequence="5850" SeqType="0" MsiKey="StartServices"/>
     <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4003"/>
     <ROW Action="AI_UninstallTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE=&quot;ALL&quot;)" Sequence="1699"/>
@@ -660,10 +661,11 @@
     <ROW Action="AI_UninstallAccounts" Condition="(VersionNT &gt;= 500) AND (REMOVE = &quot;ALL&quot;)" Sequence="1649"/>
     <ROW Action="AI_DATA_SETTER_7" Condition="NOT Installed" Sequence="4001"/>
     <ROW Action="AI_ResolveLogOnAsService" Condition="NOT Installed" Sequence="1001"/>
-    <ROW Action="GeneratePassword" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="1601"/>
     <ROW Action="InstallServices" Condition="VersionNT AND INSTALL_SERVICE = &quot;true&quot;" Sequence="5800" SeqType="0" MsiKey="InstallServices"/>
-    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6404"/>
-    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6403"/>
+    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6406"/>
+    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6405"/>
+    <ROW Action="GeneratePassword" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="1601"/>
+    <ROW Action="AI_DATA_SETTER_9" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="6401"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>

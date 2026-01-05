@@ -79,7 +79,7 @@ jobs:
           mkdir "C:/myof/attachment/"
           mkdir "C:/myof/attachment_special/"
           echo "Running installer"
-          start /w edi-connector-install.exe /exenoupdates /L "C:\myof\install.log" /qn CREATE_USER="false" INSTALL_SERVICE="false"
+          start /w edi-connector-install.exe /exenoupdates /L "C:\myof\install.log" /qn CREATE_USER="false" NEED_AUTH="false" INSTALL_SERVICE="false"
       - name: Install logs
         if: always()
         uses: actions/upload-artifact@v6
