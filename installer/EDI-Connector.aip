@@ -23,6 +23,7 @@
     <ROW Property="ARPPRODUCTICON" Value="logo_1.exe" Type="8"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DOMAIN_NAME" Value="."/>
+    <ROW Property="GENERATE_PASSWORD" Value="false"/>
     <ROW Property="INBOUND_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
     <ROW Property="INBOUND_ATTACHMENT_PATH_PROP" Value="C:\edi\inbound_attachments" Type="4"/>
     <ROW Property="INBOUND_PATH_PROP" Value="C:\edi\inbound"/>
@@ -457,15 +458,16 @@
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[AI_OFN_FILTERS]" Argument="Config (config.json)|config.json" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="2"/>
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[CONFIG_FILE]" Argument="[AI_OFN_FILEPATH]" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="5"/>
     <ROW Dialog_="PreDefinedConfig" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot; AND ( PREDEFINED_CONFIG = &quot;MOVE&quot; )" Ordering="1"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND ( CREATE_USER OR (AI_USER_EXISTS = &quot;Yes&quot; AND AI_USER_VALID_PASSWORD = &quot;Yes&quot;) )" Ordering="8"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND ( CREATE_USER OR (AI_USER_EXISTS = &quot;Yes&quot; AND AI_USER_VALID_PASSWORD = &quot;Yes&quot;) )" Ordering="10"/>
     <ROW Dialog_="LogonInformationDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[DOMAIN_NAME]" Argument="." Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="4"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="202"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="CheckIfUserExists" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="6"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_8" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="5"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="CheckIfUserExists" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="8"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_8" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="7"/>
     <ROW Dialog_="SpawnDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="SpawnDialog" Argument="SpawnDialog" Condition="AI_INSTALL AND ( NOT CREATE_USER AND (AI_USER_EXISTS &lt;&gt; &quot;Yes&quot; OR AI_USER_VALID_PASSWORD &lt;&gt; &quot;Yes&quot;) )" Ordering="7"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="SpawnDialog" Argument="SpawnDialog" Condition="AI_INSTALL AND ( NOT CREATE_USER AND (AI_USER_EXISTS &lt;&gt; &quot;Yes&quot; OR AI_USER_VALID_PASSWORD &lt;&gt; &quot;Yes&quot;) )" Ordering="9"/>
     <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[USER_NAME]" Argument="edi-connector" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="2"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[GENERATE_PASSWORD]" Argument="true" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="6"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
@@ -659,7 +661,7 @@
     <ROW Action="AI_UninstallAccounts" Condition="(VersionNT &gt;= 500) AND (REMOVE = &quot;ALL&quot;)" Sequence="1649"/>
     <ROW Action="AI_DATA_SETTER_7" Condition="NOT Installed" Sequence="4001"/>
     <ROW Action="AI_ResolveLogOnAsService" Condition="NOT Installed" Sequence="1001"/>
-    <ROW Action="GeneratePassword" Condition="( NOT Installed ) AND ( CREATE_USER )" Sequence="1601"/>
+    <ROW Action="GeneratePassword" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="1601"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
@@ -706,7 +708,7 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServCtrlComponent">
-    <ROW ServiceControl="ediconnector.exe" Name="edi-connector" Event="160" Wait="0" Component_="ediconnector.exe"/>
+    <ROW ServiceControl="ediconnector.exe" Name="edi-connector" Event="161" Wait="0" Component_="ediconnector.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServInstComponent">
     <ROW ServiceInstall="ediconnector.exe" Name="edi-connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="32769" StartName="[DOMAIN_NAME]\[USER_NAME]" Password="63998AA4F793C703378093538F428611E8FB587A92802300A596BE070168" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
