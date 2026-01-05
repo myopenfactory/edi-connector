@@ -250,7 +250,7 @@
     <ROW Property="OUTBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
     <ROW Property="INBOUND_ATTACHMENT_ENABLED" Value="CheckBox"/>
     <ROW Property="INBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
-    <ROW Property="CREATE_USER" Value="CheckBox"/>
+    <ROW Property="CREATE_USER" Value="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AuthDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="450" Height="360" Attributes="1048577" Text="[Background]" Order="100"/>
