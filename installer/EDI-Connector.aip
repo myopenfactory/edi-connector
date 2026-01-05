@@ -30,6 +30,7 @@
     <ROW Property="INBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
     <ROW Property="INBOUND_TEST_ATTACHMENT_PATH_PROP" Value="C:\edi\inbound_attachments_test" Type="4"/>
     <ROW Property="INBOUND_TEST_PATH_PROP" Value="C:\edi\inbound_test"/>
+    <ROW Property="INSTALL_SERVICE" Value="true"/>
     <ROW Property="Manufacturer" Value="myOpenFactory Software GmbH"/>
     <ROW Property="NEED_AUTH" Value="true" Options="1"/>
     <ROW Property="NEED_CONFIG" Value="true" Options="1"/>
@@ -660,6 +661,7 @@
     <ROW Action="AI_DATA_SETTER_7" Condition="NOT Installed" Sequence="4001"/>
     <ROW Action="AI_ResolveLogOnAsService" Condition="NOT Installed" Sequence="1001"/>
     <ROW Action="GeneratePassword" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="1601"/>
+    <ROW Action="InstallServices" Condition="VersionNT AND INSTALL_SERVICE = &quot;true&quot;" Sequence="5800" SeqType="0" MsiKey="InstallServices"/>
     <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6404"/>
     <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6403"/>
   </COMPONENT>
