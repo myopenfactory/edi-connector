@@ -83,7 +83,7 @@ jobs:
       - name: Set special credentials
         shell: powershell
         run: |
-          Start-Process -Verb Runas 'edi-connector' -Wait cmdkey.exe /generic:EDI-Connector/special /user:${{ vars.WINDOWS_SPECIAL_USERNAME }} /pass:${{ secrets.WINDOWS_SPECIAL_PASSWORD }}
+          Start-Process cmdkey.exe -Verb Runas 'edi-connector' -Wait -ArgumentList "/generic:EDI-Connector/special /user:${{ vars.WINDOWS_SPECIAL_USERNAME }} /pass:${{ secrets.WINDOWS_SPECIAL_PASSWORD }}"
       - name: Install logs
         if: failure()
         uses: actions/upload-artifact@v6
