@@ -88,6 +88,7 @@ jobs:
           path: "C:/myof/install.log"
       - name: E2E Tests Windows
         shell: bash
+        path: e2e
         run: |
           echo "Running connector"
           "/c/Program Files/myOpenFactory Software GmbH/EDI-Connector/edi-connector" &
