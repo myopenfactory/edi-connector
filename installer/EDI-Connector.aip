@@ -741,6 +741,6 @@
     <ROW Updater="updater.exe" URL="URL" SearchFreq="CheckFrequency" DownloadsFolder="DownloadsFolder" ID="ID" TargetDir="AppDir" AppName="ApplicationName" AppVersion="ApplicationVersion" CompanyName="CompanyName" DefCommandLine="DefaultCommandLine" Flags="Flags" IconPath="logo_updater.ico" IconIndex="0" UnistallCASeq="AI_UPDATER_UNINSTALL" TaskId="AI_ediupdater" Description="[|UpdaterName] [|ProductVersion]" WinRTGUISettings="{&quot;WinRTGUI&quot;:true,&quot;Theme&quot;:{&quot;Enabled&quot;:true,&quot;ThemeListStatesAlways&quot;:false,&quot;Colors&quot;:{}}}"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.UserAccountsComponent">
-    <ROW UserName="edi-connector" Property="USER_PASSWORD" Comment="Edi-Connector Service User" Attributes="65600" ErrorControl="1" InstallCondition="CREATE_USER" Flags="1"/>
+    <ROW UserName="edi-connector" Property="USER_PASSWORD" Comment="Edi-Connector Service User" Attributes="65600" ErrorControl="1" InstallCondition="CREATE_USER = &quot;true&quot;" Flags="1"/>
   </COMPONENT>
 </DOCUMENT>
