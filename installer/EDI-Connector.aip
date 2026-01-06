@@ -715,7 +715,7 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServCtrlComponent">
-    <ROW ServiceControl="ediconnector.exe" Name="edi-connector" Event="161" Wait="0" Component_="ediconnector.exe"/>
+    <ROW ServiceControl="ediconnector.exe" Name="edi-connector" Event="160" Wait="0" Component_="ediconnector.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServInstComponent">
     <ROW ServiceInstall="ediconnector.exe" Name="edi-connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="32769" StartName="[DOMAIN_NAME]\[USER_NAME]" Password="63998AA4F793C703378093538F428611E8FB587A92802300A596BE070168" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
