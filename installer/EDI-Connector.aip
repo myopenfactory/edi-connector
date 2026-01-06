@@ -21,13 +21,17 @@
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPNOREPAIR" Value="1" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPPRODUCTICON" Value="logo_1.exe" Type="8"/>
+    <ROW Property="CREATE_USER" Value="false"/>
     <ROW Property="CTRLS" Value="2"/>
+    <ROW Property="DOMAIN_NAME" Value="."/>
+    <ROW Property="GENERATE_PASSWORD" Value="false"/>
     <ROW Property="INBOUND_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
     <ROW Property="INBOUND_ATTACHMENT_PATH_PROP" Value="C:\edi\inbound_attachments" Type="4"/>
     <ROW Property="INBOUND_PATH_PROP" Value="C:\edi\inbound"/>
     <ROW Property="INBOUND_TEST_ATTACHMENT_EXTENSION_PROP" Value="pdf" Type="4"/>
     <ROW Property="INBOUND_TEST_ATTACHMENT_PATH_PROP" Value="C:\edi\inbound_attachments_test" Type="4"/>
     <ROW Property="INBOUND_TEST_PATH_PROP" Value="C:\edi\inbound_test"/>
+    <ROW Property="INSTALL_SERVICE" Value="true"/>
     <ROW Property="Manufacturer" Value="myOpenFactory Software GmbH"/>
     <ROW Property="NEED_AUTH" Value="true" Options="1"/>
     <ROW Property="NEED_CONFIG" Value="true" Options="1"/>
@@ -248,7 +252,7 @@
     <ROW Property="OUTBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
     <ROW Property="INBOUND_ATTACHMENT_ENABLED" Value="CheckBox"/>
     <ROW Property="INBOUND_TEST_ATTACHMENT_ENABLED" Value="CheckBox"/>
-    <ROW Property="CREATE_USER" Value="CheckBox"/>
+    <ROW Property="CREATE_USER" Value="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
     <ROW Dialog_="AuthDlg" Control="Bitmap" Type="Bitmap" X="0" Y="0" Width="450" Height="360" Attributes="1048577" Text="[Background]" Order="100"/>
@@ -381,7 +385,7 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
     <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
-    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
     <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
     <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
@@ -399,7 +403,7 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="206"/>
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
-    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
     <ROW Dialog_="AuthDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="1"/>
@@ -456,17 +460,18 @@
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[AI_OFN_FILTERS]" Argument="Config (config.json)|config.json" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="2"/>
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[CONFIG_FILE]" Argument="[AI_OFN_FILEPATH]" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="5"/>
     <ROW Dialog_="PreDefinedConfig" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot; AND ( PREDEFINED_CONFIG = &quot;MOVE&quot; )" Ordering="1"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND ( CREATE_USER OR (AI_USER_EXISTS = &quot;Yes&quot; AND AI_USER_VALID_PASSWORD = &quot;Yes&quot;) )" Ordering="8"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="GeneratePassword" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="1"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[USER_NAME]" Argument="edi-connector" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="2"/>
     <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[DOMAIN_NAME]" Argument="." Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="4"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="202"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="CheckIfUserExists" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="6"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_8" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="5"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="CheckIfUserExists" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="7"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_8" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="6"/>
     <ROW Dialog_="SpawnDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="SpawnDialog" Argument="SpawnDialog" Condition="AI_INSTALL AND ( NOT CREATE_USER AND (AI_USER_EXISTS &lt;&gt; &quot;Yes&quot; OR AI_USER_VALID_PASSWORD &lt;&gt; &quot;Yes&quot;) )" Ordering="7"/>
-    <ATTRIBUTE name="DeletedRows" value="UI.aip"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="SpawnDialog" Argument="SpawnDialog" Condition="AI_INSTALL AND ( NOT CREATE_USER AND (AI_USER_EXISTS &lt;&gt; &quot;Yes&quot; OR AI_USER_VALID_PASSWORD &lt;&gt; &quot;Yes&quot;) )" Ordering="9"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[USER_NAME]" Argument="edi-connector" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="2"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[GENERATE_PASSWORD]" Argument="true" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="5"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="2"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="2"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="8"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
@@ -490,13 +495,14 @@
     <ROW Action="AI_CreateAccount" Type="11265" Source="userAccounts.dll" Target="CreateAccount" WithoutSeq="true"/>
     <ROW Action="AI_DATA_SETTER" Type="51" Source="CustomActionData" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DATA_SETTER_1" Type="51" Source="CustomActionData" Target="[~]"/>
-    <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAE4AZQB3AC0ARQB2AGUAbgB0AEwAbwBnACAALQBMAG8AZwBOAGEAbQBlACAAQQBwAHAAbABpAGMAYQB0AGkAbwBuACAALQBTAG8AdQByAGMAZQAgACIARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAi"/>
+    <ROW Action="AI_DATA_SETTER_2" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAE4AZQB3AC0ARQB2AGUAbgB0AEwAbwBnACAALQBMAG8AZwBOAGEAbQBlACAAQQBwAHAAbABpAGMAYQB0AGkAbwBuACAALQBTAG8AdQByAGMAZQAgACIARQBEAEkALQBDAG8AbgBuAGUAYwB0AG8AcgAiACAALQBlAHIAcgBvAHIAYQBjAHQAaQBvAG4AIAAnAHMAaQBsAGUAbgB0AGwAeQBjAG8AbgB0AGkAbgB1AGUAJw=="/>
     <ROW Action="AI_DATA_SETTER_3" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAdQBzAGUAcgBuAGEAbQBlAFYAYQBsAHUAZQAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAE4AQQBNAEUAXwBQAFIATwBQAA0ACgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIAA9ACAAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAUABBAFMAUwBXAE8AUgBEAF8AUABSAE8AUAANAAoADQAKACQAdQBzAGUAcgAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABVAFMARQBSAF8ATgBBAE0ARQANAAoAJABkAG8AbQBhAGkAbgAgAD0AIABBAEkAXwBHAGUAdABNAHMAaQBQAHIAbwBwAGUAcgB0AHkAIABEAE8ATQBBAEkATgBfAE4AQQBNAEUADQAKACQAcABhAHMAcwB3AG8AcgBkACAAPQAgAEMAbwBuAHYAZQByAHQAVABvAC0AUwBlAGMAdQByAGUAUwB0AHIAaQBuAGcAIAAkACgAQQBJAF8ARwBlAHQATQBzAGkAUAByAG8AcABlAHIAdAB5ACAAVQBTAEUAUgBfAFAAQQBTAFMAVwBPAFIARAApACAALQBBAHMAUABsAGEAaQBuAFQAZQB4AHQAIAAtAEYAbwByAGMAZQAgAA0ACgAkAEMAcgBlAGQAZQBuAHQAaQBhAGwAIAA9ACAATgBlAHcALQBPAGIAagBlAGMAdAAgAFMAeQBzAHQAZQBtAC4ATQBhAG4AYQBnAGUAbQBlAG4AdAAuAEEAdQB0AG8AbQBhAHQAaQBvAG4ALgBQAFMAQwByAGUAZABlAG4AdABpAGEAbAAgACIAJABkAG8AbQBhAGkAbgBcACQAdQBzAGUAcgAiACwAIAAkAHAAYQBzAHMAdwBvAHIAZAANAAoADQAKAFMAdABhAHIAdAAtAFAAcgBvAGMAZQBzAHMAIABjAG0AZABrAGUAeQAuAGUAeABlACAALQBXAGEAaQB0ACAALQBOAG8ATgBlAHcAVwBpAG4AZABvAHcAIAAtAEMAcgBlAGQAZQBuAHQAaQBhAGwAIAAkAEMAcgBlAGQAZQBuAHQAaQBhAGwAIAAtAEEAcgBnAHUAbQBlAG4AdABMAGkAcwB0ACAAIgAvAGcAZQBuAGUAcgBpAGMAOgBFAEQASQAtAEMAbwBuAG4AZQBjAHQAbwByACAALwB1AHMAZQByADoAJAB1AHMAZQByAG4AYQBtAGUAVgBhAGwAdQBlACAALwBwAGEAcwBzAHcAbwByAGQAOgAkAHAAYQBzAHMAdwBvAHIAZABWAGEAbAB1AGUAIg=="/>
     <ROW Action="AI_DATA_SETTER_4" Type="51" Source="CustomActionData" Target="[~]"/>
     <ROW Action="AI_DATA_SETTER_5" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACACQAYwBvAG4AZgBpAGcAUABhAHQAaAAgAD0AIAAiACQARQBuAHYAOgBQAFIATwBHAFIAQQBNAEQAQQBUAEEAXABtAHkATwBwAGUAbgBGAGEAYwB0AG8AcgB5ACAAUwBvAGYAdAB3AGEAcgBlACAARwBtAGIASABcAEUARABJAC0AQwBvAG4AbgBlAGMAdABvAHIAXABjAG8AbgBmAGkAZwAuAGoAcwBvAG4AIgANAAoASQBmACAAKABbAFwAWwBdAFMAeQBzAHQAZQBtAC4ASQBPAC4ARgBpAGwAZQBbAFwAXQBdADoAOgBFAHgAaQBzAHQAcwAoACQAYwBvAG4AZgBpAGcAUABhAHQAaAApACkAIABbAFwAewBdACAAIAANAAoAIAAgAEEASQBfAFMAZQB0AE0AcwBpAFAAcgBvAHAAZQByAHQAeQAgAE4ARQBFAEQAXwBDAE8ATgBGAEkARwAgAGYAYQBsAHMAZQANAAoAWwBcAH0AXQ=="/>
     <ROW Action="AI_DATA_SETTER_6" Type="51" Source="MoveConfigFile" Target="CopyFileFolderDestination&#127;[EDIConnector_Dir]&#1;CopyFileFolderOverWrite&#127;1&#1;CopyFileFolderSource&#127;[CONFIG_FILE]&#1;CopyFileFolderUser64Bit&#127;&#1;FileFolderOperation&#127;1"/>
     <ROW Action="AI_DATA_SETTER_7" Type="51" Source="AI_SetLogOnAsService" Target="[AI_LOGON_AS_SERVICE_ACCOUNTS]"/>
     <ROW Action="AI_DATA_SETTER_8" Type="51" Source="CustomActionData" Target="AI_USER_CHECK_PASSWORD&#127;[AI_USER_CHECK_PASSWORD]&#1;AI_USER_IGNORE_FULLNAME&#127;[AI_USER_IGNORE_FULLNAME]&#1;AI_USER_IGNORE_MSI&#127;[AI_USER_IGNORE_MSI]&#1;AI_USER_IS_GROUP&#127;[AI_USER_IS_GROUP]&#1;DOMAIN_NAME&#127;[DOMAIN_NAME]&#1;USER_NAME&#127;[USER_NAME]&#1;USER_PASSWORD&#127;[USER_PASSWORD]"/>
+    <ROW Action="AI_DATA_SETTER_9" Type="51" Source="CustomActionData" Target="AFAAYQByAGEAbQBzAAIAAQBTAGMAcgBpAHAAdAACAEEAZABkAC0AVAB5AHAAZQAgAC0AQQBzAHMAZQBtAGIAbAB5ACAAUwB5AHMAdABlAG0ALgBXAGUAYgANAAoAJABwAGEAcwBzAHcAbwByAGQAIAA9ACAAWwBcAFsAXQBXAGUAYgAuAFMAZQBjAHUAcgBpAHQAeQAuAE0AZQBtAGIAZQByAHMAaABpAHAAWwBcAF0AXQA6ADoARwBlAG4AZQByAGEAdABlAFAAYQBzAHMAdwBvAHIAZAAoADEAOAAsADQAKQANAAoAUwBlAHQALQBQAHIAbwBwAGUAcgB0AHkAIAAtAG4AYQBtAGUAIAAiAFUAUwBFAFIAXwBQAEEAUwBTAFcATwBSAEQAIgAgAC0AdgBhAGwAdQBlACAAJABwAGEAcwBzAHcAbwByAGQADQAKACAAIA=="/>
     <ROW Action="AI_DOWNGRADE" Type="19" Target="4010"/>
     <ROW Action="AI_DeleteCadLzma" Type="51" Source="AI_DeleteLzma" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
@@ -540,8 +546,8 @@
     <ROW Action="AddCredentialsToWindows" Type="65" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_3"/>
     <ROW Action="BrowseForFile" Type="1" Source="aicustact.dll" Target="BrowseForFile" WithoutSeq="true" Options="1"/>
     <ROW Action="CheckIfUserExists" Type="1" Source="aicustact.dll" Target="CheckIfUserExists" WithoutSeq="true" Options="1" AdditionalSeq="AI_DATA_SETTER_8"/>
-    <ROW Action="GeneratePassword" Type="37" Target="Script Text" TargetUnformatted="var length = 8,&#13;&#10;charset = &quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/?,./][{}!@#$%^&amp;*()_&quot;,&#13;&#10;retVal = &quot;&quot;;&#13;&#10;for (var i = 0, n = charset.length; i &lt; length; ++i) {&#13;&#10;&#9;&#9;retVal += charset.charAt(Math.floor(Math.random() * n));&#13;&#10;}&#13;&#10;Session.Property(&quot;USER_PASSWORD&quot;) = retVal;" WithoutSeq="true"/>
-    <ROW Action="MoveConfigFile" Type="3073" Source="aicustact.dll" Target="CopyFileFolder" Options="1" AdditionalSeq="AI_DATA_SETTER_6"/>
+    <ROW Action="GeneratePassword" Type="1" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_9"/>
+    <ROW Action="MoveConfigFile" Type="1025" Source="aicustact.dll" Target="CopyFileFolder" Options="1" AdditionalSeq="AI_DATA_SETTER_6"/>
     <ROW Action="RegisterEventLogSource" Type="1" Source="PowerShellScriptLauncher.dll" Target="RunPowerShellScript" Options="1" AdditionalSeq="AI_DATA_SETTER_2"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
@@ -646,10 +652,8 @@
     <ROW Action="AI_JsonUninstall" Condition="(REMOVE)" Sequence="3102"/>
     <ROW Action="AI_DATA_SETTER_4" Condition="(REMOVE)" Sequence="3101"/>
     <ROW Action="AI_DetectSoftware" Sequence="101"/>
-    <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6402"/>
-    <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6401"/>
-    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5202"/>
-    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="5201"/>
+    <ROW Action="RegisterEventLogSource" Condition="( NOT Installed )" Sequence="6404"/>
+    <ROW Action="AI_DATA_SETTER_2" Condition="( NOT Installed )" Sequence="6403"/>
     <ROW Action="StartServices" Condition="VersionNT and START_SERVICE = &quot;true&quot;" Sequence="5850" SeqType="0" MsiKey="StartServices"/>
     <ROW Action="AI_ProcessTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE&lt;&gt;&quot;ALL&quot;)" Sequence="4003"/>
     <ROW Action="AI_UninstallTasks2" Condition="(VersionNT &gt;= 600) AND (REMOVE=&quot;ALL&quot;)" Sequence="1699"/>
@@ -660,6 +664,11 @@
     <ROW Action="AI_UninstallAccounts" Condition="(VersionNT &gt;= 500) AND (REMOVE = &quot;ALL&quot;)" Sequence="1649"/>
     <ROW Action="AI_DATA_SETTER_7" Condition="NOT Installed" Sequence="4001"/>
     <ROW Action="AI_ResolveLogOnAsService" Condition="NOT Installed" Sequence="1001"/>
+    <ROW Action="InstallServices" Condition="VersionNT AND INSTALL_SERVICE = &quot;true&quot;" Sequence="5800" SeqType="0" MsiKey="InstallServices"/>
+    <ROW Action="AddCredentialsToWindows" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6406"/>
+    <ROW Action="AI_DATA_SETTER_3" Condition="( NOT Installed ) AND ( NEED_AUTH = &quot;true&quot; )" Sequence="6405"/>
+    <ROW Action="GeneratePassword" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="1601"/>
+    <ROW Action="AI_DATA_SETTER_9" Condition="( NOT Installed ) AND ( GENERATE_PASSWORD = &quot;true&quot; )" Sequence="6401"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
     <ROW Action="AI_PRESERVE_INSTALL_TYPE" Sequence="199"/>
@@ -706,10 +715,10 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServCtrlComponent">
-    <ROW ServiceControl="ediconnector.exe" Name="EDI-Connector" Event="160" Wait="0" Component_="ediconnector.exe"/>
+    <ROW ServiceControl="ediconnector.exe" Name="edi-connector" Event="160" Wait="0" Component_="ediconnector.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiServInstComponent">
-    <ROW ServiceInstall="ediconnector.exe" Name="EDI-Connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="32769" StartName="[DOMAIN_NAME]\[USER_NAME]" Password="63998AA4F793C703378093538F428611E8FB587A92802300A596BE070168" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
+    <ROW ServiceInstall="ediconnector.exe" Name="edi-connector" DisplayName="EDI-Connector" ServiceType="16" StartType="2" ErrorControl="32769" StartName="[DOMAIN_NAME]\[USER_NAME]" Password="63998AA4F793C703378093538F428611E8FB587A92802300A596BE070168" Component_="ediconnector.exe" Description="EDI Verbindungsclient zur myOpenFactory Platform"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
     <ROW Shortcut="Verknpfungzu" Directory_="SHORTCUTDIR" Name="EDI-CO~1|EDI-Connector" Component_="ediconnector.exe" Target="[#ediconnector.exe]" Hotkey="0" Icon_="logo_1.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
@@ -735,6 +744,6 @@
     <ROW Updater="updater.exe" URL="URL" SearchFreq="CheckFrequency" DownloadsFolder="DownloadsFolder" ID="ID" TargetDir="AppDir" AppName="ApplicationName" AppVersion="ApplicationVersion" CompanyName="CompanyName" DefCommandLine="DefaultCommandLine" Flags="Flags" IconPath="logo_updater.ico" IconIndex="0" UnistallCASeq="AI_UPDATER_UNINSTALL" TaskId="AI_ediupdater" Description="[|UpdaterName] [|ProductVersion]" WinRTGUISettings="{&quot;WinRTGUI&quot;:true,&quot;Theme&quot;:{&quot;Enabled&quot;:true,&quot;ThemeListStatesAlways&quot;:false,&quot;Colors&quot;:{}}}"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.UserAccountsComponent">
-    <ROW UserName="edi-connector" Property="USER_PASSWORD" Comment="Edi-Connector Service User" Attributes="65600" ErrorControl="1" InstallCondition="CREATE_USER" Flags="1"/>
+    <ROW UserName="edi-connector" Property="USER_PASSWORD" Comment="Edi-Connector Service User" Attributes="65600" ErrorControl="1" InstallCondition="CREATE_USER = &quot;true&quot; AND INSTALL_SERVICE = &quot;true&quot;" Flags="1"/>
   </COMPONENT>
 </DOCUMENT>
