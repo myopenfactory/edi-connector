@@ -131,7 +131,7 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            return "${{ github.ref_name }}".substring(1).replace(/-rc(\d+)/g, '.$1');
+            return "${{ github.ref_name }}".substring(1).replace(/-rc(\.\d+)/g, '$1');
       - name: Setup installer
         uses: caphyon/advinst-github-action@main
         with:
