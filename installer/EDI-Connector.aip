@@ -21,6 +21,7 @@
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPNOREPAIR" Value="1" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPPRODUCTICON" Value="logo_1.exe" Type="8"/>
+    <ROW Property="CREATE_USER" Value="false"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="DOMAIN_NAME" Value="."/>
     <ROW Property="GENERATE_PASSWORD" Value="false"/>
@@ -384,7 +385,7 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
     <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
-    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
     <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
     <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
@@ -402,7 +403,7 @@
     <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="206"/>
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
-    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="ConfigurationDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="100"/>
     <ROW Dialog_="AuthDlg" Control_="Cancel" Event="SpawnDialog" Argument="CancelDlg" Condition="1" Ordering="1"/>
@@ -459,16 +460,18 @@
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[AI_OFN_FILTERS]" Argument="Config (config.json)|config.json" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="2"/>
     <ROW Dialog_="PreDefinedConfig" Control_="PushButton_2" Event="[CONFIG_FILE]" Argument="[AI_OFN_FILEPATH]" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot;" Ordering="5"/>
     <ROW Dialog_="PreDefinedConfig" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL AND NEED_CONFIG=&quot;true&quot; AND ( PREDEFINED_CONFIG = &quot;MOVE&quot; )" Ordering="1"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND ( CREATE_USER OR (AI_USER_EXISTS = &quot;Yes&quot; AND AI_USER_VALID_PASSWORD = &quot;Yes&quot;) )" Ordering="10"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
     <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[DOMAIN_NAME]" Argument="." Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="4"/>
     <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="AuthDlg" Condition="AI_INSTALL AND NEED_AUTH=&quot;true&quot;" Ordering="202"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="CheckIfUserExists" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="8"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_8" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="7"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="CheckIfUserExists" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="7"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="DoAction" Argument="AI_DATA_SETTER_8" Condition="AI_INSTALL AND ( NOT CREATE_USER )" Ordering="6"/>
     <ROW Dialog_="SpawnDialog" Control_="No" Event="EndDialog" Argument="Return" Condition="1" Ordering="100"/>
     <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="SpawnDialog" Argument="SpawnDialog" Condition="AI_INSTALL AND ( NOT CREATE_USER AND (AI_USER_EXISTS &lt;&gt; &quot;Yes&quot; OR AI_USER_VALID_PASSWORD &lt;&gt; &quot;Yes&quot;) )" Ordering="9"/>
     <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[USER_NAME]" Argument="edi-connector" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="2"/>
-    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[GENERATE_PASSWORD]" Argument="true" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="6"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="[GENERATE_PASSWORD]" Argument="true" Condition="AI_INSTALL AND ( CREATE_USER )" Ordering="5"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="2"/>
+    <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LogonInformationDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="2"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="8"/>
+    <ROW Dialog_="LogonInformationDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL AND INSTALL_SERVICE=&quot;true&quot;" Ordering="1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCreateFolderComponent">
     <ROW Directory_="APPDIR" Component_="APPDIR" ManualDelete="true"/>
@@ -741,6 +744,6 @@
     <ROW Updater="updater.exe" URL="URL" SearchFreq="CheckFrequency" DownloadsFolder="DownloadsFolder" ID="ID" TargetDir="AppDir" AppName="ApplicationName" AppVersion="ApplicationVersion" CompanyName="CompanyName" DefCommandLine="DefaultCommandLine" Flags="Flags" IconPath="logo_updater.ico" IconIndex="0" UnistallCASeq="AI_UPDATER_UNINSTALL" TaskId="AI_ediupdater" Description="[|UpdaterName] [|ProductVersion]" WinRTGUISettings="{&quot;WinRTGUI&quot;:true,&quot;Theme&quot;:{&quot;Enabled&quot;:true,&quot;ThemeListStatesAlways&quot;:false,&quot;Colors&quot;:{}}}"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.UserAccountsComponent">
-    <ROW UserName="edi-connector" Property="USER_PASSWORD" Comment="Edi-Connector Service User" Attributes="65600" ErrorControl="1" InstallCondition="CREATE_USER = &quot;true&quot;" Flags="1"/>
+    <ROW UserName="edi-connector" Property="USER_PASSWORD" Comment="Edi-Connector Service User" Attributes="65600" ErrorControl="1" InstallCondition="CREATE_USER = &quot;true&quot; AND INSTALL_SERVICE = &quot;true&quot;" Flags="1"/>
   </COMPONENT>
 </DOCUMENT>
