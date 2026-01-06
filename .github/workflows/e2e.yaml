@@ -81,7 +81,7 @@ jobs:
           echo "Running installer"
           start /w edi-connector-install.exe /exenoupdates /L "C:\myof\install.log" /qn CREATE_USER="false" NEED_AUTH="false" NEED_CONFIG="false" INSTALL_SERVICE="false"
       - name: Install logs
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v6
         with:
           name: install-logs
@@ -89,6 +89,7 @@ jobs:
       - name: E2E Tests Windows
         shell: bash
         run: |
-          echo "Running connector"'
+          echo "Running connector"
           "/c/Program Files/myOpenFactory Software GmbH/EDI-Connector/edi-connector" &
+          echo "Running tests"
           go run main.go
