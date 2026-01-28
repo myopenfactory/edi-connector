@@ -11,7 +11,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -92,40 +91,40 @@ func New(logger *slog.Logger, cfg config.Config) (*Connector, error) {
 }
 
 // Runs client until context is closed
-func (c *Connector) Run(ctx context.Context) error {
+func (c *Connector) Run(rootCtx context.Context) error {
 	defer c.listener.Close()
 	ticker := time.NewTicker(c.runWaitTime)
 	for {
 		select {
 		case <-ticker.C:
 			for _, transport := range c.outbounds {
-				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+				ctx, cancel := context.WithTimeout(rootCtx, 15*time.Second)
 				if err := c.outboundAttachments(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound attachment", "error", err)
 					cancel()
-					os.Exit(1)
+					continue
 				}
 				cancel()
 
-				ctx, cancel = context.WithTimeout(ctx, 15*time.Second)
+				ctx, cancel = context.WithTimeout(rootCtx, 15*time.Second)
 				if err := c.outboundMessages(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound message", "error", err)
 					cancel()
-					os.Exit(1)
+					continue
 				}
 				cancel()
 			}
 
 			for _, transport := range c.inbounds {
-				ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+				ctx, cancel := context.WithTimeout(rootCtx, 15*time.Second)
 				if err := c.inboundMessages(ctx, transport); err != nil {
 					c.logger.Error("error processing inbound transmissions", "configId", transport.ConfigId(), "authName", transport.AuthName(), "error", err)
 					cancel()
-					os.Exit(1)
+					continue
 				}
 				cancel()
 			}
-		case <-ctx.Done():
+		case <-rootCtx.Done():
 			return nil
 		}
 	}
