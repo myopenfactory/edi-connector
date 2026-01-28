@@ -11,7 +11,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -103,7 +102,7 @@ func (c *Connector) Run(ctx context.Context) error {
 				if err := c.outboundAttachments(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound attachment", "error", err)
 					cancel()
-					os.Exit(1)
+					continue
 				}
 				cancel()
 
@@ -111,7 +110,7 @@ func (c *Connector) Run(ctx context.Context) error {
 				if err := c.outboundMessages(ctx, transport); err != nil {
 					c.logger.Error("error processing outbound message", "error", err)
 					cancel()
-					os.Exit(1)
+					continue
 				}
 				cancel()
 			}
@@ -121,7 +120,7 @@ func (c *Connector) Run(ctx context.Context) error {
 				if err := c.inboundMessages(ctx, transport); err != nil {
 					c.logger.Error("error processing inbound transmissions", "configId", transport.ConfigId(), "authName", transport.AuthName(), "error", err)
 					cancel()
-					os.Exit(1)
+					continue
 				}
 				cancel()
 			}
