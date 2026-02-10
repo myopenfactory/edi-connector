@@ -123,7 +123,10 @@ func (p *outboundFileTransport) ListMessages(ctx context.Context) ([]transport.O
 	}
 
 	for _, fileInfo := range fileInfos {
-		fileExtension := filepath.Ext(fileInfo.Name())[1:]
+		fileExtension := filepath.Ext(fileInfo.Name())
+		if fileExtension != "" {
+			fileExtension = fileExtension[1:]
+		}
 		filePath := filepath.Join(message.Path, fileInfo.Name())
 		for _, extension := range message.Extensions {
 			if fileExtension == extension {

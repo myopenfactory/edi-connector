@@ -71,7 +71,8 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				logger.Error("client panic", "value", r, "stack", debug.Stack())
+				stack := string(debug.Stack()[:])
+				logger.Error("client panic", "value", r, "stack", stack)
 			}
 		}()
 		if err := connector.Run(ctx); err != nil {
