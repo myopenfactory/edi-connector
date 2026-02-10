@@ -33,7 +33,7 @@
         "message": {
           "path": "/tmp/myof/outbound_special",
           "extensions": [
-            "xml"
+            ""
           ]
         },
         "errorPath": "/tmp/myof/error",

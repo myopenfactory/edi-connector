@@ -35,7 +35,7 @@
         "message": {
           "path": "C:/myof/outbound_special/",
           "extensions": [
-            "xml"
+            ""
           ],
           "waitTime": "1s"
         },
