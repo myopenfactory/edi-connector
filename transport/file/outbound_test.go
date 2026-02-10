@@ -25,11 +25,12 @@ func TestListMessages(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(outboundDir, "outbound.test"), []byte("outbound_test"), 0644); err != nil {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(outboundDir, "outbound_noext"), []byte("outbound_noext"), 0644); err != nil {
+	time.Sleep(waitTime)
+	if err := os.WriteFile(filepath.Join(outboundDir, "outbound.csv"), []byte("outbound_csv"), 0644); err != nil {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
 	time.Sleep(waitTime)
-	if err := os.WriteFile(filepath.Join(outboundDir, "outbound.csv"), []byte("outbound_csv"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(outboundDir, "outbound_noext"), []byte("outbound_noext"), 0644); err != nil {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
 	time.Sleep(waitTime)
@@ -52,7 +53,7 @@ func TestListMessages(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to list messages: %v", err)
 	}
-	expectedLength := 2
+	expectedLength := 3
 	if len(messages) != expectedLength {
 		t.Fatalf("Expected %d messages, got: %d", expectedLength, len(messages))
 	}
@@ -65,6 +66,12 @@ func TestListMessages(t *testing.T) {
 
 	message = messages[1]
 	expectedContent = []byte("outbound_csv")
+	if !bytes.Equal(message.Content, expectedContent) {
+		t.Errorf("Expected content %s, got: %s", expectedContent, message.Content)
+	}
+
+	message = messages[2]
+	expectedContent = []byte("outbound_noext")
 	if !bytes.Equal(message.Content, expectedContent) {
 		t.Errorf("Expected content %s, got: %s", expectedContent, message.Content)
 	}
@@ -81,11 +88,12 @@ func TestListAttachments(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment.ignore"), []byte("attachment_ignore"), 0644); err != nil {
 		t.Fatalf("Failed to create attachment file: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment_noext"), []byte("attachment_noext"), 0644); err != nil {
+	time.Sleep(waitTime)
+	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment.step"), []byte("attachment_step"), 0644); err != nil {
 		t.Fatalf("Failed to create attachment file: %v", err)
 	}
 	time.Sleep(waitTime)
-	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment.step"), []byte("attachment_step"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment_noext"), []byte("attachment_noext"), 0644); err != nil {
 		t.Fatalf("Failed to create attachment file: %v", err)
 	}
 	time.Sleep(waitTime)
@@ -113,7 +121,7 @@ func TestListAttachments(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to list attachments: %v", err)
 	}
-	expectedLength := 2
+	expectedLength := 3
 	if len(attachments) != expectedLength {
 		t.Fatalf("Expected %d attachments, got: %d", expectedLength, len(attachments))
 	}
@@ -126,6 +134,12 @@ func TestListAttachments(t *testing.T) {
 
 	attachment = attachments[1]
 	expectedContent = []byte("attachment_step")
+	if !bytes.Equal(attachment.Content, expectedContent) {
+		t.Errorf("Expected content %s, got: %s", expectedContent, attachment.Content)
+	}
+
+	attachment = attachments[2]
+	expectedContent = []byte("attachment_noext")
 	if !bytes.Equal(attachment.Content, expectedContent) {
 		t.Errorf("Expected content %s, got: %s", expectedContent, attachment.Content)
 	}
