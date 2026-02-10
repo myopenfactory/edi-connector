@@ -4,7 +4,7 @@ go 1.25.3
 
 require (
 	github.com/danieljoos/wincred v1.2.3
-	golang.org/x/sys v0.40.0
+	golang.org/x/sys v0.41.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
