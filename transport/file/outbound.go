@@ -163,7 +163,10 @@ func (p *outboundFileTransport) ListAttachments(ctx context.Context) ([]transpor
 	}
 
 	for _, fileInfo := range fileInfos {
-		fileExtension := filepath.Ext(fileInfo.Name())[1:]
+		fileExtension := filepath.Ext(fileInfo.Name())
+		if fileExtension != "" {
+			fileExtension = fileExtension[1:]
+		}
 		filePath := filepath.Join(attachment.Path, fileInfo.Name())
 		for _, extension := range attachment.Extensions {
 			if fileExtension == extension {

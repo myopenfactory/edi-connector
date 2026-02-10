@@ -71,7 +71,7 @@ func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				stack := string(debug.Stack()[:])
+				stack := string(debug.Stack())
 				logger.Error("client panic", "value", r, "stack", stack)
 			}
 		}()

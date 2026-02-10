@@ -25,6 +25,9 @@ func TestListMessages(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(outboundDir, "outbound.test"), []byte("outbound_test"), 0644); err != nil {
 		t.Fatalf("Failed to create outbound file: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(outboundDir, "outbound_noext"), []byte("outbound_noext"), 0644); err != nil {
+		t.Fatalf("Failed to create outbound file: %v", err)
+	}
 	time.Sleep(waitTime)
 	if err := os.WriteFile(filepath.Join(outboundDir, "outbound.csv"), []byte("outbound_csv"), 0644); err != nil {
 		t.Fatalf("Failed to create outbound file: %v", err)
@@ -37,7 +40,7 @@ func TestListMessages(t *testing.T) {
 	outbound, err := file.NewOutboundTransport(logger, "12345", "", map[string]any{
 		"message": map[string]any{
 			"path":       outboundDir,
-			"extensions": []string{"txt", "csv"},
+			"extensions": []string{"txt", "csv", ""},
 			"waitTime":   waitTime.String(),
 		},
 		"errorPath": errorDir,
@@ -78,6 +81,9 @@ func TestListAttachments(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment.ignore"), []byte("attachment_ignore"), 0644); err != nil {
 		t.Fatalf("Failed to create attachment file: %v", err)
 	}
+	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment_noext"), []byte("attachment_noext"), 0644); err != nil {
+		t.Fatalf("Failed to create attachment file: %v", err)
+	}
 	time.Sleep(waitTime)
 	if err := os.WriteFile(filepath.Join(attachmentDir, "attachment.step"), []byte("attachment_step"), 0644); err != nil {
 		t.Fatalf("Failed to create attachment file: %v", err)
@@ -95,7 +101,7 @@ func TestListAttachments(t *testing.T) {
 		},
 		"attachment": map[string]any{
 			"path":       attachmentDir,
-			"extensions": []string{"pdf", "step"},
+			"extensions": []string{"pdf", "step", ""},
 			"waitTime":   waitTime.String(),
 		},
 		"errorPath": errorDir,
