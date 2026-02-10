@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sync"
 	"time"
@@ -79,7 +79,7 @@ func main() {
 	}
 
 	outboundSpecialPath := filepath.Join(basePath, "outbound_special")
-	err = os.WriteFile(filepath.Join(outboundSpecialPath, "message.xml"), []byte(fmt.Sprintf(messageTpl, runtime.GOOS+"-special", messageId)), 0666)
+	err = os.WriteFile(filepath.Join(outboundSpecialPath, "message"), []byte(fmt.Sprintf(messageTpl, runtime.GOOS+"-special", messageId)), 0666)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -92,10 +92,10 @@ func main() {
 
 	var wg sync.WaitGroup
 	wg.Go(func() {
-		checkForFile(inboundPath, attachmentPath, inboundAttachmentPath)
+		checkForFile(inboundPath, attachmentPath, inboundAttachmentPath, regexp.MustCompile("^[a-f\\d]{24}$"))
 	})
 	wg.Go(func() {
-		checkForFile(inboundSpecialPath, attachmentSpecialPath, inboundAttachmentSpecialPath)
+		checkForFile(inboundSpecialPath, attachmentSpecialPath, inboundAttachmentSpecialPath, regexp.MustCompile("test"))
 	})
 	complete := make(chan struct{})
 	go func() {
@@ -114,7 +114,7 @@ func main() {
 	}
 }
 
-func checkForFile(inboundFolder, attachmentFolder, attachmentInboundFolder string) {
+func checkForFile(inboundFolder, attachmentFolder, attachmentInboundFolder string, filenameMatcher *regexp.Regexp) {
 	for {
 		files, err := os.ReadDir(inboundFolder)
 		if err != nil {
@@ -133,7 +133,10 @@ func checkForFile(inboundFolder, attachmentFolder, attachmentInboundFolder strin
 			}
 
 			for _, file := range files {
-				log.Println(file.Name())
+				if !filenameMatcher.MatchString(file.Name()) {
+					fmt.Printf("File %s does not match expected pattern %s\n", file.Name(), filenameMatcher.String())
+					os.Exit(1)
+				}
 			}
 
 			attachments, err = os.ReadDir(attachmentInboundFolder)
