@@ -116,6 +116,19 @@ jobs:
         run: |-
           gh release upload ${{ github.ref_name }} dist/edi-connector-install.exe
 
+  winget:
+    if: "!github.event.release.prerelease"
+    runs-on: ubuntu-latest
+    needs: windows_installer_sign
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@c4f385af3b963eb724738ac0578b14eec7bebcc1 # v2
+        with:
+          identifier: myOpenFactory.EDIConnector
+          installers-regex: 'edi-connector-install\.exe$'
+          release-tag: ${{ github.ref_name }}
+          max-versions-to-keep: 5
+          token: ${{ secrets.WINGET_TOKEN }}
+
   windows_installer_unsign:
     if: "github.event.release.prerelease"
     runs-on: windows-latest
