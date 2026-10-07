@@ -1,10 +1,10 @@
 module github.com/myopenfactory/edi-connector/v2
 
-go 1.25.3
+go 1.27.1
 
 require (
 	github.com/danieljoos/wincred v1.2.3
-	golang.org/x/sys v0.45.0
+	golang.org/x/sys v0.48.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
