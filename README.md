@@ -20,22 +20,6 @@ The Windows installer (`edi-connector-install.exe`) is signed with an EV code si
 
 > **Note:** Installers attached to pre-releases (`-rc` versions) are **not signed**. Use regular releases for production installations.
 
-### Install via WinGet (recommended)
-
-Installing with [WinGet](https://learn.microsoft.com/en-us/windows/package-manager/winget/) avoids the browser download and therefore the SmartScreen warning. Run in an elevated terminal:
-
-```powershell
-winget install --id myOpenFactory.EDIConnector --exact
-```
-
-Updates can be installed with:
-
-```powershell
-winget upgrade --id myOpenFactory.EDIConnector --exact
-```
-
-New versions are submitted to the WinGet repository automatically on every release. They are available after Microsoft's review of the submission, which usually takes a few hours up to a few days.
-
 ### Verify the signature
 
 Before bypassing the warning, make sure the file is genuine:
