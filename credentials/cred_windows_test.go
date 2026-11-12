@@ -159,7 +159,7 @@ func TestListStored(t *testing.T) {
 	m := newTestManager(t)
 	writeStoredFile(t, m, "default.cred", storedCredential{Username: "default-user", Password: "p"})
 	writeStoredFile(t, m, "auth.cred", storedCredential{Name: "auth", Username: "auth-user", Password: "p"})
-	writeStoredFile(t, m, "other_auth_1.cred", storedCredential{Name: "other/auth:1", Username: "other-user", Password: "p"})
+	writeStoredFile(t, m, "other%2Fauth%3A1.cred", storedCredential{Name: "other/auth:1", Username: "other-user", Password: "p"})
 	writeStoredFile(t, m, "ignored.txt", storedCredential{Username: "ignored", Password: "p"})
 	if err := os.MkdirAll(filepath.Join(m.storeDir, "sub.cred"), 0o700); err != nil {
 		t.Fatalf("failed to create directory: %v", err)
@@ -214,8 +214,9 @@ func TestCredFileNaming(t *testing.T) {
 	}{
 		{"", filepath.Join("store", "default.cred")},
 		{"auth", filepath.Join("store", "auth.cred")},
-		{"a/b:c*", filepath.Join("store", "a_b_c_.cred")},
-		{"***", filepath.Join("store", "___.cred")},
+		{"a/b:c*", filepath.Join("store", "a%2Fb%3Ac%2A.cred")},
+		{"a_b%", filepath.Join("store", "a_b%25.cred")},
+		{"***", filepath.Join("store", "%2A%2A%2A.cred")},
 	}
 	for _, c := range cases {
 		if got := m.credFile(c.name); got != c.want {

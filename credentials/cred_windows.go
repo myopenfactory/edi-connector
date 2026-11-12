@@ -128,7 +128,7 @@ func (m *dpapiCredManager) GetCredential(name string) (*PasswordAuth, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := m.writeStored(name, auth); err != nil {
+	if err := m.createStored(name, auth); err != nil && !errors.Is(err, fs.ErrExist) {
 		return nil, err
 	}
 	return auth, nil
@@ -148,9 +148,10 @@ func (m *dpapiCredManager) migrateFromLegacy() {
 			Username: c.UserName,
 			Password: string(c.CredentialBlob),
 		}
+		// An existing DPAPI credential is authoritative and never overwritten.
 		// The legacy credential is kept if it cannot be written to the DPAPI
 		// store, it will be retried on the next startup.
-		_ = m.writeStored(name, auth)
+		_ = m.createStored(name, auth)
 	}
 }
 
@@ -250,7 +251,18 @@ func (m *dpapiCredManager) readStored(name string) (*PasswordAuth, error) {
 	}, nil
 }
 
+// writeStored creates or replaces the credential.
 func (m *dpapiCredManager) writeStored(name string, auth *PasswordAuth) error {
+	return m.store(name, auth, true)
+}
+
+// createStored creates the credential and fails with fs.ErrExist if it
+// already exists.
+func (m *dpapiCredManager) createStored(name string, auth *PasswordAuth) error {
+	return m.store(name, auth, false)
+}
+
+func (m *dpapiCredManager) store(name string, auth *PasswordAuth, overwrite bool) error {
 	data, err := json.Marshal(storedCredential{
 		Name:     name,
 		Username: auth.Username,
@@ -264,13 +276,36 @@ func (m *dpapiCredManager) writeStored(name string, auth *PasswordAuth) error {
 		return err
 	}
 	path := m.credFile(name)
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return fmt.Errorf("failed to create credential store directory: %w", err)
 	}
-	if err := restrictAccess(filepath.Dir(path)); err != nil {
+	if err := restrictAccess(dir); err != nil {
 		return err
 	}
-	if err := os.WriteFile(path, protected, 0o600); err != nil {
+
+	// The credential is written to a temporary file first, so that readers
+	// never see a partial file and a failed write keeps the old credential.
+	tmp, err := os.CreateTemp(dir, ".tmp-*")
+	if err != nil {
+		return fmt.Errorf("failed to write credential %q: %w", name, err)
+	}
+	tmpName := tmp.Name()
+	defer os.Remove(tmpName)
+	if _, err := tmp.Write(protected); err != nil {
+		tmp.Close()
+		return fmt.Errorf("failed to write credential %q: %w", name, err)
+	}
+	if err := tmp.Close(); err != nil {
+		return fmt.Errorf("failed to write credential %q: %w", name, err)
+	}
+	if overwrite {
+		err = os.Rename(tmpName, path)
+	} else {
+		// A hard link fails if the target exists, unlike a rename.
+		err = os.Link(tmpName, path)
+	}
+	if err != nil {
 		return fmt.Errorf("failed to write credential %q: %w", name, err)
 	}
 	// The credential is now stored with DPAPI, remove a possibly existing
@@ -279,12 +314,20 @@ func (m *dpapiCredManager) writeStored(name string, auth *PasswordAuth) error {
 	return nil
 }
 
-// restrictAccess limits the directory to SYSTEM and Administrators.
+// restrictAccess applies a protected ACL that only grants SYSTEM and
+// Administrators access and makes Administrators the owner. Existing explicit
+// entries on the directory and its files are reset first.
 func restrictAccess(dir string) error {
-	out, err := exec.Command("icacls", dir, "/inheritance:r",
-		"/grant:r", "*S-1-5-18:(OI)(CI)F", "*S-1-5-32-544:(OI)(CI)F").CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("failed to restrict access to credential store: %w: %s", err, strings.TrimSpace(string(out)))
+	steps := [][]string{
+		{dir, "/reset", "/T", "/C", "/Q"},
+		{dir, "/setowner", "*S-1-5-32-544", "/T", "/C", "/Q"},
+		{dir, "/inheritance:r", "/grant:r", "*S-1-5-18:(OI)(CI)F", "*S-1-5-32-544:(OI)(CI)F"},
+	}
+	for _, args := range steps {
+		out, err := exec.Command("icacls", args...).CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("failed to restrict access to credential store: %w: %s", err, strings.TrimSpace(string(out)))
+		}
 	}
 	return nil
 }
@@ -297,11 +340,19 @@ func (m *dpapiCredManager) credFile(name string) string {
 	return filepath.Join(m.storeDir, fileName+".cred")
 }
 
+// sanitizeCredentialFileName percent-encodes characters that are not allowed
+// in file names, and the percent sign itself, so that different names never
+// share a file. A trailing dot or space is encoded as well.
 func sanitizeCredentialFileName(name string) string {
-	return strings.Map(func(r rune) rune {
-		if r < 0x20 || strings.ContainsRune(invalidFileNameChars, r) {
-			return '_'
+	var b strings.Builder
+	for i := 0; i < len(name); i++ {
+		c := name[i]
+		last := i == len(name)-1
+		if c < 0x20 || c == '%' || strings.IndexByte(invalidFileNameChars, c) >= 0 || (last && (c == '.' || c == ' ')) {
+			fmt.Fprintf(&b, "%%%02X", c)
+			continue
 		}
-		return r
-	}, name)
+		b.WriteByte(c)
+	}
+	return b.String()
 }
