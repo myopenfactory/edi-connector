@@ -215,7 +215,7 @@ func TestCredFileNaming(t *testing.T) {
 		{"", filepath.Join("store", "default.cred")},
 		{"auth", filepath.Join("store", "auth.cred")},
 		{"a/b:c*", filepath.Join("store", "a_b_c_.cred")},
-		{"***", filepath.Join("store", "unnamed.cred")},
+		{"***", filepath.Join("store", "___.cred")},
 	}
 	for _, c := range cases {
 		if got := m.credFile(c.name); got != c.want {

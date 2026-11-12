@@ -2,7 +2,9 @@ package credentials
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -116,7 +118,7 @@ func (m *dpapiCredManager) GetCredential(name string) (*PasswordAuth, error) {
 	if err == nil {
 		return auth, nil
 	}
-	if !os.IsNotExist(err) {
+	if !errors.Is(err, fs.ErrNotExist) {
 		return nil, err
 	}
 	// The credential is not (yet) stored with DPAPI. Fall back to the legacy
@@ -157,7 +159,10 @@ func legacyCredName(serviceName, targetName string) (string, bool) {
 		return "", true
 	}
 	name, found := strings.CutPrefix(targetName, serviceName+"/")
-	return name, found
+	if !found {
+		return "", false
+	}
+	return name, true
 }
 
 func listLegacyCredentials(serviceName string) ([]CredentialInfo, error) {
@@ -288,9 +293,6 @@ func (m *dpapiCredManager) credFile(name string) string {
 	fileName := "default"
 	if name != "" {
 		fileName = sanitizeCredentialFileName(name)
-		if fileName == "" {
-			fileName = "unnamed"
-		}
 	}
 	return filepath.Join(m.storeDir, fileName+".cred")
 }
