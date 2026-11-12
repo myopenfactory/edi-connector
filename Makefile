@@ -11,6 +11,8 @@ build-$(1)-$(2):
 
 dist-$(1)-$(2): third_party build-$(1)-$(2)
 	rm -f dist/edi-connector_$(1)_$(2).zip dist/edi-connector_$(1)_$(2).tar.gz
+	chmod -R u+w dist/edi-connector_$(1)_$(2)/THIRD_PARTY 2>/dev/null || true
+	rm -rf dist/edi-connector_$(1)_$(2)/THIRD_PARTY
 	cp -R dist/THIRD_PARTY dist/edi-connector_$(1)_$(2)/
 	cp LICENSE dist/edi-connector_$(1)_$(2)/
 ifeq ($(1), windows)
@@ -23,6 +25,7 @@ endef
 $(foreach sys, $(SYSTEMS), $(foreach arch, $(ARCHS),$(eval $(call BUILD_rule,$(sys),$(arch)))))
 
 third_party:
+	chmod -R u+w dist/THIRD_PARTY 2>/dev/null || true
 	rm -rf dist/THIRD_PARTY || true
 	mkdir -p dist
 	go-licenses save . --save_path="dist/THIRD_PARTY/"
