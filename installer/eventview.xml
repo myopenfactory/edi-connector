@@ -1,0 +1,16 @@
+<ViewerConfig>
+  <QueryConfig>
+    <QueryParams>
+      <UserQuery />
+    </QueryParams>
+    <QueryNode>
+      <Name>EDI-Connector</Name>
+      <Description>Events of the EDI-Connector service</Description>
+      <QueryList>
+        <Query Id="0" Path="Application">
+          <Select Path="Application">*[System[Provider[@Name='EDI-Connector']]]</Select>
+        </Query>
+      </QueryList>
+    </QueryNode>
+  </QueryConfig>
+</ViewerConfig>

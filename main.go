@@ -65,14 +65,35 @@ func main() {
 	configFile := flag.String("config", "", "Config file.")
 	logLevel := flag.String("log_level", "", "Log level.")
 
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), `usage: %s [flags] [command]
+
+commands:
+  version                                        print the version
+  credentials list                               list stored credentials (windows only)
+  credentials set <name> <username> [password]   create or update a credential (windows only)
+  credentials set-b64 <name> <user> <password>   like set, base64 encoded username and password (windows only)
+  credentials delete <name>                      delete a credential (windows only)
+
+flags:
+`, os.Args[0])
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
 
 	if len(flag.Args()) > 0 {
 		switch flag.Arg(0) {
 		case "version":
 			fmt.Printf("Version: %s\n", version.Version)
+		case "credentials":
+			if err := credentialsCommand(flag.Args()[1:]); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
 		default:
 			fmt.Printf("Unknown parameter: %s\n", flag.Arg(0))
+			os.Exit(1)
 		}
 		return
 	}
