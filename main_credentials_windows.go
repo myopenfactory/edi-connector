@@ -36,6 +36,8 @@ func runCredentialsCommand(args []string) error {
 		return credentialsSetEncodedCommand(args[1:])
 	case "delete":
 		return credentialsDeleteCommand(args[1:])
+	case "migrate":
+		return credentialsMigrateCommand()
 	case "help":
 		printCredentialsUsage()
 		return nil
@@ -54,7 +56,11 @@ commands (administrator rights required):
                                     password is prompted for if not given
   set-b64 <name> <user> <password>  like set, with base64 encoded username
                                     and password (used by the installer)
-  delete <name>                     delete a credential`)
+  delete <name>                     delete a credential
+  migrate                           copy credentials of the current user from
+                                    the Windows credential manager to the
+                                    machine wide store (run as the former
+                                    service user, existing ones are kept)`)
 }
 
 func credentialsListCommand() error {
@@ -123,6 +129,23 @@ func credentialsSetEncodedCommand(args []string) error {
 		return err
 	}
 	fmt.Printf("credential %q updated\n", args[0])
+	return nil
+}
+
+func credentialsMigrateCommand() error {
+	migrated, skipped, err := credentials.MigrateLegacyCredentials()
+	for _, n := range migrated {
+		fmt.Printf("migrated credential %q\n", n)
+	}
+	for _, n := range skipped {
+		fmt.Printf("skipped credential %q, already exists\n", n)
+	}
+	if err != nil {
+		return err
+	}
+	if len(migrated)+len(skipped) == 0 {
+		fmt.Println("no legacy credentials found for the current user")
+	}
 	return nil
 }
 

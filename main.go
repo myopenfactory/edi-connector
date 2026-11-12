@@ -74,6 +74,8 @@ commands:
   credentials set <name> <username> [password]   create or update a credential (windows only)
   credentials set-b64 <name> <user> <password>   like set, base64 encoded username and password (windows only)
   credentials delete <name>                      delete a credential (windows only)
+  credentials migrate                            copy credentials of the current user from the
+                                                 Windows credential manager (windows only)
 
 flags:
 `, os.Args[0])

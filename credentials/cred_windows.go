@@ -134,6 +134,41 @@ func (m *dpapiCredManager) GetCredential(name string) (*PasswordAuth, error) {
 	return auth, nil
 }
 
+// MigrateLegacyCredentials copies the credentials of the current user from the
+// Windows credential manager to the DPAPI store. Existing DPAPI credentials are
+// not overwritten. It returns the names of the migrated credentials and the
+// names that were skipped because they already exist.
+func MigrateLegacyCredentials() (migrated, skipped []string, err error) {
+	storeDir, err := dpapiStoreDir()
+	if err != nil {
+		return nil, nil, err
+	}
+	m := &dpapiCredManager{serviceName: serviceName, storeDir: storeDir}
+	creds, err := wincred.FilteredList(serviceName + "*")
+	if err != nil {
+		if errors.Is(err, wincred.ErrElementNotFound) {
+			return nil, nil, nil
+		}
+		return nil, nil, fmt.Errorf("failed to list legacy credentials: %w", err)
+	}
+	for _, c := range creds {
+		name, ok := legacyCredName(serviceName, c.TargetName)
+		if !ok {
+			continue
+		}
+		err := m.createStored(name, &PasswordAuth{Username: c.UserName, Password: string(c.CredentialBlob)})
+		switch {
+		case errors.Is(err, fs.ErrExist):
+			skipped = append(skipped, name)
+		case err != nil:
+			return migrated, skipped, err
+		default:
+			migrated = append(migrated, name)
+		}
+	}
+	return migrated, skipped, nil
+}
+
 func (m *dpapiCredManager) migrateFromLegacy() {
 	creds, err := wincred.FilteredList(m.serviceName + "*")
 	if err != nil {
